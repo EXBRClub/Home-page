@@ -34,6 +34,7 @@ body {
   font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 1rem;
   line-height: 1.65;
+  isolation: isolate;
   background:
     radial-gradient(circle at 78% 18%, rgba(18, 82, 91, 0.13), transparent 24rem),
     radial-gradient(circle at 8% 74%, rgba(242, 169, 59, 0.055), transparent 25rem),
@@ -75,11 +76,12 @@ body::before {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: 0;
   width: 100vw;
   height: 58vh;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.72;
+  filter: drop-shadow(0 0 3px rgba(44, 157, 172, 0.24));
   mix-blend-mode: screen;
   mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.82) 56%, transparent 100%);
 }
@@ -110,6 +112,13 @@ body::before {
 
 main {
   display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.site-footer {
+  position: relative;
+  z-index: 1;
 }
 
 .section {

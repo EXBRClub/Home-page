@@ -24,19 +24,35 @@ html.home-first-boot .tactical-dock {
   animation: boot-dock 650ms 1.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-html.home-first-boot body::after {
-  content: "";
+.boot-construction {
+  display: none;
+}
+
+html.home-first-boot .boot-construction {
   position: fixed;
   inset: 0;
-  z-index: 110;
+  z-index: 105;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
   pointer-events: none;
+  mix-blend-mode: screen;
+  animation: boot-overlay 2.3s ease both;
+}
+
+html.home-first-boot .boot-construction span {
   opacity: 0;
   background:
-    linear-gradient(to bottom, transparent 0 47%, rgba(147, 215, 223, 0.12) 49%, rgba(147, 215, 223, 0.5) 50%, rgba(44, 157, 172, 0.12) 52%, transparent 55%),
-    linear-gradient(90deg, transparent, rgba(18, 82, 91, 0.06), transparent);
-  mix-blend-mode: screen;
-  animation: boot-scan 1.75s 180ms ease-in-out both;
+    repeating-linear-gradient(180deg, rgba(147, 215, 223, 0.08) 0 2px, transparent 2px 8px),
+    linear-gradient(180deg, rgba(18, 82, 91, 0.22), rgba(44, 157, 172, 0.08) 60%, transparent);
+  transform: scaleY(0);
+  transform-origin: top;
+  animation: boot-column 1.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+
+html.home-first-boot .boot-construction span:nth-child(2n) { animation-delay: 90ms; }
+html.home-first-boot .boot-construction span:nth-child(3n) { animation-delay: 190ms; }
+html.home-first-boot .boot-construction span:nth-child(4n) { animation-delay: 280ms; }
+html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 360ms; }
 
 @keyframes boot-header {
   from { opacity: 0; clip-path: inset(0 50% 100%); }
@@ -60,11 +76,16 @@ html.home-first-boot body::after {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes boot-scan {
-  0% { opacity: 0; transform: translateY(-65%); }
-  12% { opacity: 0.75; }
-  82% { opacity: 0.5; }
-  100% { opacity: 0; transform: translateY(65%); }
+@keyframes boot-column {
+  0% { opacity: 0; transform: scaleY(0); }
+  35% { opacity: 0.6; }
+  75% { opacity: 0.22; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(1); }
+}
+
+@keyframes boot-overlay {
+  0%, 78% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
 }
 
 .hero::before {
@@ -538,13 +559,16 @@ html.home-first-boot body::after {
   html.home-first-boot .site-header,
   html.home-first-boot .hero-copy[data-reveal],
   html.home-first-boot .command-panel[data-reveal],
-  html.home-first-boot .tactical-dock,
-  html.home-first-boot body::after {
+  html.home-first-boot .tactical-dock {
     animation: none;
     opacity: 1;
     transform: none;
     clip-path: none;
     filter: none;
+  }
+
+  html.home-first-boot .boot-construction {
+    display: none;
   }
 }
 

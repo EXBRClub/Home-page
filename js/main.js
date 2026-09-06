@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const dockLinks = [...document.querySelectorAll('.dock-menu a[href^="#"]')];
   const sections = [...document.querySelectorAll('main section[id]')];
 
+  if (document.documentElement.classList.contains('home-first-boot')) {
+    window.setTimeout(() => {
+      document.documentElement.classList.remove('home-first-boot');
+    }, 2500);
+  }
+
   const startAmbientMatrix = () => {
     if (reduceMotion) return;
 
@@ -35,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let ratio = 1;
     let columns = [];
     let animationFrame = 0;
+    let lastFrame = 0;
 
     const seeded = value => {
       const result = Math.sin(value * 9301 + 49297) * 233280;
@@ -51,49 +58,64 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.style.height = `${height}px`;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
 
-      const spacing = width < 560 ? 34 : 42;
+      const spacing = width < 560 ? 20 : 23;
       const count = Math.ceil(width / spacing) + 1;
       columns = Array.from({ length: count }, (_, index) => ({
-        x: index * spacing + (seeded(index + 2) - 0.5) * 12,
+        x: index * spacing + (seeded(index + 2) - 0.5) * 8,
         offset: seeded(index + 21),
-        speed: 0.000022 + seeded(index + 47) * 0.000016,
-        trail: 3 + Math.floor(seeded(index + 73) * 4)
+        speed: 0.000012 + seeded(index + 47) * 0.00001,
+        trail: 9 + Math.floor(seeded(index + 73) * 9),
+        depth: 0.48 + seeded(index + 91) * 0.52,
+        size: 9 + Math.floor(seeded(index + 113) * 4)
       }));
     };
 
-    const draw = () => {
+    const draw = timestamp => {
+      if (timestamp - lastFrame < 32) {
+        animationFrame = window.requestAnimationFrame(draw);
+        return;
+      }
+
+      lastFrame = timestamp;
       const elapsed = Date.now() - startedAt;
       context.clearRect(0, 0, width, height);
-      context.font = '14px Consolas, "Courier New", monospace';
       context.textAlign = 'center';
       context.textBaseline = 'middle';
+      context.globalCompositeOperation = 'lighter';
 
       columns.forEach((column, columnIndex) => {
-        const phase = (elapsed * column.speed + column.offset) % 1;
-        const head = phase * (height + 90) - 45;
+        context.font = `${column.size}px Consolas, "Courier New", monospace`;
 
-        for (let index = 0; index < column.trail; index += 1) {
-          const y = head - index * 22;
-          if (y < -20 || y > height + 20) continue;
-          const shimmer = 0.82 + seeded(columnIndex * 17 + index * 31) * 0.18;
-          const alpha = Math.max(0.015, (0.12 - index * 0.018) * shimmer);
-          context.fillStyle = `rgba(147, 215, 223, ${alpha})`;
-          context.fillText('•', column.x, y);
+        for (let stream = 0; stream < 2; stream += 1) {
+          const phase = (elapsed * column.speed + column.offset + stream * 0.51) % 1;
+          const head = phase * (height + 150) - 75;
+
+          for (let index = 0; index < column.trail; index += 1) {
+            const y = head - index * 13;
+            if (y < -20 || y > height + 20) continue;
+            const shimmer = 0.72 + seeded(columnIndex * 19 + index * 37 + stream * 11) * 0.28;
+            const fade = Math.max(0.025, 0.2 - index * 0.011);
+            const alpha = fade * shimmer * column.depth;
+            context.fillStyle = `rgba(94, 189, 201, ${alpha})`;
+            context.fillText('•', column.x + stream * 2, y);
+          }
         }
       });
+
+      context.globalCompositeOperation = 'source-over';
 
       animationFrame = window.requestAnimationFrame(draw);
     };
 
     resize();
-    draw();
+    draw(performance.now());
     window.addEventListener('resize', resize, { passive: true });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         window.cancelAnimationFrame(animationFrame);
       } else {
         window.cancelAnimationFrame(animationFrame);
-        draw();
+        draw(performance.now());
       }
     });
   };

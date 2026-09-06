@@ -20,9 +20,10 @@
 
   <script>
     try {
-      if (sessionStorage.getItem('exbr.homeBootSeen') !== '1') {
+      const bootMarker = '__EXBR_HOME_BOOT_SEEN__';
+      if (!window.name.includes(bootMarker)) {
         document.documentElement.classList.add('home-first-boot');
-        sessionStorage.setItem('exbr.homeBootSeen', '1');
+        window.name = `${window.name}${bootMarker}`;
       }
     } catch (error) {
       document.documentElement.classList.add('home-first-boot');
@@ -36,9 +37,9 @@
   <meta property="og:locale" content="pt_BR">
 
   <link rel="stylesheet" href="css/reset.css?v=20260906-1">
-  <link rel="stylesheet" href="css/base.css?v=20260906-6">
-  <link rel="stylesheet" href="css/components.css?v=20260906-6">
-  <link rel="stylesheet" href="css/pages/home.css?v=20260906-6">
+  <link rel="stylesheet" href="css/base.css?v=20260906-7">
+  <link rel="stylesheet" href="css/components.css?v=20260906-7">
+  <link rel="stylesheet" href="css/pages/home.css?v=20260906-7">
 
   <script type="application/ld+json">
   {
@@ -55,6 +56,10 @@
 
   <div class="screen-grid" aria-hidden="true"></div>
   <div class="screen-noise" aria-hidden="true"></div>
+  <div class="boot-construction" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
 
   <header class="site-header" data-site-header>
     <div class="header-shell">
@@ -244,6 +249,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260906-6" defer></script>
+  <script src="js/main.js?v=20260906-7" defer></script>
 </body>
 </html>

@@ -78,4 +78,4 @@ O projeto inclui favicon vetorial, ícones para atalhos em celulares e manifesto
 
 ## Efeitos de sessão
 
-A cascata ambiente de pontos mantém sua fase durante atualizações e mudanças de página na mesma guia. A montagem inicial da Home acontece apenas uma vez por guia: não reinicia com `F5` e volta a ser exibida depois que a guia é totalmente fechada e uma nova sessão é iniciada. Ambos os efeitos respeitam `prefers-reduced-motion`.
+A cascata ambiente de pontos mantém sua fase durante atualizações e mudanças de página na mesma guia. A montagem inicial da Home usa uma marca vinculada à vida da própria guia: não reinicia com `F5` ou ao retornar do Login, mas volta a ser exibida em uma nova guia. Ambos os efeitos respeitam `prefers-reduced-motion`.
