@@ -10,7 +10,15 @@ Home-page
 ├── index.html                 ← Home de página única
 ├── README.md                  ← Apresentação técnica do projeto
 ├── MAPA-SITE.txt              ← Mapa estrutural
+├── site.webmanifest           ← Instalação e identidade para dispositivos móveis
 ├── LICENSE                    ← Licença original do repositório
+│
+├── assets/
+│   └── icons/
+│       ├── favicon.svg        ← Favicon vetorial moderno
+│       ├── apple-touch-icon.png
+│       ├── icon-192.png
+│       └── icon-512.png
 │
 ├── css/
 │   ├── reset.css              ← Normalização do navegador
@@ -47,6 +55,12 @@ COMPONENTE TÁTICO INFERIOR
 - 6 espaços funcionais com emojis temporários
 - Estrutura preparada para ícones PNG adicionados individualmente depois
 - Apenas o item selecionado usa borda e iluminação amarelas
+
+IDENTIDADE MÓVEL
+
+- Favicon moderno implementado
+- Ícone para atalhos em celulares implementado
+- Manifesto de aplicativo web implementado
 
 PLANEJADO — NÃO IMPLEMENTADO
 

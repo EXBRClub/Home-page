@@ -13,6 +13,13 @@ Home-page/
 ├── index.html
 ├── README.md
 ├── MAPA-SITE.txt
+├── site.webmanifest
+├── assets/
+│   └── icons/
+│       ├── favicon.svg
+│       ├── apple-touch-icon.png
+│       ├── icon-192.png
+│       └── icon-512.png
 ├── css/
 │   ├── reset.css
 │   ├── base.css
@@ -66,3 +73,5 @@ A página de login já possui a interface visual e a sinalização de acesso res
 ## Interface tática
 
 O cabeçalho utiliza abas compactas com iluminação central, botão de login recortado e indicador verde pulsante de portal ativo. A barra inferior curva possui seis espaços funcionais com emojis temporários, preparados para receber os ícones PNG definitivos individualmente.
+
+O projeto inclui favicon vetorial, ícones para atalhos em celulares e manifesto para instalação como aplicativo web. A identidade azul utiliza a família azul-petróleo definida pelos tons `#07383d` e `#12525b`, com variações luminosas da mesma matiz.
