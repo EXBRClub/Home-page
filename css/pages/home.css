@@ -91,9 +91,9 @@
   grid-template-rows: auto 1fr auto auto;
   border: 1px solid var(--color-line-strong);
   background:
-    linear-gradient(135deg, rgba(88, 212, 238, 0.05), transparent 42%),
-    rgba(5, 11, 17, 0.76);
-  box-shadow: var(--shadow-panel), inset 0 0 50px rgba(88, 212, 238, 0.025);
+    linear-gradient(135deg, rgba(24, 105, 116, 0.78), rgba(7, 56, 61, 0.88)),
+    rgba(5, 11, 17, 0.82);
+  box-shadow: var(--shadow-panel), inset 0 0 50px rgba(88, 212, 238, 0.08);
   backdrop-filter: blur(16px);
   clip-path: polygon(0 0, calc(100% - 2rem) 0, 100% 2rem, 100% 100%, 2rem 100%, 0 calc(100% - 2rem));
 }
@@ -113,7 +113,7 @@
 }
 
 .panel-topline {
-  border-bottom: 1px solid var(--color-line);
+  border-bottom: 2px solid rgba(88, 212, 238, 0.28);
 }
 
 .panel-code {
@@ -183,7 +183,7 @@
   display: grid;
   gap: 0.05rem;
   padding: 0.8rem 3.2rem 0.8rem 1rem;
-  border-bottom: 1px solid var(--color-line);
+  border-bottom: 2px solid rgba(88, 212, 238, 0.28);
   transition: background var(--transition-fast), padding var(--transition-fast);
 }
 

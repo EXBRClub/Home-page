@@ -9,6 +9,8 @@
   --color-muted: #9db0b8;
   --color-primary: #58d4ee;
   --color-primary-soft: #b7f5ff;
+  --color-teal-deep: #07383d;
+  --color-teal-panel: #12525b;
   --color-accent: #f2a93b;
   --color-danger: #ff674d;
   --shadow-panel: 0 24px 70px rgba(0, 0, 0, 0.42);
@@ -36,6 +38,10 @@ body {
     radial-gradient(circle at 78% 18%, rgba(45, 139, 164, 0.13), transparent 24rem),
     radial-gradient(circle at 8% 74%, rgba(242, 169, 59, 0.055), transparent 25rem),
     linear-gradient(145deg, #030609 0%, #07101a 48%, #05090e 100%);
+}
+
+body.has-tactical-dock {
+  padding-bottom: 4.15rem;
 }
 
 body::before {

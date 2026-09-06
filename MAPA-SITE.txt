@@ -41,6 +41,12 @@ pages/login.html
 - Autenticação ainda não conectada
 - Nenhuma credencial é enviada ou armazenada
 
+COMPONENTE TÁTICO INFERIOR
+
+- Barra inferior implementada na Home e no Login
+- 6 espaços funcionais temporariamente numerados
+- Ícones definitivos serão adicionados individualmente depois
+
 PLANEJADO — NÃO IMPLEMENTADO
 
 assets/

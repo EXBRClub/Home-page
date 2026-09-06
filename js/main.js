@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.querySelector('.nav-toggle');
   const menuLinks = [...document.querySelectorAll('.site-nav a')];
   const navLinks = [...document.querySelectorAll('.site-nav a[href^="#"]')];
+  const dockLinks = [...document.querySelectorAll('.dock-menu a[href^="#"]')];
   const sections = [...document.querySelectorAll('main section[id]')];
 
   const setMenu = open => {
@@ -53,6 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!entry.isIntersecting) return;
         const currentId = `#${entry.target.id}`;
         navLinks.forEach(link => {
+          if (link.getAttribute('href') === currentId) link.setAttribute('aria-current', 'page');
+          else link.removeAttribute('aria-current');
+        });
+        dockLinks.forEach(link => {
           if (link.getAttribute('href') === currentId) link.setAttribute('aria-current', 'page');
           else link.removeAttribute('aria-current');
         });

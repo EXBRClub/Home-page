@@ -62,3 +62,7 @@ PlanetSide 2 é marca de seus respectivos detentores. Este é um projeto comunit
 ## Login
 
 A página de login já possui a interface visual e a sinalização de acesso restrito. A autenticação permanece desativada até a definição de um serviço seguro para validar membros; nenhuma credencial é enviada ou armazenada pela versão atual.
+
+## Interface tática
+
+O cabeçalho utiliza abas recortadas, botão de login com iluminação verde e indicador luminoso de portal ativo. A barra inferior já possui seis espaços funcionais numerados, preparados para receber os ícones definitivos individualmente.
