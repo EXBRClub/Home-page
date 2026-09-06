@@ -1,0 +1,39 @@
+Home-page
+Compatível com:
+- github.com/mrserluiz/Home-page
+- github.com/EXBRClub/Home-page
+
+ESTRUTURA IDÊNTICA NOS DOIS REPOSITÓRIOS
+
+Home-page
+│
+├── index.html                 ← Home de página única
+├── README.md                  ← Apresentação técnica do projeto
+├── MAPA-SITE.txt              ← Mapa estrutural
+├── LICENSE                    ← Licença original do repositório
+│
+├── css/
+│   ├── reset.css              ← Normalização do navegador
+│   ├── base.css               ← Tokens, tipografia e base visual
+│   ├── components.css         ← Navegação, botões, painéis e rodapé
+│   └── pages/
+│       └── home.css           ← Layout exclusivo da Home
+│
+└── js/
+    └── main.js                ← Menu, navegação ativa e animações
+
+SEÇÕES DA HOME
+
+#inicio
+#sobre
+#operacoes
+#recrutamento
+#comunidade
+
+PLANEJADO — NÃO IMPLEMENTADO
+
+assets/
+pages/
+data/
+
+Essas pastas serão criadas quando houver conteúdo oficial que justifique seu uso.
