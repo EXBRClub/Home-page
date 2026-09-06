@@ -136,6 +136,16 @@ html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 36
   text-shadow: 0 0 45px rgba(44, 157, 172, 0.1);
 }
 
+@media (max-width: 47.99rem) {
+  .hero h1 {
+    margin: 1rem 0 1.5rem;
+    font-size: clamp(4.65rem, 22vw, 6.2rem);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    white-space: nowrap;
+  }
+}
+
 .hero h1 span {
   color: transparent;
   -webkit-text-stroke: 1px rgba(147, 215, 223, 0.7);

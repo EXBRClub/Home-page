@@ -7,6 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const navLinks = [...document.querySelectorAll('.site-nav a[href^="#"]')];
   const dockLinks = [...document.querySelectorAll('.dock-menu a[href^="#"]')];
   const sections = [...document.querySelectorAll('main section[id]')];
+  let activeOverride = window.location.hash === '#comunidade' ? '#comunidade' : '';
+
+  const setActiveSection = currentId => {
+    navLinks.forEach(link => {
+      if (link.getAttribute('href') === currentId) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+    dockLinks.forEach(link => {
+      if (link.getAttribute('href') === currentId) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+  };
+
+  if (activeOverride) setActiveSection(activeOverride);
 
   if (document.documentElement.classList.contains('home-first-boot')) {
     window.setTimeout(() => {
@@ -91,6 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
     link.addEventListener('click', () => setMenu(false));
   });
 
+  [...new Set([...navLinks, ...dockLinks])].forEach(link => {
+    link.addEventListener('click', () => {
+      const targetId = link.getAttribute('href');
+      activeOverride = targetId === '#comunidade' ? targetId : '';
+      setActiveSection(targetId);
+    });
+  });
+
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') setMenu(false);
   });
@@ -123,14 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         const currentId = `#${entry.target.id}`;
-        navLinks.forEach(link => {
-          if (link.getAttribute('href') === currentId) link.setAttribute('aria-current', 'page');
-          else link.removeAttribute('aria-current');
-        });
-        dockLinks.forEach(link => {
-          if (link.getAttribute('href') === currentId) link.setAttribute('aria-current', 'page');
-          else link.removeAttribute('aria-current');
-        });
+        if (activeOverride && currentId === '#operacoes') return;
+        if (currentId !== '#operacoes') activeOverride = '';
+        setActiveSection(currentId);
       });
     }, { rootMargin: '-35% 0px -55%', threshold: 0 });
 

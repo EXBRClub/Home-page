@@ -28,7 +28,7 @@
 }
 
 .header-shell {
-  width: min(100% - 2rem, 1440px);
+  width: min(100% - (var(--gutter) * 2), var(--container));
   height: 100%;
   margin-inline: auto;
   display: flex;
