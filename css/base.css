@@ -74,16 +74,50 @@ body::before {
 
 .ambient-matrix {
   position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  width: 100vw;
-  height: 58vh;
+  inset: 0 0 auto;
+  z-index: 1;
+  height: 62vh;
+  overflow: hidden;
   pointer-events: none;
-  opacity: 0.72;
-  filter: drop-shadow(0 0 3px rgba(44, 157, 172, 0.24));
+  opacity: 0.9;
   mix-blend-mode: screen;
-  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.82) 56%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.92) 48%, transparent 100%);
+}
+
+.matrix-stream {
+  position: absolute;
+  top: 0;
+  left: var(--matrix-x);
+  width: 1rem;
+  color: rgba(93, 207, 215, 0.68);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: var(--matrix-size);
+  font-weight: 700;
+  line-height: 0.72rem;
+  text-align: center;
+  white-space: pre;
+  opacity: var(--matrix-opacity);
+  text-shadow:
+    0 0 3px rgba(63, 194, 205, 0.8),
+    0 0 9px rgba(35, 128, 139, 0.42);
+  transform: translate3d(0, -110%, 0);
+  animation: matrix-fall var(--matrix-duration) linear infinite;
+  animation-delay: var(--matrix-delay);
+  will-change: transform;
+}
+
+.matrix-stream::first-line {
+  color: rgba(173, 249, 252, 0.95);
+}
+
+@keyframes matrix-fall {
+  from {
+    transform: translate3d(0, -110%, 0);
+  }
+
+  to {
+    transform: translate3d(0, 72vh, 0);
+  }
 }
 
 .screen-noise {
@@ -113,12 +147,12 @@ body::before {
 main {
   display: block;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .site-footer {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .section {
