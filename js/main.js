@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const startAmbientMatrix = () => {
-    if (reduceMotion) return;
-
     const storageKey = 'exbr.matrixStartedAt';
     let startedAt = Date.now();
 
@@ -48,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       for (let index = 0; index < count; index += 1) {
         const stream = document.createElement('span');
-        const duration = 15 + seeded(index + 47) * 16;
+        const durationBase = 15 + seeded(index + 47) * 16;
+        const duration = reduceMotion ? durationBase * 1.35 : durationBase;
         const phase = (elapsedSeconds + seeded(index + 21) * duration) % duration;
         const trail = 17 + Math.floor(seeded(index + 73) * 20);
         const x = index * spacing + (seeded(index + 2) - 0.5) * 9;

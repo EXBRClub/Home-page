@@ -80,8 +80,10 @@ body::before {
   overflow: hidden;
   pointer-events: none;
   opacity: 0.9;
-  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 4px rgba(44, 157, 172, 0.28));
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.92) 48%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.92) 48%, transparent 100%);
+  transform: translateZ(0);
 }
 
 .matrix-stream {
@@ -228,6 +230,11 @@ p {
   }
 
   .ambient-matrix {
-    display: none;
+    display: block;
+  }
+
+  .matrix-stream {
+    animation-duration: var(--matrix-duration) !important;
+    animation-iteration-count: infinite !important;
   }
 }
