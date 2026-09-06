@@ -37,9 +37,9 @@
   <meta property="og:locale" content="pt_BR">
 
   <link rel="stylesheet" href="css/reset.css?v=20260906-1">
-  <link rel="stylesheet" href="css/base.css?v=20260906-10">
-  <link rel="stylesheet" href="css/components.css?v=20260906-10">
-  <link rel="stylesheet" href="css/pages/home.css?v=20260906-10">
+  <link rel="stylesheet" href="css/base.css?v=20260906-11">
+  <link rel="stylesheet" href="css/components.css?v=20260906-11">
+  <link rel="stylesheet" href="css/pages/home.css?v=20260906-11">
 
   <script type="application/ld+json">
   {
@@ -169,12 +169,29 @@
 
     <section class="section section-modules" id="operacoes" aria-labelledby="operacoes-title">
       <div class="container">
-        <header class="section-heading heading-inline" data-reveal>
-          <div>
+        <header class="operations-heading" data-reveal>
+          <div class="section-heading operations-title">
             <p class="eyebrow"><span></span> Rede da Outfit</p>
-            <h2 id="operacoes-title">Setores do portal</h2>
+            <h2 id="operacoes-title">Setor de Operações</h2>
           </div>
-          <p class="section-index">03 / 05</p>
+
+          <aside class="alert-monitor" aria-labelledby="active-alerts-title" data-alert-monitor>
+            <div class="alert-monitor-topline">
+              <a href="https://ps2alerts.com/alert-history" target="_blank" rel="noopener noreferrer">Dados: PS2Alerts <span aria-hidden="true">↗</span></a>
+              <span class="alert-live-status" data-alert-status><i aria-hidden="true"></i> Sincronizando</span>
+            </div>
+            <div class="alert-monitor-heading">
+              <h3 id="active-alerts-title">Alertas ativos</h3>
+              <span data-alert-count>--</span>
+            </div>
+            <div class="alert-list" data-alert-list aria-live="polite">
+              <p class="alert-monitor-message">Consultando Auraxis...</p>
+            </div>
+            <div class="alert-monitor-footer">
+              <span>Atualização automática</span>
+              <time data-alert-updated>--:--:--</time>
+            </div>
+          </aside>
         </header>
 
         <div class="module-grid">
@@ -249,6 +266,7 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260906-10" defer></script>
+  <script src="js/main.js?v=20260906-11" defer></script>
+  <script src="js/operations.js?v=20260906-11" defer></script>
 </body>
 </html>
