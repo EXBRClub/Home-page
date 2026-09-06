@@ -14,16 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let refreshTimer = 0;
   let isRefreshing = false;
 
-  const worlds = {
-    1: 'Connery',
-    10: 'Miller',
-    13: 'Cobalt',
-    17: 'Emerald',
-    19: 'Jaeger',
-    40: 'SolTech',
-    1000: 'Genudine',
-    2000: 'Ceres'
-  };
+  const ospreyWorldIds = new Set([1, 17]);
 
   const zones = {
     2: 'Indar',
@@ -40,9 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
     { key: 'other', label: '—' }
   ];
 
-  const setStatus = (label, error = false) => {
+  const setStatus = (label, error = false, closed = false) => {
     status.lastChild.textContent = ` ${label}`;
     status.classList.toggle('is-error', error);
+    status.classList.toggle('is-closed', closed);
   };
 
   const fetchJson = async path => {
@@ -79,6 +71,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     return message;
+  };
+
+  const isOspreyAlert = alert => {
+    const worldName = String(alert.worldName || alert.world || '').trim();
+    return ospreyWorldIds.has(Number(alert.world)) || /^(osprey|connery|emerald)$/i.test(worldName);
+  };
+
+  const createClosedAlert = () => {
+    const closed = document.createElement('div');
+    const server = document.createElement('p');
+    const ruleTop = document.createElement('span');
+    const message = document.createElement('strong');
+    const ruleBottom = document.createElement('span');
+    const link = document.createElement('a');
+
+    closed.className = 'alert-closed';
+    server.className = 'alert-closed-server';
+    server.textContent = 'Osprey · Sem mapa ativo';
+    ruleTop.className = 'alert-closed-rule alert-closed-rule-top';
+    ruleBottom.className = 'alert-closed-rule alert-closed-rule-bottom';
+    ruleTop.setAttribute('aria-hidden', 'true');
+    ruleBottom.setAttribute('aria-hidden', 'true');
+    message.textContent = 'SEM ALERTA ATIVO';
+    link.href = historyUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = 'Consultar histórico ↗';
+
+    closed.append(server, ruleTop, message, ruleBottom, link);
+    return closed;
   };
 
   const percentageSet = values => {
@@ -143,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     entry.className = 'alert-entry';
     heading.className = 'alert-entry-head';
     server.className = 'alert-entry-server';
-    server.textContent = `${worlds[alert.world] || `Servidor ${alert.world}`} · ${zones[alert.zone] || `Continente ${alert.zone}`}`;
+    server.textContent = `Osprey · ${zones[alert.zone] || `Continente ${alert.zone}`}`;
     timer.className = 'alert-entry-timer';
     timer.dataset.alertEnd = String(endTime);
     timer.setAttribute('aria-label', 'Tempo restante');
@@ -182,17 +204,17 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const renderAlerts = async alerts => {
-    const activeAlerts = alerts.filter(alert => alert && alert.instanceId).slice(0, 5);
+    const activeAlerts = alerts.filter(alert => alert && alert.instanceId && isOspreyAlert(alert)).slice(0, 5);
     list.replaceChildren();
-    count.textContent = String(alerts.length).padStart(2, '0');
+    count.textContent = String(activeAlerts.length).padStart(2, '0');
 
     if (!activeAlerts.length) {
-      list.append(makeMessage('Nenhum alerta ativo em Auraxis.', true));
-      setStatus('Monitorando');
+      list.append(createClosedAlert());
+      setStatus('Osprey fechado', false, true);
       return;
     }
 
-    setStatus('Ao vivo');
+    setStatus('Osprey ao vivo');
     const populations = await Promise.allSettled(activeAlerts.map(alert => getPopulation(alert.instanceId)));
     activeAlerts.forEach((alert, index) => {
       const population = populations[index].status === 'fulfilled' ? populations[index].value : null;
