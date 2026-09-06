@@ -490,15 +490,6 @@ html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 36
   box-shadow: 0 0 0.65rem rgba(242, 169, 59, 0.75);
 }
 
-.alert-live-status.is-closed {
-  color: #ff6a6a;
-}
-
-.alert-live-status.is-closed i {
-  background: #ff3434;
-  box-shadow: 0 0 0.7rem rgba(255, 52, 52, 0.82);
-}
-
 .alert-monitor-heading {
   margin-top: 0.8rem;
   padding-bottom: 0.55rem;
@@ -621,10 +612,19 @@ html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 36
 }
 
 .alert-closed-server {
-  margin: 0 0 0.15rem;
+  margin: 0;
   color: #f2f8fa;
   font-size: 0.86rem;
   font-weight: 720;
+}
+
+.alert-closed-map-source {
+  margin: -0.15rem 0 0.18rem;
+  color: #7e949c;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .alert-closed-rule {
