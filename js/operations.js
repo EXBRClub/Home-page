@@ -10,7 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const historyUrl = 'https://ps2alerts.com/alert-history';
   const refreshInterval = 15000;
   const populationInterval = 30000;
+  const historyInterval = 300000;
   const populationCache = new Map();
+  let lastAlertCache = { data: null, fetchedAt: 0 };
   let refreshTimer = 0;
   let isRefreshing = false;
 
@@ -31,10 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     { key: 'other', label: '—' }
   ];
 
-  const setStatus = (label, error = false, closed = false) => {
+  const setStatus = (label, error = false) => {
     status.lastChild.textContent = ` ${label}`;
     status.classList.toggle('is-error', error);
-    status.classList.toggle('is-closed', closed);
   };
 
   const fetchJson = async path => {
@@ -78,9 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return ospreyWorldIds.has(Number(alert.world)) || /^(osprey|connery|emerald)$/i.test(worldName);
   };
 
-  const createClosedAlert = () => {
+  const createClosedAlert = lastAlert => {
     const closed = document.createElement('div');
     const server = document.createElement('p');
+    const mapSource = document.createElement('small');
     const ruleTop = document.createElement('span');
     const message = document.createElement('strong');
     const ruleBottom = document.createElement('span');
@@ -88,7 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     closed.className = 'alert-closed';
     server.className = 'alert-closed-server';
-    server.textContent = 'Osprey · Sem mapa ativo';
+    server.textContent = lastAlert
+      ? `Osprey · ${zones[lastAlert.zone] || `Continente ${lastAlert.zone}`}`
+      : 'Osprey · Último mapa indisponível';
+    mapSource.className = 'alert-closed-map-source';
+    mapSource.textContent = 'Último mapa iniciado registrado pelo PS2Alerts';
     ruleTop.className = 'alert-closed-rule alert-closed-rule-top';
     ruleBottom.className = 'alert-closed-rule alert-closed-rule-bottom';
     ruleTop.setAttribute('aria-hidden', 'true');
@@ -99,8 +105,25 @@ document.addEventListener('DOMContentLoaded', () => {
     link.rel = 'noopener noreferrer';
     link.textContent = 'Consultar histórico ↗';
 
-    closed.append(server, ruleTop, message, ruleBottom, link);
+    closed.append(server, mapSource, ruleTop, message, ruleBottom, link);
     return closed;
+  };
+
+  const getLastOspreyAlert = async () => {
+    if (Date.now() - lastAlertCache.fetchedAt < historyInterval) return lastAlertCache.data;
+
+    const histories = await Promise.allSettled([...ospreyWorldIds].map(world => (
+      fetchJson(`/instances/territory-control?world=${world}&sortBy=timeStarted&order=desc&pageSize=1`)
+    )));
+    const records = histories.flatMap(result => (
+      result.status === 'fulfilled' && Array.isArray(result.value) ? result.value : []
+    ));
+    const latest = records
+      .filter(isOspreyAlert)
+      .sort((first, second) => new Date(second.timeStarted) - new Date(first.timeStarted))[0] || null;
+
+    lastAlertCache = { data: latest, fetchedAt: Date.now() };
+    return latest;
   };
 
   const percentageSet = values => {
@@ -209,8 +232,9 @@ document.addEventListener('DOMContentLoaded', () => {
     count.textContent = String(activeAlerts.length).padStart(2, '0');
 
     if (!activeAlerts.length) {
-      list.append(createClosedAlert());
-      setStatus('Osprey fechado', false, true);
+      const lastAlert = await getLastOspreyAlert();
+      list.append(createClosedAlert(lastAlert));
+      setStatus('Monitorando Osprey');
       return;
     }
 
