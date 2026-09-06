@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('[data-site-header]');
   const nav = document.querySelector('[data-site-nav]');
   const toggle = document.querySelector('.nav-toggle');
+  const menuLinks = [...document.querySelectorAll('.site-nav a')];
   const navLinks = [...document.querySelectorAll('.site-nav a[href^="#"]')];
   const sections = [...document.querySelectorAll('main section[id]')];
 
@@ -15,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setMenu(toggle.getAttribute('aria-expanded') !== 'true');
   });
 
-  navLinks.forEach(link => {
+  menuLinks.forEach(link => {
     link.addEventListener('click', () => setMenu(false));
   });
 

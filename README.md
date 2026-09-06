@@ -18,7 +18,10 @@ Home-page/
 │   ├── base.css
 │   ├── components.css
 │   └── pages/
-│       └── home.css
+│       ├── home.css
+│       └── login.css
+├── pages/
+│   └── login.html
 └── js/
     └── main.js
 ```
@@ -55,3 +58,7 @@ Antes de inserir links ou informações definitivas, confirmar com a administra�
 - agenda e registros de operações.
 
 PlanetSide 2 é marca de seus respectivos detentores. Este é um projeto comunitário da Outfit EXBR.
+
+## Login
+
+A página de login já possui a interface visual e a sinalização de acesso restrito. A autenticação permanece desativada até a definição de um serviço seguro para validar membros; nenhuma credencial é enviada ou armazenada pela versão atual.

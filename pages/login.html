@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070c12">
+
+  <title>Login | EXBR</title>
+  <meta name="description" content="Área de acesso restrito para membros da Outfit EXBR em PlanetSide 2.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://exbrclub.github.io/Home-page/pages/login.html">
+
+  <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
+  <link rel="stylesheet" href="../css/base.css?v=20260906-2">
+  <link rel="stylesheet" href="../css/components.css?v=20260906-2">
+  <link rel="stylesheet" href="../css/pages/login.css?v=20260906-2">
+</head>
+<body class="login-page">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+  <div class="screen-grid" aria-hidden="true"></div>
+  <div class="screen-noise" aria-hidden="true"></div>
+
+  <header class="site-header" data-site-header>
+    <div class="header-shell">
+      <a class="brand" href="../index.html#inicio" aria-label="EXBR — voltar ao início">
+        <span class="brand-mark" aria-hidden="true">EX</span>
+        <span class="brand-copy">
+          <strong class="brand-title-accent">Exército Brasileiro</strong>
+          <small>Outfit Network</small>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
+        <span class="nav-toggle-label">Menu</span>
+        <span class="nav-toggle-icon" aria-hidden="true"><i></i><i></i></span>
+      </button>
+
+      <nav class="site-nav" id="site-navigation" aria-label="Navegação principal" data-site-nav>
+        <a href="../index.html#inicio"><span>01</span>Início</a>
+        <a href="../index.html#sobre"><span>02</span>Sobre</a>
+        <a href="../index.html#operacoes"><span>03</span>Operações</a>
+        <a href="../index.html#recrutamento"><span>04</span>Recrutamento</a>
+        <div class="nav-stack">
+          <a href="../index.html#comunidade"><span>05</span>Comunidade</a>
+          <a class="nav-login-link" href="login.html" aria-current="page">Login</a>
+        </div>
+      </nav>
+
+      <div class="header-status" aria-label="Status do portal">
+        <span class="status-light" aria-hidden="true"></span>
+        <span>Portal ativo</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo" class="login-main">
+    <div class="login-orbit" aria-hidden="true"></div>
+    <div class="login-rail" aria-hidden="true">SECURE UPLINK // EXBR</div>
+
+    <div class="container login-layout">
+      <section class="login-intro" aria-labelledby="login-title" data-reveal>
+        <p class="eyebrow"><span></span> Canal reservado</p>
+        <p class="login-code">SYS-AUTH // 01</p>
+        <h1 id="login-title">Acesso de membros</h1>
+        <p>Área reservada para integrantes da Outfit EXBR. A autenticação será liberada após a integração do sistema de membros.</p>
+
+        <div class="access-status">
+          <span class="access-status-light" aria-hidden="true"></span>
+          <div>
+            <strong>Acesso em configuração</strong>
+            <small>Terminal protegido · conexão indisponível</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="login-terminal tactical-panel" aria-labelledby="terminal-title" data-reveal>
+        <div class="terminal-topline">
+          <span>EXBR // IDENTIFICAÇÃO</span>
+          <span class="terminal-state">STANDBY</span>
+        </div>
+
+        <div class="terminal-content">
+          <div class="terminal-emblem" aria-hidden="true"><strong>EXBR</strong><span>AUTH</span></div>
+          <h2 id="terminal-title">Identifique-se</h2>
+          <p>O login ainda não está conectado ao cadastro de membros.</p>
+
+          <form class="login-form" aria-describedby="login-notice">
+            <label for="login-email">E-mail ou identificação</label>
+            <div class="field-shell">
+              <span aria-hidden="true">ID</span>
+              <input id="login-email" name="email" type="text" autocomplete="username" placeholder="Acesso ainda indisponível" disabled>
+            </div>
+
+            <label for="login-password">Senha</label>
+            <div class="field-shell">
+              <span aria-hidden="true">••</span>
+              <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="••••••••••••" disabled>
+            </div>
+
+            <button class="button login-submit" type="submit" disabled>
+              Entrar no sistema <span aria-hidden="true">→</span>
+            </button>
+          </form>
+
+          <p class="login-notice" id="login-notice">Nenhuma credencial é enviada ou armazenada nesta versão.</p>
+        </div>
+
+        <div class="terminal-footer">
+          <span>PROTOCOLO 01</span>
+          <a href="../index.html">← Retornar ao portal</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-shell">
+      <a class="brand brand-footer" href="../index.html#inicio" aria-label="EXBR — voltar ao início">
+        <span class="brand-mark" aria-hidden="true">EX</span>
+        <span class="brand-copy"><strong>EXBR</strong><small>Outfit Network</small></span>
+      </a>
+      <p>Portal comunitário da Outfit EXBR em PlanetSide 2.</p>
+      <p class="footer-meta">© <span data-current-year>2026</span> EXBR · Acesso restrito.</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js?v=20260906-2" defer></script>
+</body>
+</html>

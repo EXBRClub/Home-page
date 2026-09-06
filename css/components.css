@@ -69,6 +69,13 @@
   letter-spacing: 0.16em;
 }
 
+.brand-copy .brand-title-accent {
+  color: #f2d530;
+  font-size: clamp(0.68rem, 1.15vw, 0.83rem);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .brand-copy small {
   margin-top: 0.28rem;
   color: var(--color-muted);
@@ -159,6 +166,26 @@
 .site-nav a span {
   color: #68808a;
   font-size: 0.66rem;
+}
+
+.nav-stack {
+  display: grid;
+}
+
+.site-nav .nav-login-link {
+  min-height: 2.25rem;
+  padding-block: 0.25rem;
+  color: #70d73d;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+.site-nav .nav-login-link:hover,
+.site-nav .nav-login-link:focus-visible,
+.site-nav .nav-login-link[aria-current="page"] {
+  border-color: #70d73d;
+  color: #a3ff70;
+  background: rgba(112, 215, 61, 0.08);
 }
 
 .site-nav a:hover,
@@ -319,6 +346,30 @@
     padding-inline: 0.8rem;
     border-left: 0;
     border-bottom: 2px solid transparent;
+  }
+
+  .nav-stack {
+    align-content: center;
+  }
+
+  .nav-stack > a:first-child {
+    min-height: auto;
+    padding-top: 0.8rem;
+    padding-bottom: 0.1rem;
+    border-bottom: 0;
+  }
+
+  .site-nav .nav-login-link {
+    min-height: auto;
+    justify-content: center;
+    padding: 0.05rem 0.8rem 0.7rem;
+    border-bottom: 2px solid transparent;
+  }
+
+  .site-nav .nav-login-link:hover,
+  .site-nav .nav-login-link:focus-visible,
+  .site-nav .nav-login-link[aria-current="page"] {
+    border-bottom-color: #70d73d;
   }
 
   .site-nav a:hover,

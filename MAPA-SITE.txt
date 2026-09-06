@@ -17,7 +17,11 @@ Home-page
 │   ├── base.css               ← Tokens, tipografia e base visual
 │   ├── components.css         ← Navegação, botões, painéis e rodapé
 │   └── pages/
-│       └── home.css           ← Layout exclusivo da Home
+│       ├── home.css           ← Layout exclusivo da Home
+│       └── login.css          ← Layout exclusivo do Login
+│
+├── pages/
+│   └── login.html             ← Acesso restrito (interface em preparação)
 │
 └── js/
     └── main.js                ← Menu, navegação ativa e animações
@@ -30,10 +34,16 @@ SEÇÕES DA HOME
 #recrutamento
 #comunidade
 
+LOGIN
+
+pages/login.html
+- Interface visual criada
+- Autenticação ainda não conectada
+- Nenhuma credencial é enviada ou armazenada
+
 PLANEJADO — NÃO IMPLEMENTADO
 
 assets/
-pages/
 data/
 
 Essas pastas serão criadas quando houver conteúdo oficial que justifique seu uso.
