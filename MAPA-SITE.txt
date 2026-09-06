@@ -44,8 +44,9 @@ pages/login.html
 COMPONENTE TÁTICO INFERIOR
 
 - Barra inferior implementada na Home e no Login
-- 6 espaços funcionais temporariamente numerados
-- Ícones definitivos serão adicionados individualmente depois
+- 6 espaços funcionais com emojis temporários
+- Estrutura preparada para ícones PNG adicionados individualmente depois
+- Apenas o item selecionado usa borda e iluminação amarelas
 
 PLANEJADO — NÃO IMPLEMENTADO
 

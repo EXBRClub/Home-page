@@ -65,4 +65,4 @@ A página de login já possui a interface visual e a sinalização de acesso res
 
 ## Interface tática
 
-O cabeçalho utiliza abas recortadas, botão de login com iluminação verde e indicador luminoso de portal ativo. A barra inferior já possui seis espaços funcionais numerados, preparados para receber os ícones definitivos individualmente.
+O cabeçalho utiliza abas compactas com iluminação central, botão de login recortado e indicador verde pulsante de portal ativo. A barra inferior curva possui seis espaços funcionais com emojis temporários, preparados para receber os ícones PNG definitivos individualmente.
