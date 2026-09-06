@@ -71,6 +71,19 @@ body::before {
   mask-image: linear-gradient(to bottom, black, transparent 85%);
 }
 
+.ambient-matrix {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 58vh;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.82) 56%, transparent 100%);
+}
+
 .screen-noise {
   position: fixed;
   inset: 0;
@@ -169,5 +182,9 @@ p {
   [data-reveal] {
     opacity: 1;
     transform: none;
+  }
+
+  .ambient-matrix {
+    display: none;
   }
 }

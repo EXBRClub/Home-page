@@ -75,3 +75,7 @@ A página de login já possui a interface visual e a sinalização de acesso res
 O cabeçalho utiliza abas compactas com iluminação central, botão de login recortado e indicador verde pulsante de portal ativo. A barra inferior curva possui seis espaços funcionais com emojis temporários, preparados para receber os ícones PNG definitivos individualmente.
 
 O projeto inclui favicon vetorial, ícones para atalhos em celulares e manifesto para instalação como aplicativo web. A identidade azul utiliza a família azul-petróleo definida pelos tons `#07383d` e `#12525b`, com variações luminosas da mesma matiz.
+
+## Efeitos de sessão
+
+A cascata ambiente de pontos mantém sua fase durante atualizações e mudanças de página na mesma guia. A montagem inicial da Home acontece apenas uma vez por guia: não reinicia com `F5` e volta a ser exibida depois que a guia é totalmente fechada e uma nova sessão é iniciada. Ambos os efeitos respeitam `prefers-reduced-motion`.

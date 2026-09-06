@@ -62,6 +62,13 @@ IDENTIDADE MÓVEL
 - Ícone para atalhos em celulares implementado
 - Manifesto de aplicativo web implementado
 
+EFEITOS DE SESSÃO
+
+- Cascata sutil de pontos do topo até o meio da tela
+- Fase preservada entre páginas e atualizações na mesma guia
+- Construção visual da Home executada uma vez por guia
+- Efeitos desativados quando o usuário prefere movimento reduzido
+
 PLANEJADO — NÃO IMPLEMENTADO
 
 assets/

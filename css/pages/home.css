@@ -8,6 +8,65 @@
   border-bottom: 1px solid var(--color-line);
 }
 
+html.home-first-boot .site-header {
+  animation: boot-header 520ms 120ms both;
+}
+
+html.home-first-boot .hero-copy[data-reveal] {
+  animation: boot-construct-left 1.05s 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+html.home-first-boot .command-panel[data-reveal] {
+  animation: boot-construct-right 1.05s 760ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+html.home-first-boot .tactical-dock {
+  animation: boot-dock 650ms 1.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+html.home-first-boot body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(to bottom, transparent 0 47%, rgba(147, 215, 223, 0.12) 49%, rgba(147, 215, 223, 0.5) 50%, rgba(44, 157, 172, 0.12) 52%, transparent 55%),
+    linear-gradient(90deg, transparent, rgba(18, 82, 91, 0.06), transparent);
+  mix-blend-mode: screen;
+  animation: boot-scan 1.75s 180ms ease-in-out both;
+}
+
+@keyframes boot-header {
+  from { opacity: 0; clip-path: inset(0 50% 100%); }
+  to { opacity: 1; clip-path: inset(0); }
+}
+
+@keyframes boot-construct-left {
+  0% { opacity: 0; transform: translateX(-1rem); clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); filter: brightness(1.8); }
+  45% { opacity: 0.72; }
+  100% { opacity: 1; transform: translateX(0); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); filter: brightness(1); }
+}
+
+@keyframes boot-construct-right {
+  0% { opacity: 0; transform: translateX(1rem) scaleX(0.04); transform-origin: right center; filter: brightness(1.8); }
+  58% { opacity: 0.85; }
+  100% { opacity: 1; transform: translateX(0) scaleX(1); transform-origin: right center; filter: brightness(1); }
+}
+
+@keyframes boot-dock {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes boot-scan {
+  0% { opacity: 0; transform: translateY(-65%); }
+  12% { opacity: 0.75; }
+  82% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(65%); }
+}
+
 .hero::before {
   content: "";
   position: absolute;
@@ -472,6 +531,20 @@
 @media (min-width: 34rem) {
   .hero-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.home-first-boot .site-header,
+  html.home-first-boot .hero-copy[data-reveal],
+  html.home-first-boot .command-panel[data-reveal],
+  html.home-first-boot .tactical-dock,
+  html.home-first-boot body::after {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    filter: none;
   }
 }
 
