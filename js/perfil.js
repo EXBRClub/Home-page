@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const avatarOptions = [...document.querySelectorAll('[data-avatar-option]')];
   const bannerOptions = [...document.querySelectorAll('[data-banner-option]')];
   const feedback = document.querySelector('[data-profile-feedback]');
+  const editToggle = document.querySelector('[data-profile-edit-toggle]');
+  const editLabel = document.querySelector('[data-profile-edit-label]');
+  const customizer = document.querySelector('#profile-customizer');
 
   if (!card || !avatarImage || !avatarClass) return;
 
@@ -75,6 +78,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   avatarOptions.forEach(option => option.addEventListener('click', () => applyAvatar(option)));
   bannerOptions.forEach(option => option.addEventListener('click', () => applyBanner(option)));
+
+  editToggle?.addEventListener('click', () => {
+    if (!customizer) return;
+    const willOpen = editToggle.getAttribute('aria-expanded') !== 'true';
+    editToggle.setAttribute('aria-expanded', String(willOpen));
+    customizer.hidden = !willOpen;
+    if (editLabel) editLabel.textContent = willOpen ? 'Fechar edição' : 'Editar perfil';
+    if (willOpen) customizer.querySelector('button')?.focus({ preventScroll: true });
+  });
 
   const storedAvatar = readPreference(storageKeys.avatar);
   const storedBanner = readPreference(storageKeys.banner);

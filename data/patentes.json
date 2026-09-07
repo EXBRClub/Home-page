@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "patenteInicial": "soldado",
+  "controle": "administracao",
+  "patentes": [
+    { "ordem": 0, "id": "recruta", "nome": "Recruta", "grupo": "Ingresso" },
+    { "ordem": 1, "id": "soldado", "nome": "Soldado", "grupo": "Praças" },
+    { "ordem": 2, "id": "cabo", "nome": "Cabo", "grupo": "Praças" },
+    { "ordem": 3, "id": "terceiro-sargento", "nome": "3º Sargento", "grupo": "Praças" },
+    { "ordem": 4, "id": "segundo-sargento", "nome": "2º Sargento", "grupo": "Praças" },
+    { "ordem": 5, "id": "primeiro-sargento", "nome": "1º Sargento", "grupo": "Praças" },
+    { "ordem": 6, "id": "subtenente", "nome": "Subtenente", "grupo": "Praças" },
+    { "ordem": 7, "id": "aspirante", "nome": "Aspirante a Oficial", "grupo": "Oficiais subalternos" },
+    { "ordem": 8, "id": "segundo-tenente", "nome": "2º Tenente", "grupo": "Oficiais subalternos" },
+    { "ordem": 9, "id": "primeiro-tenente", "nome": "1º Tenente", "grupo": "Oficiais subalternos" },
+    { "ordem": 10, "id": "capitao", "nome": "Capitão", "grupo": "Oficiais intermediários" },
+    { "ordem": 11, "id": "major", "nome": "Major", "grupo": "Oficiais superiores" },
+    { "ordem": 12, "id": "tenente-coronel", "nome": "Tenente-Coronel", "grupo": "Oficiais superiores" },
+    { "ordem": 13, "id": "coronel", "nome": "Coronel", "grupo": "Oficiais superiores" },
+    { "ordem": 14, "id": "general-brigada", "nome": "General de Brigada", "grupo": "Oficiais-generais" },
+    { "ordem": 15, "id": "general-divisao", "nome": "General de Divisão", "grupo": "Oficiais-generais" },
+    { "ordem": 16, "id": "general-exercito", "nome": "General de Exército", "grupo": "Oficiais-generais" }
+  ]
+}
