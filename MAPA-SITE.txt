@@ -28,6 +28,7 @@ Home-page
 │   ├── components.css         ← Navegação, botões, painéis e rodapé
 │   └── pages/
 │       ├── admin.css          ← Lista de membros, patentes e janela de medalhas
+│       ├── comunidade.css     ← Lista pública de membros e atividade
 │       ├── home.css           ← Layout exclusivo da Home
 │       ├── login.css          ← Layout exclusivo do Login
 │       ├── operacoes.css      ← Lista e editor das operações
@@ -40,12 +41,14 @@ Home-page
 │
 ├── pages/
 │   ├── admin.html             ← Gestão protegida de membros
+│   ├── comunidade.html        ← Perfis públicos da comunidade autenticada
 │   ├── login.html             ← Login e cadastro por e-mail e senha
 │   ├── operacoes.html         ← Página dedicada às operações e participações
 │   └── perfil.html            ← Perfil autenticado do membro
 │
 └── js/
     ├── admin.js               ← Busca, patentes e medalhas administrativas
+    ├── comunidade.js          ← Busca, perfis públicos e atividade recente
     ├── firebase-client.js     ← Inicialização do Firebase
     ├── home-operations.js     ← Resumo das operações exibido na Home
     ├── login.js               ← Entrada, cadastro, sessão e redefinição de senha
@@ -81,6 +84,8 @@ PERFIS E PERMISSÕES
 - Somente administradores atribuem patentes e medalhas
 - Medalhas: users/{uid}/medals/{medalId}
 - Regras versionadas em firestore.rules
+- publicProfiles/{uid}: identidade, medalhas em destaque e atividades sem expor e-mail
+- Membros autenticados podem consultar outros perfis públicos
 
 PAINEL ADMINISTRATIVO
 
@@ -130,6 +135,15 @@ OPERAÇÕES
 - PNGs de operação e de medalha configuráveis por caminho ou URL
 - Primeiro atalho inferior na guia leva ao setor da Home; após visitar a página dedicada, retorna diretamente a ela
 - Registros: users/{uid}/participations/{operationId} e operations/{operationId}/participants/{uid}
+
+COMUNIDADE
+
+- pages/comunidade.html: área protegida para membros autenticados
+- Pesquisa por nome ou patente
+- Avatar, patente, atividade recente e até cinco medalhas em destaque
+- Botão Ver perfil abre pages/perfil.html?uid={uid}
+- Membros comuns veem somente publicProfiles/{uid}
+- E-mails, papéis administrativos e dados privados não são expostos
 
 PLANEJADO — NÃO IMPLEMENTADO
 
