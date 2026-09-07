@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/login.css?v=20260906-10">
+  <link rel="stylesheet" href="../css/pages/login.css?v=20260907-1">
 </head>
 <body class="login-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -68,13 +68,13 @@
         <p class="eyebrow"><span></span> Canal reservado</p>
         <p class="login-code">SYS-AUTH // 01</p>
         <h1 id="login-title">Acesso de membros</h1>
-        <p>Área reservada para integrantes da Outfit EXBR. A autenticação será liberada após a integração do sistema de membros.</p>
+        <p>Área reservada para integrantes da Outfit EXBR. Use as credenciais fornecidas pela administração.</p>
 
         <div class="access-status">
           <span class="access-status-light" aria-hidden="true"></span>
           <div>
-            <strong>Acesso em configuração</strong>
-            <small>Terminal protegido · conexão indisponível</small>
+            <strong data-access-title>Inicializando canal seguro</strong>
+            <small data-access-detail>Conectando ao sistema de membros…</small>
           </div>
         </div>
       </section>
@@ -82,33 +82,35 @@
       <section class="login-terminal tactical-panel" aria-labelledby="terminal-title" data-reveal>
         <div class="terminal-topline">
           <span>EXBR // IDENTIFICAÇÃO</span>
-          <span class="terminal-state">STANDBY</span>
+          <span class="terminal-state" data-terminal-state>CONNECT</span>
         </div>
 
         <div class="terminal-content">
           <div class="terminal-emblem" aria-hidden="true"><strong>EXBR</strong><span>AUTH</span></div>
           <h2 id="terminal-title">Identifique-se</h2>
-          <p>O login ainda não está conectado ao cadastro de membros.</p>
+          <p>Acesse seu perfil, patente e histórico de condecorações.</p>
 
-          <form class="login-form" aria-describedby="login-notice">
-            <label for="login-email">E-mail ou identificação</label>
+          <form class="login-form" data-login-form aria-describedby="login-notice">
+            <label for="login-email">E-mail</label>
             <div class="field-shell">
               <span aria-hidden="true">ID</span>
-              <input id="login-email" name="email" type="text" autocomplete="username" placeholder="Acesso ainda indisponível" disabled>
+              <input id="login-email" name="email" type="email" autocomplete="username" placeholder="seu-email@exemplo.com" required>
             </div>
 
             <label for="login-password">Senha</label>
             <div class="field-shell">
               <span aria-hidden="true">••</span>
-              <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="••••••••••••" disabled>
+              <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="••••••••••••" required>
             </div>
 
-            <button class="button login-submit" type="submit" disabled>
+            <button class="button login-submit" type="submit" data-login-submit>
               Entrar no sistema <span aria-hidden="true">→</span>
             </button>
+
+            <button class="password-reset" type="button" data-password-reset>Esqueci minha senha</button>
           </form>
 
-          <p class="login-notice" id="login-notice">Nenhuma credencial é enviada ou armazenada nesta versão.</p>
+          <p class="login-notice" id="login-notice" data-login-notice aria-live="polite">Autenticação protegida pelo Firebase. A EXBR não armazena sua senha no site.</p>
         </div>
 
         <div class="terminal-footer">
@@ -144,5 +146,6 @@
   </footer>
 
   <script src="../js/main.js?v=20260906-10" defer></script>
+  <script src="../js/login.js?v=20260907-1" type="module"></script>
 </body>
 </html>

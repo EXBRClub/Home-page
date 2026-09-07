@@ -1,0 +1,61 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function owns(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function validNewMember(userId) {
+      return owns(userId)
+        && request.resource.data.keys().hasOnly([
+          'email', 'displayName', 'role', 'rankId', 'avatarId', 'bannerId',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role == 'member'
+        && request.resource.data.rankId == 'soldado'
+        && request.resource.data.avatarId in ['assalto', 'pesado', 'reconhecimento']
+        && request.resource.data.bannerId in ['brasil', 'comando', 'noturna'];
+    }
+
+    function validMemberProfileUpdate(userId) {
+      return owns(userId)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['displayName', 'avatarId', 'bannerId', 'updatedAt'])
+        && request.resource.data.avatarId in ['assalto', 'pesado', 'reconhecimento']
+        && request.resource.data.bannerId in ['brasil', 'comando', 'noturna'];
+    }
+
+    match /users/{userId} {
+      allow create: if validNewMember(userId);
+      allow read: if owns(userId) || isAdmin();
+      allow update: if isAdmin() || validMemberProfileUpdate(userId);
+      allow delete: if isAdmin();
+
+      match /medals/{medalId} {
+        allow read: if owns(userId) || isAdmin();
+        allow create, update, delete: if isAdmin();
+      }
+    }
+
+    match /operations/{operationId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

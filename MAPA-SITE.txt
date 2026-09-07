@@ -10,6 +10,8 @@ Home-page
 ├── index.html                 ← Home de página única
 ├── README.md                  ← Apresentação técnica do projeto
 ├── MAPA-SITE.txt              ← Mapa estrutural
+├── FIREBASE.md                ← Estrutura de autenticação, perfis e permissões
+├── firestore.rules            ← Regras publicadas do Cloud Firestore
 ├── site.webmanifest           ← Instalação e identidade para dispositivos móveis
 ├── LICENSE                    ← Licença original do repositório
 │
@@ -26,13 +28,21 @@ Home-page
 │   ├── components.css         ← Navegação, botões, painéis e rodapé
 │   └── pages/
 │       ├── home.css           ← Layout exclusivo da Home
-│       └── login.css          ← Layout exclusivo do Login
+│       ├── login.css          ← Layout exclusivo do Login
+│       └── perfil.css         ← Painel do membro, avatar e medalhas
+│
+├── data/
+│   └── patentes.json          ← Hierarquia militar usada nos perfis
 │
 ├── pages/
-│   └── login.html             ← Acesso restrito (interface em preparação)
+│   ├── login.html             ← Login definitivo por e-mail e senha
+│   └── perfil.html            ← Perfil autenticado do membro
 │
 └── js/
-    └── main.js                ← Menu, navegação ativa e animações
+    ├── firebase-client.js     ← Inicialização do Firebase
+    ├── login.js               ← Entrada, sessão e redefinição de senha
+    ├── main.js                ← Menu, navegação ativa e animações
+    └── perfil.js              ← Perfil, medalhas, preferências e logout
 
 SEÇÕES DA HOME
 
@@ -45,9 +55,19 @@ SEÇÕES DA HOME
 LOGIN
 
 pages/login.html
-- Interface visual criada
-- Autenticação ainda não conectada
-- Nenhuma credencial é enviada ou armazenada
+- Firebase Authentication conectado
+- Método: e-mail e senha
+- Cadastro público desativado; contas criadas pela administração
+- Redefinição de senha por e-mail
+
+PERFIS E PERMISSÕES
+
+- users/{uid}: dados do perfil, patente e função
+- role: member | admin
+- Membro altera somente nome, avatar e bandeira
+- Administrador preparado para gerenciar perfis, operações e medalhas
+- Medalhas: users/{uid}/medals/{medalId}
+- Regras versionadas em firestore.rules
 
 COMPONENTE TÁTICO INFERIOR
 
@@ -71,7 +91,6 @@ EFEITOS DE SESSÃO
 
 PLANEJADO — NÃO IMPLEMENTADO
 
-assets/
-data/
-
-Essas pastas serão criadas quando houver conteúdo oficial que justifique seu uso.
+- Painel visual de administração
+- Editor de operações
+- Interface para conceder medalhas e alterar patentes

@@ -211,32 +211,79 @@
   padding: 0.75rem 0.9rem;
   border: 0;
   outline: 0;
-  color: var(--color-muted);
+  color: #e8f6f8;
   background: transparent;
 }
 
-.field-shell input:disabled {
-  cursor: not-allowed;
-  opacity: 0.62;
+.field-shell:focus-within {
+  border-color: rgba(104, 210, 221, 0.78);
+  box-shadow: inset 0 0 1.2rem rgba(44, 157, 172, 0.09), 0 0 0.8rem rgba(44, 157, 172, 0.08);
+}
+
+.field-shell input::placeholder {
+  color: #607983;
 }
 
 .login-submit {
   width: 100%;
   margin-top: 1rem;
-  color: #7b9098;
-  background: rgba(44, 157, 172, 0.08);
-  border-color: var(--color-line);
-  cursor: not-allowed;
+  color: #edfbfd;
+  background: radial-gradient(circle at center, rgba(31, 126, 139, 0.28), rgba(5, 27, 34, 0.88) 72%);
+  border-color: rgba(104, 210, 221, 0.58);
+  cursor: pointer;
 }
 
 .login-submit:disabled {
-  opacity: 0.72;
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.login-submit:not(:disabled):hover,
+.login-submit:not(:disabled):focus-visible {
+  border-color: #8df27a;
+  color: #fff;
+  background: radial-gradient(circle at center, rgba(95, 201, 93, 0.26), rgba(5, 27, 34, 0.9) 72%);
+  box-shadow: inset 0 0 1.5rem rgba(101, 235, 91, 0.1), 0 0 0.8rem rgba(101, 235, 91, 0.1);
+}
+
+.login-submit.is-loading span {
+  animation: login-pulse 900ms ease-in-out infinite alternate;
+}
+
+.password-reset {
+  justify-self: end;
+  padding: 0.2rem 0;
+  border: 0;
+  color: #78bdc6;
+  background: transparent;
+  font-size: 0.68rem;
+  letter-spacing: 0.045em;
+  cursor: pointer;
+}
+
+.password-reset:hover,
+.password-reset:focus-visible {
+  color: #dff8fb;
+  text-decoration: underline;
+}
+
+.password-reset:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .terminal-content .login-notice {
   margin-top: 1rem;
   color: #71868f;
   font-size: 0.68rem;
+}
+
+.login-notice[data-state="error"] { color: #ff7d72; }
+.login-notice[data-state="success"] { color: #8df27a; }
+.login-notice[data-state="progress"] { color: #78d7df; }
+
+@keyframes login-pulse {
+  to { opacity: 0.35; }
 }
 
 .terminal-footer {

@@ -195,6 +195,24 @@
   color: #9fc1c8;
 }
 
+.member-role-badge {
+  margin-left: auto;
+  padding: 0.2rem 0.42rem;
+  border: 1px solid rgba(100, 203, 215, 0.42);
+  color: #82d6df;
+  background: rgba(5, 35, 42, 0.72);
+  font: 0.54rem/1 Consolas, "Courier New", monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.member-role-badge[data-role="admin"] {
+  border-color: rgba(240, 198, 75, 0.72);
+  color: #ffe071;
+  background: rgba(59, 44, 9, 0.76);
+  box-shadow: 0 0 0.7rem rgba(240, 198, 75, 0.12);
+}
+
 .member-service-line small::before {
   content: "//";
   margin-right: 0.5rem;
@@ -489,6 +507,32 @@
   list-style: none;
 }
 
+.medals-empty {
+  min-height: 12rem;
+  display: grid;
+  place-content: center;
+  gap: 0.45rem;
+  padding: 1.5rem;
+  color: #6c858d;
+  text-align: center;
+}
+
+.medals-empty > span {
+  color: rgba(231, 189, 66, 0.65);
+  font-size: 2.4rem;
+}
+
+.medals-empty strong {
+  color: #b8cbd0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.medals-empty small {
+  font-size: 0.68rem;
+}
+
 .medal-entry {
   min-height: 4.3rem;
   display: grid;
@@ -629,6 +673,10 @@
   .member-service-line {
     flex-wrap: wrap;
     gap: 0.25rem 0.4rem;
+  }
+
+  .member-role-badge {
+    margin-left: 0;
   }
 
   .member-service-line small::before {

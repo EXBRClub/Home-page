@@ -13,6 +13,8 @@ Home-page/
 ├── index.html
 ├── README.md
 ├── MAPA-SITE.txt
+├── FIREBASE.md
+├── firestore.rules
 ├── site.webmanifest
 ├── assets/
 │   └── icons/
@@ -26,11 +28,18 @@ Home-page/
 │   ├── components.css
 │   └── pages/
 │       ├── home.css
-│       └── login.css
+│       ├── login.css
+│       └── perfil.css
+├── data/
+│   └── patentes.json
 ├── pages/
-│   └── login.html
+│   ├── login.html
+│   └── perfil.html
 └── js/
-    └── main.js
+    ├── firebase-client.js
+    ├── login.js
+    ├── main.js
+    └── perfil.js
 ```
 
 ## Publicação
@@ -66,9 +75,11 @@ Antes de inserir links ou informações definitivas, confirmar com a administra�
 
 PlanetSide 2 é marca de seus respectivos detentores. Este é um projeto comunitário da Outfit EXBR.
 
-## Login
+## Login e perfis
 
-A página de login já possui a interface visual e a sinalização de acesso restrito. A autenticação permanece desativada até a definição de um serviço seguro para validar membros; nenhuma credencial é enviada ou armazenada pela versão atual.
+O portal usa Firebase Authentication com e-mail e senha. Não existe cadastro público: as contas são fornecidas pela administração. O primeiro login cria um perfil padrão no Firestore com patente Soldado e função Membro.
+
+As regras separam os acessos `member` e `admin`. Membros podem alterar somente dados visuais do próprio perfil; administradores ficam preparados para editar operações, patentes e medalhas. Consulte [FIREBASE.md](FIREBASE.md).
 
 ## Interface tática
 

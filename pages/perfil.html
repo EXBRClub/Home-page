@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260907-2">
+  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260907-3">
 </head>
 <body class="member-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -49,7 +49,7 @@
         <a href="../index.html#operacoes">Operações</a>
         <a href="../index.html#recrutamento">Recrutamento</a>
         <a class="nav-community-mobile" href="../index.html#comunidade">Comunidade</a>
-        <a class="nav-login-link" href="login.html"><span class="nav-login-text">Login</span></a>
+        <a class="nav-login-link" href="login.html" data-logout><span class="nav-login-text">Sair</span></a>
       </nav>
 
       <div class="header-status" aria-label="Status do portal">
@@ -67,7 +67,7 @@
       <section class="identity-zone" aria-labelledby="member-name" data-reveal>
         <header class="member-section-label">
           <p class="eyebrow"><span></span> Identificação</p>
-          <span class="member-online"><i aria-hidden="true"></i> Perfil local</span>
+          <span class="member-online"><i aria-hidden="true"></i> <span data-member-status>Conectando…</span></span>
         </header>
 
         <article class="identity-card" data-profile-card data-banner="brasil">
@@ -78,10 +78,11 @@
 
           <div class="member-nameplate">
             <span class="member-operator-label">OPERADOR</span>
-            <h1 id="member-name">MEMBRO EXBR</h1>
+            <h1 id="member-name" data-member-name>MEMBRO EXBR</h1>
             <span class="member-service-line">
               <strong data-member-rank data-rank-id="soldado">Soldado</strong>
               <small data-avatar-class>Classe Assalto</small>
+              <em class="member-role-badge" data-member-role data-role="member">Membro</em>
             </span>
           </div>
 
@@ -129,7 +130,7 @@
             </div>
           </div>
 
-          <p class="profile-feedback" data-profile-feedback aria-live="polite">Configuração salva neste navegador.</p>
+          <p class="profile-feedback" data-profile-feedback aria-live="polite">Configuração vinculada à sua conta EXBR.</p>
         </div>
       </section>
 
@@ -141,37 +142,14 @@
             <span>REGISTRO // CONDECORAÇÕES</span>
             <h2 id="medals-title">Medalhas</h2>
           </div>
-          <span class="medals-count">06</span>
+          <span class="medals-count" data-medals-count>00</span>
         </div>
 
-        <p class="medals-demo-label">Dados demonstrativos</p>
+        <p class="medals-demo-label" data-medals-label>Carregando registro…</p>
 
         <div class="medals-scroll" tabindex="0" aria-label="Lista de medalhas do membro">
-          <ol class="medals-list">
-            <li class="medal-entry">
-              <span class="medal-icon" data-medal-icon=""><span aria-hidden="true">🏅</span></span>
-              <span class="medal-copy"><strong>Medalha de Honra</strong><small>Operação · 07/09/2026</small></span>
-            </li>
-            <li class="medal-entry">
-              <span class="medal-icon" data-medal-icon=""><span aria-hidden="true">🛡️</span></span>
-              <span class="medal-copy"><strong>Linha de Frente</strong><small>Operação · 31/08/2026</small></span>
-            </li>
-            <li class="medal-entry">
-              <span class="medal-icon" data-medal-icon=""><span aria-hidden="true">🎯</span></span>
-              <span class="medal-copy"><strong>Precisão Tática</strong><small>Operação · 24/08/2026</small></span>
-            </li>
-            <li class="medal-entry">
-              <span class="medal-icon" data-medal-icon=""><span aria-hidden="true">🤝</span></span>
-              <span class="medal-copy"><strong>Irmandade EXBR</strong><small>Operação · 17/08/2026</small></span>
-            </li>
-            <li class="medal-entry">
-              <span class="medal-icon" data-medal-icon=""><span aria-hidden="true">⚔️</span></span>
-              <span class="medal-copy"><strong>Operação Osprey</strong><small>Operação · 10/08/2026</small></span>
-            </li>
-            <li class="medal-entry">
-              <span class="medal-icon" data-medal-icon=""><span aria-hidden="true">⭐</span></span>
-              <span class="medal-copy"><strong>Serviço Distinto</strong><small>Operação · 03/08/2026</small></span>
-            </li>
+          <ol class="medals-list" data-medals-list>
+            <li class="medals-empty"><span aria-hidden="true">◇</span><strong>Carregando condecorações</strong><small>Aguarde a sincronização do perfil.</small></li>
           </ol>
 
           <div class="medal-slots" aria-label="Espaços para novas medalhas">
@@ -195,12 +173,12 @@
       <a href="../index.html#operacoes"><span class="dock-icon" data-icon="operacoes" aria-hidden="true"><span class="dock-icon-fallback">⚔️</span></span><span class="visually-hidden">Operações</span></a>
       <a href="../index.html#recrutamento"><span class="dock-icon" data-icon="recrutamento" aria-hidden="true"><span class="dock-icon-fallback">🎯</span></span><span class="visually-hidden">Recrutamento</span></a>
       <a href="../index.html#comunidade"><span class="dock-icon" data-icon="comunidade" aria-hidden="true"><span class="dock-icon-fallback">👥</span></span><span class="visually-hidden">Comunidade</span></a>
-      <a href="perfil.html" aria-current="page"><span class="dock-icon" data-icon="login" aria-hidden="true"><span class="dock-icon-fallback">👤</span></span><span class="visually-hidden">Área do membro</span></a>
+      <a href="login.html" data-logout><span class="dock-icon" data-icon="login" aria-hidden="true"><span class="dock-icon-fallback">🚪</span></span><span class="visually-hidden">Sair da conta</span></a>
     </div>
     <span class="dock-meta">Brasil // Outfit</span>
   </nav>
 
   <script src="../js/main.js?v=20260906-11" defer></script>
-  <script src="../js/perfil.js?v=20260907-2" defer></script>
+  <script src="../js/perfil.js?v=20260907-3" type="module"></script>
 </body>
 </html>
