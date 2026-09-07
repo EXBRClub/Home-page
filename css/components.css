@@ -409,12 +409,50 @@
   height: 2rem;
   display: grid;
   place-items: center;
+  background-image: var(--dock-icon-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0 0 0.2rem rgba(92, 218, 232, 0.26));
+  transition: filter var(--transition-fast), transform var(--transition-fast);
 }
 
 .dock-icon-fallback {
-  font-size: 1.3rem;
-  line-height: 1;
-  filter: grayscale(0.4) saturate(0.72);
+  display: none;
+}
+
+.dock-icon[data-icon="inicio"] {
+  --dock-icon-image: url("../assets/icons/dock/inicio.png");
+}
+
+.dock-icon[data-icon="sobre"] {
+  --dock-icon-image: url("../assets/icons/dock/sobre.png");
+}
+
+.dock-icon[data-icon="operacoes"] {
+  --dock-icon-image: url("../assets/icons/dock/operacoes.png");
+}
+
+.dock-icon[data-icon="recrutamento"] {
+  --dock-icon-image: url("../assets/icons/dock/recrutamento.png");
+}
+
+.dock-icon[data-icon="comunidade"] {
+  --dock-icon-image: url("../assets/icons/dock/comunidade.png");
+}
+
+.dock-icon[data-icon="login"] {
+  --dock-icon-image: url("../assets/icons/dock/login.png");
+}
+
+.dock-menu a:hover .dock-icon,
+.dock-menu a:focus-visible .dock-icon {
+  filter: brightness(1.1) drop-shadow(0 0 0.35rem rgba(92, 218, 232, 0.55));
+  transform: scale(1.04);
+}
+
+.dock-menu a[aria-current="page"] .dock-icon {
+  filter: brightness(1.12) saturate(0.92) drop-shadow(0 0 0.32rem rgba(255, 211, 56, 0.82));
 }
 
 .dock-icon img {
