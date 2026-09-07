@@ -77,9 +77,9 @@ PlanetSide 2 é marca de seus respectivos detentores. Este é um projeto comunit
 
 ## Login e perfis
 
-O portal usa Firebase Authentication com e-mail e senha. Não existe cadastro público: as contas são fornecidas pela administração. O primeiro login cria um perfil padrão no Firestore com patente Soldado e função Membro.
+O portal usa Firebase Authentication com e-mail e senha. Os membros podem criar suas próprias contas usando, nesta fase, o código temporário de seis dígitos `070922`. O primeiro acesso cria um perfil padrão no Firestore com patente Soldado e função Membro.
 
-As regras separam os acessos `member` e `admin`. Membros podem alterar somente dados visuais do próprio perfil; administradores ficam preparados para editar operações, patentes e medalhas. Consulte [FIREBASE.md](FIREBASE.md).
+As regras separam os acessos `member` e `admin`. Membros podem alterar somente dados visuais do próprio perfil; apenas administradores atribuem patentes e medalhas. O código temporário é uma etapa de interface, não um controle de segurança definitivo; consulte [FIREBASE.md](FIREBASE.md).
 
 ## Interface tática
 

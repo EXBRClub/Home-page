@@ -35,12 +35,12 @@ Home-page
 │   └── patentes.json          ← Hierarquia militar usada nos perfis
 │
 ├── pages/
-│   ├── login.html             ← Login definitivo por e-mail e senha
+│   ├── login.html             ← Login e cadastro por e-mail e senha
 │   └── perfil.html            ← Perfil autenticado do membro
 │
 └── js/
     ├── firebase-client.js     ← Inicialização do Firebase
-    ├── login.js               ← Entrada, sessão e redefinição de senha
+    ├── login.js               ← Entrada, cadastro, sessão e redefinição de senha
     ├── main.js                ← Menu, navegação ativa e animações
     └── perfil.js              ← Perfil, medalhas, preferências e logout
 
@@ -57,7 +57,9 @@ LOGIN
 pages/login.html
 - Firebase Authentication conectado
 - Método: e-mail e senha
-- Cadastro público desativado; contas criadas pela administração
+- Membros criam suas próprias contas
+- Cadastro atual usa seis campos e o código temporário 070922
+- Perfil inicial: função Membro e patente Soldado
 - Redefinição de senha por e-mail
 
 PERFIS E PERMISSÕES
@@ -65,7 +67,7 @@ PERFIS E PERMISSÕES
 - users/{uid}: dados do perfil, patente e função
 - role: member | admin
 - Membro altera somente nome, avatar e bandeira
-- Administrador preparado para gerenciar perfis, operações e medalhas
+- Somente administradores atribuem patentes e medalhas
 - Medalhas: users/{uid}/medals/{medalId}
 - Regras versionadas em firestore.rules
 
@@ -94,3 +96,5 @@ PLANEJADO — NÃO IMPLEMENTADO
 - Painel visual de administração
 - Editor de operações
 - Interface para conceder medalhas e alterar patentes
+- Bot do Discord para códigos únicos, membros e presença em operações
+- Pesquisa do Recursion Tracker e futuro complemento de estatísticas

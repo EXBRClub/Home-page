@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/login.css?v=20260907-1">
+  <link rel="stylesheet" href="../css/pages/login.css?v=20260907-2">
 </head>
 <body class="login-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -68,7 +68,7 @@
         <p class="eyebrow"><span></span> Canal reservado</p>
         <p class="login-code">SYS-AUTH // 01</p>
         <h1 id="login-title">Acesso de membros</h1>
-        <p>Área reservada para integrantes da Outfit EXBR. Use as credenciais fornecidas pela administração.</p>
+        <p>Entre com sua identificação ou crie sua conta para fazer parte do sistema de membros da Outfit EXBR.</p>
 
         <div class="access-status">
           <span class="access-status-light" aria-hidden="true"></span>
@@ -90,7 +90,20 @@
           <h2 id="terminal-title">Identifique-se</h2>
           <p>Acesse seu perfil, patente e histórico de condecorações.</p>
 
+          <div class="auth-mode-switch" role="tablist" aria-label="Modo de acesso">
+            <button type="button" role="tab" aria-selected="true" data-auth-mode="login">Entrar</button>
+            <button type="button" role="tab" aria-selected="false" data-auth-mode="register">Criar conta</button>
+          </div>
+
           <form class="login-form" data-login-form aria-describedby="login-notice">
+            <div class="register-field" data-register-field hidden>
+              <label for="register-name">Nome de operador</label>
+              <div class="field-shell">
+                <span aria-hidden="true">OP</span>
+                <input id="register-name" name="displayName" type="text" autocomplete="nickname" maxlength="32" placeholder="Nome no jogo" data-register-required>
+              </div>
+            </div>
+
             <label for="login-email">E-mail</label>
             <div class="field-shell">
               <span aria-hidden="true">ID</span>
@@ -103,8 +116,29 @@
               <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="••••••••••••" required>
             </div>
 
+            <div class="register-field" data-register-field hidden>
+              <label for="register-password-confirm">Confirmar senha</label>
+              <div class="field-shell">
+                <span aria-hidden="true">••</span>
+                <input id="register-password-confirm" name="passwordConfirm" type="password" autocomplete="new-password" placeholder="••••••••••••" data-register-required>
+              </div>
+            </div>
+
+            <fieldset class="registration-fieldset register-field" data-register-field hidden>
+              <legend>Código de registro</legend>
+              <p>Informe o código de seis dígitos fornecido pela EXBR.</p>
+              <div class="registration-code" data-registration-code>
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Dígito 1 do código" autocomplete="one-time-code" data-code-slot data-register-required>
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Dígito 2 do código" data-code-slot data-register-required>
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Dígito 3 do código" data-code-slot data-register-required>
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Dígito 4 do código" data-code-slot data-register-required>
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Dígito 5 do código" data-code-slot data-register-required>
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Dígito 6 do código" data-code-slot data-register-required>
+              </div>
+            </fieldset>
+
             <button class="button login-submit" type="submit" data-login-submit>
-              Entrar no sistema <span aria-hidden="true">→</span>
+              <span data-submit-label>Entrar no sistema</span> <span aria-hidden="true">→</span>
             </button>
 
             <button class="password-reset" type="button" data-password-reset>Esqueci minha senha</button>
@@ -146,6 +180,6 @@
   </footer>
 
   <script src="../js/main.js?v=20260906-10" defer></script>
-  <script src="../js/login.js?v=20260907-1" type="module"></script>
+  <script src="../js/login.js?v=20260907-2" type="module"></script>
 </body>
 </html>
