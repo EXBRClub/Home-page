@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "medalhas": [
+    { "id": "honra", "nome": "Medalha de Honra", "emoji": "🏅", "operationName": "Operação EXBR", "iconUrl": "" },
+    { "id": "linha-frente", "nome": "Linha de Frente", "emoji": "🛡️", "operationName": "Operação EXBR", "iconUrl": "" },
+    { "id": "precisao-tatica", "nome": "Precisão Tática", "emoji": "🎯", "operationName": "Operação EXBR", "iconUrl": "" },
+    { "id": "irmandade-exbr", "nome": "Irmandade EXBR", "emoji": "🤝", "operationName": "Operação EXBR", "iconUrl": "" },
+    { "id": "operacao-osprey", "nome": "Operação Osprey", "emoji": "⚔️", "operationName": "Operação Osprey", "iconUrl": "" },
+    { "id": "servico-distinto", "nome": "Serviço Distinto", "emoji": "⭐", "operationName": "Operação EXBR", "iconUrl": "" }
+  ]
+}

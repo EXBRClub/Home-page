@@ -37,6 +37,64 @@
   gap: clamp(1rem, 2.2vw, 2.4rem);
 }
 
+.member-command-bar {
+  grid-column: 1 / -1;
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  margin-bottom: -1.45rem;
+}
+
+.member-command-bar[hidden],
+.admin-access-button[hidden],
+.profile-edit-toggle[hidden] {
+  display: none;
+}
+
+.admin-access-button,
+.member-logout-button {
+  min-height: 2.3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 1rem;
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-access-button {
+  min-width: 14rem;
+  border: 1px solid #e2b82f;
+  color: #ffd84e;
+  background: radial-gradient(circle at center, rgba(226, 176, 44, 0.2), rgba(19, 19, 12, 0.88) 74%);
+  box-shadow: inset 0 0 1rem rgba(240, 198, 75, 0.08), 0 0 0.7rem rgba(240, 198, 75, 0.08);
+  clip-path: polygon(0.55rem 0, calc(100% - 0.55rem) 0, 100% 0.55rem, 100% calc(100% - 0.55rem), calc(100% - 0.55rem) 100%, 0.55rem 100%, 0 calc(100% - 0.55rem), 0 0.55rem);
+}
+
+.admin-access-button:hover,
+.admin-access-button:focus-visible {
+  color: #fff7c2;
+  background: radial-gradient(circle at center, rgba(255, 200, 43, 0.34), rgba(19, 19, 12, 0.9) 75%);
+  transform: translateY(-1px);
+}
+
+.member-logout-button {
+  border: 1px solid rgba(104, 210, 221, 0.38);
+  color: #9fc3ca;
+  background: rgba(5, 24, 30, 0.78);
+}
+
+.member-logout-button:hover,
+.member-logout-button:focus-visible {
+  border-color: rgba(104, 210, 221, 0.72);
+  color: #eafcff;
+}
+
 .identity-zone {
   min-width: 0;
 }
@@ -232,6 +290,15 @@
   filter: drop-shadow(0.7rem 1rem 1rem rgba(0, 0, 0, 0.58));
   transform: translateX(-50%);
   transition: opacity 220ms ease, transform 280ms ease, filter 280ms ease;
+}
+
+.member-avatar[role="button"] {
+  cursor: pointer;
+}
+
+.member-avatar[role="button"]:focus-visible {
+  outline: 2px solid #6bd5df;
+  outline-offset: -0.25rem;
 }
 
 .identity-card.is-changing .member-avatar {
@@ -636,6 +703,11 @@
     gap: 2rem;
   }
 
+  .member-command-bar {
+    width: min(100%, 34rem);
+    margin: 0 auto -1.25rem;
+  }
+
   .member-future-space { display: none; }
 
   .identity-zone,
@@ -660,6 +732,16 @@
 
   .identity-card {
     height: 27rem;
+  }
+
+  .member-command-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-access-button,
+  .member-logout-button {
+    width: 100%;
   }
 
   .member-nameplate {

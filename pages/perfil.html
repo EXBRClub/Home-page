@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260907-3">
+  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260907-4">
 </head>
 <body class="member-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -49,7 +49,7 @@
         <a href="../index.html#operacoes">Operações</a>
         <a href="../index.html#recrutamento">Recrutamento</a>
         <a class="nav-community-mobile" href="../index.html#comunidade">Comunidade</a>
-        <a class="nav-login-link" href="login.html" data-logout><span class="nav-login-text">Sair</span></a>
+        <a class="nav-login-link" href="perfil.html" aria-current="page"><span class="nav-login-text">Perfil</span></a>
       </nav>
 
       <div class="header-status" aria-label="Status do portal">
@@ -64,6 +64,11 @@
     <div class="member-coordinate member-coordinate-right" aria-hidden="true">OSPREY // PERFIL</div>
 
     <div class="container member-dashboard">
+      <div class="member-command-bar" data-member-command-bar hidden>
+        <a class="admin-access-button" href="admin.html" data-admin-access hidden>Área administrativa</a>
+        <button class="member-logout-button" type="button" data-logout>Sair</button>
+      </div>
+
       <section class="identity-zone" aria-labelledby="member-name" data-reveal>
         <header class="member-section-label">
           <p class="eyebrow"><span></span> Identificação</p>
@@ -86,11 +91,11 @@
             </span>
           </div>
 
-          <img class="member-avatar" data-member-avatar src="../assets/profile/avatars/assalto.webp" alt="Avatar selecionado: soldado da classe Assalto">
+          <img class="member-avatar" data-member-avatar src="../assets/profile/avatars/assalto.webp" alt="Avatar selecionado: soldado da classe Assalto" role="button" tabindex="0" aria-label="Mostrar opções de edição do perfil">
 
           <div class="identity-scan" aria-hidden="true"></div>
 
-          <button class="profile-edit-toggle" type="button" data-profile-edit-toggle aria-expanded="false" aria-controls="profile-customizer">
+          <button class="profile-edit-toggle" type="button" data-profile-edit-toggle aria-expanded="false" aria-controls="profile-customizer" hidden>
             <span aria-hidden="true">⚙</span>
             <strong data-profile-edit-label>Editar perfil</strong>
           </button>
@@ -173,12 +178,12 @@
       <a href="../index.html#operacoes"><span class="dock-icon" data-icon="operacoes" aria-hidden="true"><span class="dock-icon-fallback">⚔️</span></span><span class="visually-hidden">Operações</span></a>
       <a href="../index.html#recrutamento"><span class="dock-icon" data-icon="recrutamento" aria-hidden="true"><span class="dock-icon-fallback">🎯</span></span><span class="visually-hidden">Recrutamento</span></a>
       <a href="../index.html#comunidade"><span class="dock-icon" data-icon="comunidade" aria-hidden="true"><span class="dock-icon-fallback">👥</span></span><span class="visually-hidden">Comunidade</span></a>
-      <a href="login.html" data-logout><span class="dock-icon" data-icon="login" aria-hidden="true"><span class="dock-icon-fallback">🚪</span></span><span class="visually-hidden">Sair da conta</span></a>
+      <a href="perfil.html" aria-current="page"><span class="dock-icon" data-icon="login" aria-hidden="true"><span class="dock-icon-fallback">👤</span></span><span class="visually-hidden">Perfil do membro</span></a>
     </div>
     <span class="dock-meta">Brasil // Outfit</span>
   </nav>
 
   <script src="../js/main.js?v=20260906-11" defer></script>
-  <script src="../js/perfil.js?v=20260907-3" type="module"></script>
+  <script src="../js/perfil.js?v=20260907-4" type="module"></script>
 </body>
 </html>

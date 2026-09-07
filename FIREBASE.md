@@ -46,6 +46,8 @@ iconUrl       caminho/URL do PNG definitivo
 
 Somente administradores podem conceder, editar ou remover medalhas. O membro pode consultar apenas as próprias condecorações.
 
+O catálogo visual inicial está em `data/medalhas.json`. Os emojis são temporários; cada definição já aceita `iconUrl` para receber posteriormente o PNG definitivo. O painel administrativo salva a concessão ou a remoção assim que o administrador seleciona a medalha.
+
 ## Operações
 
 Coleção: `operations/{operationId}`
@@ -55,6 +57,17 @@ A leitura pública está preparada; criação, edição e exclusão são restrit
 ## Regras
 
 O arquivo `firestore.rules` é a cópia versionada das regras publicadas no projeto Firebase. Qualquer alteração futura deve ser aplicada no arquivo e no console/CLI para mantê-los sincronizados.
+
+## Painel administrativo
+
+Rota protegida: `pages/admin.html`
+
+- usuários `member` são redirecionados para o próprio perfil;
+- usuários `admin` podem pesquisar todos os membros;
+- dois cliques sobre um registro abrem o perfil consultado;
+- mudanças de patente são salvas automaticamente;
+- medalhas podem ser adicionadas ou removidas em uma janela própria;
+- somente o dono do perfil recebe os controles de avatar e bandeira.
 
 ## Evolução planejada
 

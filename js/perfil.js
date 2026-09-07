@@ -12,6 +12,7 @@ import { auth, db } from './firebase-client.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const card = document.querySelector('[data-profile-card]');
+  const identityZone = document.querySelector('.identity-zone');
   const avatarImage = document.querySelector('[data-member-avatar]');
   const avatarClass = document.querySelector('[data-avatar-class]');
   const avatarOptions = [...document.querySelectorAll('[data-avatar-option]')];
@@ -24,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const memberRank = document.querySelector('[data-member-rank]');
   const memberRole = document.querySelector('[data-member-role]');
   const memberStatus = document.querySelector('[data-member-status]');
+  const commandBar = document.querySelector('[data-member-command-bar]');
+  const adminAccess = document.querySelector('[data-admin-access]');
   const logoutButtons = [...document.querySelectorAll('[data-logout]')];
   const medalsList = document.querySelector('[data-medals-list]');
   const medalsCount = document.querySelector('[data-medals-count]');
@@ -33,10 +36,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const avatars = new Map(avatarOptions.map(option => [option.dataset.avatar, option]));
   const banners = new Map(bannerOptions.map(option => [option.dataset.banner, option]));
+  const requestedUid = new URLSearchParams(window.location.search).get('uid');
   let currentUser = null;
   let currentProfile = null;
+  let currentProfileUid = null;
+  let viewerProfile = null;
+  let isOwner = false;
   let ranks = new Map();
   let feedbackTimer = 0;
+  let editVisibilityTimer = 0;
 
   const announce = (message, persistent = false) => {
     if (!feedback) return;
@@ -80,10 +88,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const savePreference = async (field, value, successMessage) => {
-    if (!currentUser) return;
+    if (!currentUser || !currentProfileUid || !isOwner) return;
     announce('Sincronizando perfil…', true);
     try {
-      await updateDoc(doc(db, 'users', currentUser.uid), {
+      await updateDoc(doc(db, 'users', currentProfileUid), {
         [field]: value,
         updatedAt: serverTimestamp()
       });
@@ -95,21 +103,56 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   avatarOptions.forEach(option => option.addEventListener('click', () => {
+    if (!isOwner) return;
     applyAvatar(option);
     savePreference('avatarId', option.dataset.avatar, `Soldado ${option.dataset.avatarName} selecionado.`);
   }));
 
   bannerOptions.forEach(option => option.addEventListener('click', () => {
+    if (!isOwner) return;
     applyBanner(option);
     savePreference('bannerId', option.dataset.banner, `Bandeira ${option.textContent.trim()} selecionada.`);
   }));
 
+  const hideOwnerControls = () => {
+    window.clearTimeout(editVisibilityTimer);
+    if (customizer) customizer.hidden = true;
+    if (editToggle) {
+      editToggle.hidden = true;
+      editToggle.setAttribute('aria-expanded', 'false');
+    }
+    if (editLabel) editLabel.textContent = 'Editar perfil';
+  };
+
+  const refreshEditTimer = () => {
+    if (!isOwner || editToggle?.hidden) return;
+    window.clearTimeout(editVisibilityTimer);
+    editVisibilityTimer = window.setTimeout(hideOwnerControls, 30000);
+  };
+
+  const revealOwnerControls = () => {
+    if (!isOwner || !editToggle) return;
+    editToggle.hidden = false;
+    refreshEditTimer();
+  };
+
+  avatarImage.addEventListener('click', revealOwnerControls);
+  avatarImage.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    revealOwnerControls();
+    editToggle?.focus();
+  });
+  identityZone?.addEventListener('pointerdown', refreshEditTimer);
+  identityZone?.addEventListener('keydown', refreshEditTimer);
+
   editToggle?.addEventListener('click', () => {
-    if (!customizer) return;
+    if (!customizer || !isOwner) return;
     const willOpen = editToggle.getAttribute('aria-expanded') !== 'true';
     editToggle.setAttribute('aria-expanded', String(willOpen));
     customizer.hidden = !willOpen;
     if (editLabel) editLabel.textContent = willOpen ? 'Fechar edição' : 'Editar perfil';
+    refreshEditTimer();
     if (willOpen) customizer.querySelector('button')?.focus({ preventScroll: true });
   });
 
@@ -125,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
     medalsList.replaceChildren();
     medalsCount.textContent = String(medals.length).padStart(2, '0');
     if (medalsLabel) medalsLabel.textContent = medals.length ? 'Registro oficial' : 'Aguardando condecorações';
-
     if (!medals.length) {
       const empty = document.createElement('li');
       empty.className = 'medals-empty';
@@ -175,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const reference = doc(db, 'users', user.uid);
     const snapshot = await getDoc(reference);
     if (snapshot.exists()) return snapshot.data();
-
     const displayName = user.displayName || user.email?.split('@')[0] || 'Membro EXBR';
     const profile = {
       email: user.email || '',
@@ -202,10 +243,21 @@ document.addEventListener('DOMContentLoaded', () => {
       memberRole.textContent = role === 'admin' ? 'Administrador' : 'Membro';
       memberRole.dataset.role = role;
     }
-    if (memberStatus) memberStatus.textContent = role === 'admin' ? 'Comando online' : 'Membro online';
-    document.body.dataset.userRole = role;
+    if (memberStatus) memberStatus.textContent = isOwner ? 'Perfil ativo' : 'Registro consultado';
+    document.body.dataset.userRole = viewerProfile?.role === 'admin' ? 'admin' : 'member';
     applyAvatar(avatars.get(profile.avatarId) || avatarOptions[0], false);
     applyBanner(banners.get(profile.bannerId) || bannerOptions[0]);
+
+    if (isOwner) {
+      avatarImage.setAttribute('role', 'button');
+      avatarImage.setAttribute('tabindex', '0');
+      avatarImage.setAttribute('aria-label', 'Mostrar opções de edição do perfil');
+    } else {
+      avatarImage.removeAttribute('role');
+      avatarImage.removeAttribute('tabindex');
+      avatarImage.removeAttribute('aria-label');
+      hideOwnerControls();
+    }
   };
 
   loadRanks().then(() => {
@@ -217,9 +269,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
       currentUser = user;
       try {
-        currentProfile = await ensureProfile(user);
+        viewerProfile = await ensureProfile(user);
+        const viewingAnotherProfile = Boolean(requestedUid && requestedUid !== user.uid);
+        if (viewingAnotherProfile && viewerProfile.role !== 'admin') {
+          window.location.replace('perfil.html');
+          return;
+        }
+
+        currentProfileUid = viewingAnotherProfile ? requestedUid : user.uid;
+        isOwner = currentProfileUid === user.uid;
+        if (viewingAnotherProfile) {
+          const targetSnapshot = await getDoc(doc(db, 'users', currentProfileUid));
+          if (!targetSnapshot.exists()) {
+            window.location.replace('admin.html');
+            return;
+          }
+          currentProfile = targetSnapshot.data();
+        } else {
+          currentProfile = viewerProfile;
+        }
+
+        if (commandBar) commandBar.hidden = false;
+        if (adminAccess) adminAccess.hidden = viewerProfile.role !== 'admin';
         renderProfile(currentProfile);
-        await loadMedals(user.uid);
+        await loadMedals(currentProfileUid);
         document.body.classList.add('profile-ready');
       } catch (error) {
         announce('Não foi possível carregar o perfil. Tente entrar novamente.', true);

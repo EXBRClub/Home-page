@@ -27,22 +27,27 @@ Home-page
 │   ├── base.css               ← Tokens, tipografia e base visual
 │   ├── components.css         ← Navegação, botões, painéis e rodapé
 │   └── pages/
+│       ├── admin.css          ← Lista de membros, patentes e janela de medalhas
 │       ├── home.css           ← Layout exclusivo da Home
 │       ├── login.css          ← Layout exclusivo do Login
 │       └── perfil.css         ← Painel do membro, avatar e medalhas
 │
 ├── data/
+│   ├── medalhas.json          ← Catálogo inicial de condecorações
 │   └── patentes.json          ← Hierarquia militar usada nos perfis
 │
 ├── pages/
+│   ├── admin.html             ← Gestão protegida de membros
 │   ├── login.html             ← Login e cadastro por e-mail e senha
 │   └── perfil.html            ← Perfil autenticado do membro
 │
 └── js/
+    ├── admin.js               ← Busca, patentes e medalhas administrativas
     ├── firebase-client.js     ← Inicialização do Firebase
     ├── login.js               ← Entrada, cadastro, sessão e redefinição de senha
     ├── main.js                ← Menu, navegação ativa e animações
-    └── perfil.js              ← Perfil, medalhas, preferências e logout
+    ├── perfil.js              ← Perfil, medalhas, preferências e logout
+    └── session-ui.js          ← Alterna Login/Perfil conforme a sessão
 
 SEÇÕES DA HOME
 
@@ -61,6 +66,7 @@ pages/login.html
 - Cadastro atual usa seis campos e o código temporário 070922
 - Perfil inicial: função Membro e patente Soldado
 - Redefinição de senha por e-mail
+- Login muda para Perfil enquanto a sessão estiver ativa
 
 PERFIS E PERMISSÕES
 
@@ -70,6 +76,17 @@ PERFIS E PERMISSÕES
 - Somente administradores atribuem patentes e medalhas
 - Medalhas: users/{uid}/medals/{medalId}
 - Regras versionadas em firestore.rules
+
+PAINEL ADMINISTRATIVO
+
+- pages/admin.html: acesso exclusivo para role admin
+- Pesquisa de membros por nome, e-mail ou patente
+- Dois cliques em um membro abrem seu perfil
+- Alteração de patente com salvamento automático
+- Janela de medalhas com busca, adição e remoção automáticas
+- Catálogo preparado para substituir emojis por iconUrl PNG
+- Botão Editar perfil visível somente ao dono após clicar no avatar
+- Controles de edição voltam a ficar ocultos após 30 segundos sem atividade
 
 COMPONENTE TÁTICO INFERIOR
 
@@ -93,8 +110,6 @@ EFEITOS DE SESSÃO
 
 PLANEJADO — NÃO IMPLEMENTADO
 
-- Painel visual de administração
 - Editor de operações
-- Interface para conceder medalhas e alterar patentes
 - Bot do Discord para códigos únicos, membros e presença em operações
 - Pesquisa do Recursion Tracker e futuro complemento de estatísticas

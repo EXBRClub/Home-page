@@ -27,19 +27,24 @@ Home-page/
 │   ├── base.css
 │   ├── components.css
 │   └── pages/
+│       ├── admin.css
 │       ├── home.css
 │       ├── login.css
 │       └── perfil.css
 ├── data/
+│   ├── medalhas.json
 │   └── patentes.json
 ├── pages/
+│   ├── admin.html
 │   ├── login.html
 │   └── perfil.html
 └── js/
+    ├── admin.js
     ├── firebase-client.js
     ├── login.js
     ├── main.js
-    └── perfil.js
+    ├── perfil.js
+    └── session-ui.js
 ```
 
 ## Publicação
@@ -80,6 +85,8 @@ PlanetSide 2 é marca de seus respectivos detentores. Este é um projeto comunit
 O portal usa Firebase Authentication com e-mail e senha. Os membros podem criar suas próprias contas usando, nesta fase, o código temporário de seis dígitos `070922`. O primeiro acesso cria um perfil padrão no Firestore com patente Soldado e função Membro.
 
 As regras separam os acessos `member` e `admin`. Membros podem alterar somente dados visuais do próprio perfil; apenas administradores atribuem patentes e medalhas. O código temporário é uma etapa de interface, não um controle de segurança definitivo; consulte [FIREBASE.md](FIREBASE.md).
+
+Quando existe uma sessão ativa, o botão Login da Home muda para Perfil. No perfil, o dono pode revelar o botão de edição clicando no avatar; o controle volta a ficar oculto após 30 segundos sem atividade. Administradores recebem acesso ao painel protegido `pages/admin.html`, com pesquisa de membros, consulta de perfil, alteração automática de patente e inclusão ou remoção automática de medalhas.
 
 ## Interface tática
 
