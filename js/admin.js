@@ -70,6 +70,32 @@ const isValidPngUrl = value => {
 
 const resolveMedalIcon = value => isValidPngUrl(value) ? value.trim() : defaultMedalIcon;
 
+const publicProfileData = user => ({
+  displayName: user.displayName || user.email?.split('@')[0] || 'Membro EXBR',
+  rankId: user.rankId || 'soldado',
+  avatarId: user.avatarId || 'assalto',
+  bannerId: user.bannerId || 'brasil',
+  updatedAt: serverTimestamp()
+});
+
+const publicMedal = medal => ({
+  catalogId: medal.catalogId || '',
+  name: medal.name || 'Medalha EXBR',
+  description: medal.description || '',
+  operationName: medal.operationName || 'Operação EXBR',
+  operationDate: medal.operationDate || null,
+  iconUrl: resolveMedalIcon(medal.iconUrl)
+});
+
+const syncPublicMedals = async userId => {
+  const snapshot = await getDocs(collection(db, 'users', userId, 'medals'));
+  const featuredMedals = snapshot.docs.map(item => ({ id: item.id, ...item.data() }))
+    .sort((a, b) => (b.operationDate?.seconds || 0) - (a.operationDate?.seconds || 0))
+    .slice(0, 5)
+    .map(publicMedal);
+  await setDoc(doc(db, 'publicProfiles', userId), { featuredMedals, updatedAt: serverTimestamp() }, { merge: true });
+};
+
 const openProfile = uid => {
   window.location.href = `perfil.html?uid=${encodeURIComponent(uid)}`;
 };
@@ -133,6 +159,11 @@ const renderUsers = () => {
         });
         user.rankId = select.value;
         currentRank.textContent = rankName(user.rankId);
+        try {
+          await setDoc(doc(db, 'publicProfiles', user.id), publicProfileData(user), { merge: true });
+        } catch (error) {
+          // A patente privada foi salva e o perfil público será sincronizado depois.
+        }
         setFeedback(`Patente de ${name.textContent} salva automaticamente.`, 'success');
       } catch (error) {
         select.value = previousRank;
@@ -227,6 +258,11 @@ const addMedal = async (medal, button) => {
       iconUrl: resolveMedalIcon(medal.iconUrl),
       awardedAt: serverTimestamp()
     });
+    try {
+      await syncPublicMedals(selectedUser.id);
+    } catch (error) {
+      // A concessão permanece válida mesmo se o resumo comunitário estiver indisponível.
+    }
     setMedalFeedback(`${medal.nome} adicionada ao perfil. É possível concedê-la novamente em outra operação.`, 'success');
     button.disabled = false;
   } catch (error) {
@@ -344,6 +380,9 @@ const loadData = async () => {
   medals = medalDefinitions.sort((first, second) => first.nome.localeCompare(second.nome, 'pt-BR'));
   users = usersSnapshot.docs.map(item => ({ id: item.id, ...item.data() }));
   users.sort((a, b) => (a.displayName || a.email || '').localeCompare(b.displayName || b.email || '', 'pt-BR'));
+  const publicBatch = writeBatch(db);
+  users.forEach(user => publicBatch.set(doc(db, 'publicProfiles', user.id), publicProfileData(user), { merge: true }));
+  if (users.length) await publicBatch.commit();
   renderUsers();
   setFeedback(`${users.length} membro${users.length === 1 ? '' : 's'} no registro. Duplo clique abre o perfil.`, 'success');
 };
