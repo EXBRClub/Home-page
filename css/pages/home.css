@@ -789,12 +789,70 @@ html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 36
 }
 
 .recruit-copy h2 {
-  max-width: 13ch;
+  max-width: 22ch;
   margin: 1rem 0 1.25rem;
 }
 
-.recruit-copy > p:last-child {
-  max-width: 42rem;
+.recruit-discord-message {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  max-width: 44rem;
+  margin-top: 1.6rem;
+}
+
+.recruit-discord-message p {
+  margin: 0;
+  color: #dfe9ec;
+  font-size: clamp(1rem, 2.2vw, 1.24rem);
+  line-height: 1.55;
+}
+
+.discord-mark {
+  width: 3.65rem;
+  height: 3.65rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(147, 215, 223, 0.2);
+  background: linear-gradient(145deg, rgba(88, 101, 242, 0.32), rgba(23, 31, 53, 0.8));
+  box-shadow: inset 0 0 1.4rem rgba(88, 101, 242, 0.12);
+  clip-path: polygon(0 0, calc(100% - 0.6rem) 0, 100% 0.6rem, 100% 100%, 0.6rem 100%, 0 calc(100% - 0.6rem));
+}
+
+.discord-mark svg {
+  width: 2rem;
+  height: 2rem;
+  fill: #f4f7ff;
+}
+
+.recruit-discord-button {
+  position: relative;
+  width: min(100%, 22rem);
+  min-height: 2.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 2rem auto 0;
+  border: 1px solid #85dc79;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(16, 54, 32, 0.12);
+  box-shadow: inset 0 0 1.2rem rgba(121, 220, 115, 0.03);
+  clip-path: polygon(0.75rem 0, calc(100% - 1.6rem) 0, 100% 0.7rem, 100% 100%, 1.6rem 100%, 0 calc(100% - 0.7rem));
+  transition: color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.recruit-discord-button:hover,
+.recruit-discord-button:focus-visible {
+  color: #fff;
+  background: rgba(90, 193, 88, 0.16);
+  box-shadow: inset 0 0 1.5rem rgba(130, 255, 124, 0.14), 0 0 1.2rem rgba(130, 255, 124, 0.18);
+  transform: translateY(-0.12rem);
 }
 
 .recruit-state {
@@ -804,6 +862,14 @@ html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 36
   padding: 1rem;
   border-left: 1px solid var(--color-accent);
   background: rgba(242, 169, 59, 0.05);
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.recruit-state:hover,
+.recruit-state:focus-visible {
+  border-color: #ffd166;
+  background: rgba(242, 169, 59, 0.1);
+  transform: translateY(-0.12rem);
 }
 
 .recruit-state strong {
@@ -815,6 +881,11 @@ html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 36
 .recruit-state small {
   color: #80939b;
   font-size: 0.72rem;
+}
+
+.recruit-state:hover small,
+.recruit-state:focus-visible small {
+  color: #bdcbd0;
 }
 
 .state-line {
@@ -921,7 +992,7 @@ html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 36
   }
 
   .recruit-shell {
-    grid-template-columns: auto minmax(0, 1fr) minmax(14rem, 0.42fr);
+    grid-template-columns: auto minmax(0, 1fr) minmax(13rem, 0.34fr);
     gap: 2.5rem;
     padding: 3rem;
   }
