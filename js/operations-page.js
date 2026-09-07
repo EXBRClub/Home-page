@@ -212,6 +212,24 @@ const applyToOperation = async (operation, button) => {
     batch.set(doc(db, 'users', currentUser.uid, 'participations', operation.id), participation);
     batch.set(doc(db, 'operations', operation.id, 'participants', currentUser.uid), participation);
     await batch.commit();
+    try {
+      const publicReference = doc(db, 'publicProfiles', currentUser.uid);
+      const publicSnapshot = await getDoc(publicReference);
+      const recentActivities = [participation, ...(publicSnapshot.data()?.recentActivities || [])]
+        .filter((activity, index, items) => items.findIndex(item => item.operationId === activity.operationId) === index)
+        .slice(0, 3);
+      await setDoc(publicReference, {
+        displayName: currentProfile?.displayName || currentUser.displayName || 'Membro EXBR',
+        rankId: currentProfile?.rankId || 'soldado',
+        avatarId: currentProfile?.avatarId || 'assalto',
+        bannerId: currentProfile?.bannerId || 'brasil',
+        featuredMedals: publicSnapshot.data()?.featuredMedals || [],
+        recentActivities,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (error) {
+      // A participação principal foi salva; o resumo público será sincronizado no próximo acesso.
+    }
     appliedOperationIds.add(operation.id);
     button.dataset.applied = 'true';
     button.textContent = 'Participação registrada';
