@@ -68,6 +68,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const medalDate = medal => medal.operationDate?.toDate?.().toLocaleDateString('pt-BR') || medal.operationDate || 'Data não informada';
 
+  const publicMedal = medal => ({
+    catalogId: medal.catalogId || '',
+    name: medal.name || 'Medalha EXBR',
+    description: medal.description || '',
+    operationName: medal.operationName || 'Operação EXBR',
+    operationDate: medal.operationDate || null,
+    iconUrl: resolveMedalIcon(medal.iconUrl)
+  });
+
+  const publicActivity = participation => ({
+    operationId: participation.operationId || participation.id || '',
+    title: participation.title || 'Operação EXBR',
+    status: participation.status || 'confirmed',
+    startsAt: participation.startsAt || null,
+    joinedAt: participation.joinedAt || null
+  });
+
   const fillMedalDetail = (medal, definition = {}) => {
     const name = definition.nome || medal.name || 'Medalha EXBR';
     const description = definition.description || medal.description || 'Condecoração oficial concedida pela EXBR.';
@@ -152,6 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
         updatedAt: serverTimestamp()
       });
       currentProfile[field] = value;
+      try {
+        await setDoc(doc(db, 'publicProfiles', currentProfileUid), {
+          [field]: value,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch (error) {
+        // A preferência privada permanece salva mesmo se o espelho público estiver indisponível.
+      }
       announce(successMessage);
     } catch (error) {
       announce('Não foi possível salvar esta alteração.', true);
@@ -274,7 +299,11 @@ document.addEventListener('DOMContentLoaded', () => {
           remove.disabled = true;
           try {
             await deleteDoc(doc(db, 'users', currentProfileUid, 'medals', medal.id));
-            await loadMedals(currentProfileUid);
+            const remainingMedals = await loadMedals(currentProfileUid);
+            await setDoc(doc(db, 'publicProfiles', currentProfileUid), {
+              featuredMedals: remainingMedals.slice(0, 5).map(publicMedal),
+              updatedAt: serverTimestamp()
+            }, { merge: true });
             announce(`${name.textContent} removida do perfil.`);
           } catch (error) {
             remove.disabled = false;
@@ -293,9 +322,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const medals = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
       medals.sort((a, b) => (b.operationDate?.seconds || 0) - (a.operationDate?.seconds || 0));
       renderMedals(medals);
+      return medals;
     } catch (error) {
       renderMedals([]);
       if (medalsLabel) medalsLabel.textContent = 'Registro indisponível';
+      return [];
     }
   };
 
@@ -330,9 +361,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const participations = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
       participations.sort((a, b) => (b.joinedAt?.seconds || 0) - (a.joinedAt?.seconds || 0));
       renderParticipations(participations);
+      return participations;
     } catch (error) {
       renderParticipations([]);
+      return [];
     }
+  };
+
+  const syncPublicProfile = async (medals, participations) => {
+    if (!isOwner || !currentProfileUid || !currentProfile) return;
+    await setDoc(doc(db, 'publicProfiles', currentProfileUid), {
+      displayName: currentProfile.displayName || 'Membro EXBR',
+      rankId: currentProfile.rankId || 'soldado',
+      avatarId: currentProfile.avatarId || 'assalto',
+      bannerId: currentProfile.bannerId || 'brasil',
+      featuredMedals: medals.slice(0, 5).map(publicMedal),
+      recentActivities: participations.slice(0, 3).map(publicActivity),
+      updatedAt: serverTimestamp()
+    }, { merge: true });
   };
 
   const ensureProfile = async user => {
@@ -393,20 +439,18 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         viewerProfile = await ensureProfile(user);
         const viewingAnotherProfile = Boolean(requestedUid && requestedUid !== user.uid);
-        if (viewingAnotherProfile && viewerProfile.role !== 'admin') {
-          window.location.replace('perfil.html');
-          return;
-        }
-
         currentProfileUid = viewingAnotherProfile ? requestedUid : user.uid;
         isOwner = currentProfileUid === user.uid;
         if (viewingAnotherProfile) {
-          const targetSnapshot = await getDoc(doc(db, 'users', currentProfileUid));
+          const collectionName = viewerProfile.role === 'admin' ? 'users' : 'publicProfiles';
+          const targetSnapshot = await getDoc(doc(db, collectionName, currentProfileUid));
           if (!targetSnapshot.exists()) {
-            window.location.replace('admin.html');
+            window.location.replace('comunidade.html');
             return;
           }
-          currentProfile = targetSnapshot.data();
+          currentProfile = viewerProfile.role === 'admin'
+            ? targetSnapshot.data()
+            : { ...targetSnapshot.data(), role: 'member' };
         } else {
           currentProfile = viewerProfile;
         }
@@ -414,7 +458,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (commandBar) commandBar.hidden = false;
         if (adminAccess) adminAccess.hidden = viewerProfile.role !== 'admin';
         renderProfile(currentProfile);
-        await Promise.all([loadMedals(currentProfileUid), loadParticipations(currentProfileUid)]);
+        if (viewingAnotherProfile && viewerProfile.role !== 'admin') {
+          renderMedals(currentProfile.featuredMedals || []);
+          renderParticipations(currentProfile.recentActivities || []);
+        } else {
+          const [medals, participations] = await Promise.all([loadMedals(currentProfileUid), loadParticipations(currentProfileUid)]);
+          if (isOwner) await syncPublicProfile(medals, participations);
+        }
         document.body.classList.add('profile-ready');
       } catch (error) {
         announce('Não foi possível carregar o perfil. Tente entrar novamente.', true);
