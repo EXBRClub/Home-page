@@ -28,6 +28,7 @@ Home-page/
 │   ├── components.css
 │   └── pages/
 │       ├── admin.css
+│       ├── comunidade.css
 │       ├── home.css
 │       ├── login.css
 │       ├── operacoes.css
@@ -38,11 +39,13 @@ Home-page/
 │   └── patentes.json
 ├── pages/
 │   ├── admin.html
+│   ├── comunidade.html
 │   ├── login.html
 │   ├── operacoes.html
 │   └── perfil.html
 └── js/
     ├── admin.js
+    ├── comunidade.js
     ├── firebase-client.js
     ├── home-operations.js
     ├── login.js
@@ -98,6 +101,12 @@ Quando existe uma sessão ativa, o botão Login da Home muda para Perfil. No per
 A Home continua exibindo até três operações atuais no setor `#operacoes`. Os cartões abrem `pages/operacoes.html`, que reúne conteúdo completo, medalha prevista e registro de participação do membro. Administradores podem criar e editar operações diretamente nessa página.
 
 Na mesma guia, o primeiro uso do atalho inferior de Operações leva ao setor da Home. Depois que a página dedicada é visitada, o atalho passa a retornar diretamente a ela até a guia ser encerrada.
+
+## Comunidade
+
+A rota protegida `pages/comunidade.html` reúne os perfis públicos dos membros autenticados. A lista permite pesquisar por nome ou patente e mostra avatar, patente, atividade recente, até cinco medalhas em destaque e acesso ao perfil público completo.
+
+Os dados comunitários usam `publicProfiles/{uid}`, separado do documento privado `users/{uid}`. E-mail, função administrativa e outros dados privados não são publicados. Membros autenticados podem consultar os perfis públicos; apenas o próprio membro ou um administrador pode atualizar seu registro público.
 
 ## Interface tática
 
