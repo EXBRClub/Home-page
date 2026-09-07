@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/admin.css?v=20260907-1">
+  <link rel="stylesheet" href="../css/pages/admin.css?v=20260907-2">
 </head>
 <body class="admin-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -74,7 +74,10 @@
   <dialog class="medal-dialog tactical-panel" data-medal-dialog aria-labelledby="medal-dialog-title">
     <div class="medal-dialog-header">
       <div><span>CONDECORAÇÕES //</span><h2 id="medal-dialog-title">Medalhas</h2></div>
-      <button type="button" data-medal-dialog-close aria-label="Fechar janela">×</button>
+      <div class="medal-dialog-actions">
+        <button class="medal-create-button" type="button" data-medal-create>Criar</button>
+        <button class="medal-dialog-close" type="button" data-medal-dialog-close aria-label="Fechar janela">×</button>
+      </div>
     </div>
     <p class="medal-target">Soldado: <strong data-medal-target>—</strong></p>
     <div class="medal-operation-fields">
@@ -84,6 +87,24 @@
     <label class="medal-search"><span aria-hidden="true">⌕</span><input type="search" placeholder="Pesquisar medalhas" data-medal-search></label>
     <p class="medal-dialog-feedback" data-medal-feedback aria-live="polite">Selecione uma medalha para conceder. A remoção é feita no perfil.</p>
     <div class="medal-catalog" data-medal-catalog></div>
+  </dialog>
+
+  <dialog class="medal-editor tactical-panel" data-medal-editor aria-labelledby="medal-editor-title">
+    <form data-medal-editor-form>
+      <div class="medal-dialog-header">
+        <div><span>CATÁLOGO // EXBR</span><h2 id="medal-editor-title">Nova medalha</h2></div>
+        <button class="medal-dialog-close" type="button" data-medal-editor-close aria-label="Fechar editor">×</button>
+      </div>
+      <input type="hidden" name="medalId" data-medal-editor-id>
+      <div class="medal-editor-fields">
+        <label>Nome da medalha<input name="name" type="text" maxlength="60" required></label>
+        <label>Descrição<textarea name="description" maxlength="220" rows="4" required></textarea></label>
+        <label>URL ou caminho do ícone PNG<input name="iconUrl" type="text" maxlength="300" placeholder="../assets/medals/medalha.png"></label>
+        <small>Sem um endereço PNG válido, será usado o ícone padrão recrutamento.png.</small>
+      </div>
+      <p class="medal-editor-feedback" data-medal-editor-feedback aria-live="polite"></p>
+      <button class="medal-editor-save" type="submit">Salvar medalha</button>
+    </form>
   </dialog>
 
   <nav class="tactical-dock" aria-label="Atalhos táticos">
@@ -100,6 +121,6 @@
   </nav>
 
   <script src="../js/main.js?v=20260907-2" defer></script>
-  <script src="../js/admin.js?v=20260907-2" type="module"></script>
+  <script src="../js/admin.js?v=20260907-3" type="module"></script>
 </body>
 </html>

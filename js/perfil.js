@@ -12,6 +12,17 @@ import {
 import { auth, db } from './firebase-client.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  const defaultMedalIcon = '../assets/icons/dock/recrutamento.png';
+  const resolveMedalIcon = value => {
+    if (!value?.trim()) return defaultMedalIcon;
+    try {
+      return new URL(value.trim(), window.location.href).pathname.toLocaleLowerCase().endsWith('.png')
+        ? value.trim()
+        : defaultMedalIcon;
+    } catch (error) {
+      return defaultMedalIcon;
+    }
+  };
   const card = document.querySelector('[data-profile-card]');
   const identityZone = document.querySelector('.identity-zone');
   const avatarImage = document.querySelector('[data-member-avatar]');
@@ -185,12 +196,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const icon = document.createElement('span');
       icon.className = 'medal-icon';
       icon.setAttribute('aria-hidden', 'true');
-      if (medal.iconUrl) {
-        icon.style.setProperty('--medal-image', `url("${medal.iconUrl}")`);
-        icon.classList.add('has-image');
-      } else {
-        icon.textContent = medal.emoji || '🏅';
-      }
+      const image = document.createElement('img');
+      image.src = resolveMedalIcon(medal.iconUrl);
+      image.alt = '';
+      image.addEventListener('error', () => {
+        if (!image.src.endsWith('/recrutamento.png')) image.src = defaultMedalIcon;
+      });
+      icon.classList.add('has-image');
+      icon.append(image);
       const copy = document.createElement('span');
       copy.className = 'medal-copy';
       const name = document.createElement('strong');

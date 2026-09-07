@@ -89,6 +89,9 @@ PAINEL ADMINISTRATIVO
 - Dois cliques em um membro abrem seu perfil
 - Alteração de patente com salvamento automático
 - Janela de medalhas com busca e concessão automática
+- Criação e edição de nome, descrição e ícone das medalhas
+- Catálogo persistente: medalCatalog/{medalId}
+- Ícone padrão para medalhas sem PNG válido: assets/icons/dock/recrutamento.png
 - Medalhas repetidas permitidas em datas ou operações diferentes
 - Remoção administrativa feita no perfil do membro
 - Catálogo preparado para substituir emojis por iconUrl PNG

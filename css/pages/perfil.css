@@ -703,6 +703,7 @@
 }
 
 .medal-icon.has-image > span { display: none; }
+.medal-icon img { width: 88%; height: 88%; object-fit: contain; }
 
 .medal-copy {
   min-width: 0;

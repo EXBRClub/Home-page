@@ -125,6 +125,7 @@
 
 .operation-reward { grid-column: 2; grid-row: 2 / span 2; min-width: 8rem; display: grid; place-items: center; align-content: center; gap: 0.45rem; color: #9bb1b7; text-align: center; }
 .operation-reward-icon { width: 4.2rem; height: 4.2rem; display: grid; place-items: center; border: 1px solid rgba(231, 189, 66, 0.68); color: #ffdc62; background-color: rgba(45, 35, 9, 0.68); background-image: var(--medal-image, none); background-position: center; background-repeat: no-repeat; background-size: contain; font-size: 2rem; clip-path: polygon(0.45rem 0, 100% 0, 100% calc(100% - 0.45rem), calc(100% - 0.45rem) 100%, 0 100%, 0 0.45rem); }
+.operation-reward-icon img { width: 88%; height: 88%; object-fit: contain; }
 .operation-reward strong { max-width: 9rem; font-size: 0.68rem; letter-spacing: 0.04em; }
 
 .operation-actions { grid-column: 1 / -1; display: flex; align-items: center; justify-content: flex-end; gap: 0.55rem; }

@@ -20,6 +20,17 @@ const editorTitle = document.querySelector('#operation-editor-title');
 const editorClose = document.querySelector('[data-operation-close]');
 const editorFeedback = document.querySelector('[data-operation-editor-feedback]');
 const fallbackImage = '../assets/icons/dock/operacoes.png';
+const fallbackMedalIcon = '../assets/icons/dock/recrutamento.png';
+const resolveMedalIcon = value => {
+  if (!value?.trim()) return fallbackMedalIcon;
+  try {
+    return new URL(value.trim(), window.location.href).pathname.toLocaleLowerCase().endsWith('.png')
+      ? value.trim()
+      : fallbackMedalIcon;
+  } catch (error) {
+    return fallbackMedalIcon;
+  }
+};
 
 let operations = [];
 let currentUser = null;
@@ -83,11 +94,13 @@ const createOperationCard = operation => {
   const rewardIcon = document.createElement('span');
   rewardIcon.className = 'operation-reward-icon';
   rewardIcon.setAttribute('aria-hidden', 'true');
-  if (operation.medalIconUrl) {
-    rewardIcon.style.setProperty('--medal-image', `url("${operation.medalIconUrl}")`);
-  } else {
-    rewardIcon.textContent = operation.medalEmoji || '🏅';
-  }
+  const rewardImage = document.createElement('img');
+  rewardImage.src = resolveMedalIcon(operation.medalIconUrl);
+  rewardImage.alt = '';
+  rewardImage.addEventListener('error', () => {
+    if (!rewardImage.src.endsWith('/recrutamento.png')) rewardImage.src = fallbackMedalIcon;
+  });
+  rewardIcon.append(rewardImage);
   const rewardName = document.createElement('strong');
   rewardName.textContent = operation.medalName || 'Medalha a definir';
   reward.append(rewardIcon, rewardName);
@@ -230,7 +243,6 @@ const openEditor = (operation = null) => {
   editorForm.elements.status.value = operation?.status || 'open';
   editorForm.elements.imageUrl.value = operation?.imageUrl || '';
   editorForm.elements.medalName.value = operation?.medalName || '';
-  editorForm.elements.medalEmoji.value = operation?.medalEmoji || '🏅';
   editorForm.elements.medalIconUrl.value = operation?.medalIconUrl || '';
   if (editorTitle) editorTitle.textContent = operation ? 'Editar operação' : 'Nova operação';
   if (editorFeedback) editorFeedback.textContent = 'As alterações serão publicadas ao salvar.';
@@ -252,7 +264,6 @@ const saveOperation = async event => {
     status: editorForm.elements.status.value,
     imageUrl: editorForm.elements.imageUrl.value.trim(),
     medalName: editorForm.elements.medalName.value.trim(),
-    medalEmoji: editorForm.elements.medalEmoji.value.trim() || '🏅',
     medalIconUrl: editorForm.elements.medalIconUrl.value.trim(),
     updatedAt: serverTimestamp()
   };

@@ -1,11 +1,11 @@
 {
   "version": 1,
   "medalhas": [
-    { "id": "honra", "nome": "Medalha de Honra", "emoji": "🏅", "operationName": "Operação EXBR", "iconUrl": "" },
-    { "id": "linha-frente", "nome": "Linha de Frente", "emoji": "🛡️", "operationName": "Operação EXBR", "iconUrl": "" },
-    { "id": "precisao-tatica", "nome": "Precisão Tática", "emoji": "🎯", "operationName": "Operação EXBR", "iconUrl": "" },
-    { "id": "irmandade-exbr", "nome": "Irmandade EXBR", "emoji": "🤝", "operationName": "Operação EXBR", "iconUrl": "" },
-    { "id": "operacao-osprey", "nome": "Operação Osprey", "emoji": "⚔️", "operationName": "Operação Osprey", "iconUrl": "" },
-    { "id": "servico-distinto", "nome": "Serviço Distinto", "emoji": "⭐", "operationName": "Operação EXBR", "iconUrl": "" }
+    { "id": "honra", "nome": "Medalha de Honra", "description": "Condecoração por mérito e dedicação à EXBR.", "operationName": "Operação EXBR", "iconUrl": "../assets/icons/dock/recrutamento.png" },
+    { "id": "linha-frente", "nome": "Linha de Frente", "description": "Reconhecimento por atuação nas linhas de frente.", "operationName": "Operação EXBR", "iconUrl": "../assets/icons/dock/recrutamento.png" },
+    { "id": "precisao-tatica", "nome": "Precisão Tática", "description": "Reconhecimento por eficiência e precisão em campo.", "operationName": "Operação EXBR", "iconUrl": "../assets/icons/dock/recrutamento.png" },
+    { "id": "irmandade-exbr", "nome": "Irmandade EXBR", "description": "Condecoração por cooperação e compromisso com a Outfit.", "operationName": "Operação EXBR", "iconUrl": "../assets/icons/dock/recrutamento.png" },
+    { "id": "operacao-osprey", "nome": "Operação Osprey", "description": "Registro de participação em operação oficial no servidor Osprey.", "operationName": "Operação Osprey", "iconUrl": "../assets/icons/dock/recrutamento.png" },
+    { "id": "servico-distinto", "nome": "Serviço Distinto", "description": "Reconhecimento por serviço destacado à comunidade EXBR.", "operationName": "Operação EXBR", "iconUrl": "../assets/icons/dock/recrutamento.png" }
   ]
 }

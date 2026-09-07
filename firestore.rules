@@ -77,6 +77,10 @@ service cloud.firestore {
       }
     }
 
+    match /medalCatalog/{medalId} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

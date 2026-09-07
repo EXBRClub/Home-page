@@ -42,12 +42,14 @@ catalogId     identificador da medalha no catálogo
 operationName nome da operação
 operationDate data da operação (Timestamp recomendado)
 emoji         ícone temporário
-iconUrl       caminho/URL do PNG definitivo
+iconUrl       caminho/URL do PNG definitivo; usa recrutamento.png como padrão
 ```
 
 Somente administradores podem conceder, editar ou remover medalhas. O membro pode consultar apenas as próprias condecorações.
 
-O catálogo visual inicial está em `data/medalhas.json`. Os emojis são temporários; cada definição já aceita `iconUrl` para receber posteriormente o PNG definitivo. Cada concessão usa um documento automático, por isso o mesmo membro pode receber a mesma medalha em operações ou datas diferentes. O painel administrativo concede medalhas; a remoção é feita pelo administrador dentro do perfil consultado.
+O catálogo inicial de segurança está em `data/medalhas.json`, mas o catálogo editável fica em `medalCatalog/{medalId}` no Firestore. Na primeira abertura administrativa, os modelos locais são copiados para essa coleção quando ela ainda estiver vazia. Administradores podem criar novas medalhas e editar nome, descrição e URL do ícone das medalhas existentes.
+
+Todos os modelos usam `../assets/icons/dock/recrutamento.png` enquanto não houver um caminho ou URL terminado em `.png`. Se a imagem personalizada falhar ao carregar, a interface também retorna automaticamente ao ícone padrão. Cada concessão usa um documento automático, por isso o mesmo membro pode receber a mesma medalha em operações ou datas diferentes. O painel administrativo concede medalhas; a remoção é feita pelo administrador dentro do perfil consultado.
 
 ## Operações
 
@@ -78,6 +80,7 @@ Rota protegida: `pages/admin.html`
 - usuários `admin` podem pesquisar todos os membros;
 - dois cliques sobre um registro abrem o perfil consultado;
 - mudanças de patente são salvas automaticamente;
+- catálogo de medalhas pode ser criado e editado por administradores;
 - medalhas podem ser concedidas pela janela própria e removidas no perfil consultado;
 - a mesma medalha pode ser concedida novamente em outra data ou operação;
 - operações podem ser criadas e editadas na página dedicada;

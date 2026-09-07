@@ -10,8 +10,7 @@
       "status": "open",
       "imageUrl": "",
       "medalName": "Operação Osprey",
-      "medalEmoji": "⚔️",
-      "medalIconUrl": "",
+      "medalIconUrl": "../assets/icons/dock/recrutamento.png",
       "startsAt": ""
     },
     {
@@ -23,8 +22,7 @@
       "status": "open",
       "imageUrl": "",
       "medalName": "Linha de Frente",
-      "medalEmoji": "🛡️",
-      "medalIconUrl": "",
+      "medalIconUrl": "../assets/icons/dock/recrutamento.png",
       "startsAt": ""
     },
     {
@@ -36,8 +34,7 @@
       "status": "open",
       "imageUrl": "",
       "medalName": "Precisão Tática",
-      "medalEmoji": "🎯",
-      "medalIconUrl": "",
+      "medalIconUrl": "../assets/icons/dock/recrutamento.png",
       "startsAt": ""
     }
   ]

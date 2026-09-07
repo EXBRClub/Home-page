@@ -91,7 +91,7 @@ O portal usa Firebase Authentication com e-mail e senha. Os membros podem criar 
 
 As regras separam os acessos `member` e `admin`. Membros podem alterar somente dados visuais do próprio perfil; apenas administradores atribuem patentes e medalhas. O código temporário é uma etapa de interface, não um controle de segurança definitivo; consulte [FIREBASE.md](FIREBASE.md).
 
-Quando existe uma sessão ativa, o botão Login da Home muda para Perfil. No perfil, o dono pode revelar o botão de edição clicando no avatar; o controle volta a ficar oculto após 30 segundos sem atividade. Administradores recebem acesso ao painel protegido `pages/admin.html`, com pesquisa de membros, consulta de perfil, alteração automática de patente e concessão de medalhas. A mesma medalha pode ser concedida mais de uma vez em datas ou operações diferentes; a remoção administrativa fica no perfil consultado.
+Quando existe uma sessão ativa, o botão Login da Home muda para Perfil. No perfil, o dono pode revelar o botão de edição clicando no avatar; o controle volta a ficar oculto após 30 segundos sem atividade. Administradores recebem acesso ao painel protegido `pages/admin.html`, com pesquisa de membros, consulta de perfil, alteração automática de patente, criação e edição do catálogo de medalhas e concessão de condecorações. A mesma medalha pode ser concedida mais de uma vez em datas ou operações diferentes; a remoção administrativa fica no perfil consultado. Medalhas sem um PNG válido usam `assets/icons/dock/recrutamento.png`.
 
 ## Operações
 
