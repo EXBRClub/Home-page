@@ -194,31 +194,10 @@
           </aside>
         </header>
 
-        <div class="module-grid">
-          <article class="module-card" data-reveal>
-            <div class="module-number">01</div>
-            <p class="module-kicker">Novos membros</p>
-            <h3>Recrutamento</h3>
-            <p>O caminho para conhecer a EXBR e descobrir como fazer parte da comunidade.</p>
-            <a href="#recrutamento">Acessar setor <span aria-hidden="true">↗</span></a>
-          </article>
-
-          <article class="module-card module-card-featured" data-reveal>
-            <div class="module-number">02</div>
-            <p class="module-kicker">Coordenação</p>
-            <h3>Operações</h3>
-            <p>Agenda, chamadas e registros das atividades da Outfit terão seu espaço dedicado.</p>
-            <span class="module-status">Conteúdo em preparação</span>
-          </article>
-
-          <article class="module-card" id="comunidade" data-reveal>
-            <div class="module-number">03</div>
-            <p class="module-kicker">Conexões</p>
-            <h3>Comunidade</h3>
-            <p>Canais oficiais, informações importantes e novidades serão concentrados aqui.</p>
-            <span class="module-status">Conteúdo em preparação</span>
-          </article>
+        <div class="module-grid operation-preview-grid" data-home-operations aria-live="polite">
+          <p class="operations-loading">Carregando operações atuais…</p>
         </div>
+        <span id="comunidade" class="section-anchor" aria-hidden="true"></span>
       </div>
     </section>
 
@@ -255,7 +234,7 @@
     <div class="dock-menu">
       <a href="#inicio" aria-current="page"><span class="dock-icon" data-icon="inicio" aria-hidden="true"><span class="dock-icon-fallback">🏠</span></span><span class="visually-hidden">Início</span></a>
       <a href="#sobre"><span class="dock-icon" data-icon="sobre" aria-hidden="true"><span class="dock-icon-fallback">🛡️</span></span><span class="visually-hidden">Sobre</span></a>
-      <a href="#operacoes"><span class="dock-icon" data-icon="operacoes" aria-hidden="true"><span class="dock-icon-fallback">⚔️</span></span><span class="visually-hidden">Operações</span></a>
+      <a href="#operacoes" data-operations-entry><span class="dock-icon" data-icon="operacoes" aria-hidden="true"><span class="dock-icon-fallback">⚔️</span></span><span class="visually-hidden">Operações</span></a>
       <a href="#recrutamento"><span class="dock-icon" data-icon="recrutamento" aria-hidden="true"><span class="dock-icon-fallback">🎯</span></span><span class="visually-hidden">Recrutamento</span></a>
       <a href="#comunidade"><span class="dock-icon" data-icon="comunidade" aria-hidden="true"><span class="dock-icon-fallback">👥</span></span><span class="visually-hidden">Comunidade</span></a>
       <a href="pages/login.html" data-session-dock><span class="dock-icon" data-icon="login" aria-hidden="true"><span class="dock-icon-fallback">👤</span></span><span class="visually-hidden" data-session-dock-label>Login</span></a>
@@ -274,8 +253,9 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260906-11" defer></script>
+  <script src="js/main.js?v=20260907-2" defer></script>
   <script src="js/operations.js?v=20260906-13" defer></script>
+  <script src="js/home-operations.js?v=20260907-1" type="module"></script>
   <script src="js/session-ui.js?v=20260907-1" type="module"></script>
 </body>
 </html>

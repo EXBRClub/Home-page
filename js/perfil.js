@@ -1,6 +1,7 @@
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const medalsList = document.querySelector('[data-medals-list]');
   const medalsCount = document.querySelector('[data-medals-count]');
   const medalsLabel = document.querySelector('[data-medals-label]');
+  const memberOperationsList = document.querySelector('[data-member-operations-list]');
 
   if (!card || !avatarImage || !avatarClass) return;
 
@@ -197,6 +199,28 @@ document.addEventListener('DOMContentLoaded', () => {
       detail.textContent = `${medal.operationName || 'Operação'} · ${date}`;
       copy.append(name, detail);
       item.append(icon, copy);
+
+      if (viewerProfile?.role === 'admin') {
+        item.classList.add('can-manage');
+        const remove = document.createElement('button');
+        remove.className = 'medal-remove';
+        remove.type = 'button';
+        remove.textContent = '×';
+        remove.setAttribute('aria-label', `Remover ${name.textContent} de ${memberName?.textContent || 'membro'}`);
+        remove.addEventListener('click', async () => {
+          if (!currentProfileUid || !window.confirm(`Remover a medalha ${name.textContent} deste perfil?`)) return;
+          remove.disabled = true;
+          try {
+            await deleteDoc(doc(db, 'users', currentProfileUid, 'medals', medal.id));
+            await loadMedals(currentProfileUid);
+            announce(`${name.textContent} removida do perfil.`);
+          } catch (error) {
+            remove.disabled = false;
+            announce('Não foi possível remover esta medalha.', true);
+          }
+        });
+        item.append(remove);
+      }
       medalsList.append(item);
     });
   };
@@ -210,6 +234,42 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       renderMedals([]);
       if (medalsLabel) medalsLabel.textContent = 'Registro indisponível';
+    }
+  };
+
+  const renderParticipations = participations => {
+    if (!memberOperationsList) return;
+    memberOperationsList.replaceChildren();
+    if (!participations.length) {
+      const empty = document.createElement('p');
+      empty.className = 'member-operations-empty';
+      empty.textContent = 'Nenhuma participação registrada.';
+      memberOperationsList.append(empty);
+      return;
+    }
+
+    participations.forEach(participation => {
+      const item = document.createElement('a');
+      item.className = 'member-operation-entry';
+      item.href = `operacoes.html#${encodeURIComponent(participation.operationId)}`;
+      const title = document.createElement('strong');
+      title.textContent = participation.title || 'Operação EXBR';
+      const status = document.createElement('span');
+      const date = participation.startsAt?.toDate?.().toLocaleString('pt-BR') || 'Data em definição';
+      status.textContent = `${participation.status === 'confirmed' ? 'Participação confirmada' : 'Registrada'} · ${date}`;
+      item.append(title, status);
+      memberOperationsList.append(item);
+    });
+  };
+
+  const loadParticipations = async uid => {
+    try {
+      const snapshot = await getDocs(collection(db, 'users', uid, 'participations'));
+      const participations = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      participations.sort((a, b) => (b.joinedAt?.seconds || 0) - (a.joinedAt?.seconds || 0));
+      renderParticipations(participations);
+    } catch (error) {
+      renderParticipations([]);
     }
   };
 
@@ -292,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (commandBar) commandBar.hidden = false;
         if (adminAccess) adminAccess.hidden = viewerProfile.role !== 'admin';
         renderProfile(currentProfile);
-        await loadMedals(currentProfileUid);
+        await Promise.all([loadMedals(currentProfileUid), loadParticipations(currentProfileUid)]);
         document.body.classList.add('profile-ready');
       } catch (error) {
         announce('Não foi possível carregar o perfil. Tente entrar novamente.', true);

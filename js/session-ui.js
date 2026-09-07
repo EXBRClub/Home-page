@@ -8,8 +8,9 @@ const sessionDockLabel = document.querySelector('[data-session-dock-label]');
 
 onAuthStateChanged(auth, user => {
   const authenticated = Boolean(user);
-  if (sessionLink) sessionLink.href = authenticated ? 'pages/perfil.html' : 'pages/login.html';
+  const prefix = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+  if (sessionLink) sessionLink.href = authenticated ? `${prefix}perfil.html` : `${prefix}login.html`;
   if (sessionLabel) sessionLabel.textContent = authenticated ? 'Perfil' : 'Login';
-  if (sessionDock) sessionDock.href = authenticated ? 'pages/perfil.html' : 'pages/login.html';
+  if (sessionDock) sessionDock.href = authenticated ? `${prefix}perfil.html` : `${prefix}login.html`;
   if (sessionDockLabel) sessionDockLabel.textContent = authenticated ? 'Perfil do membro' : 'Login';
 });

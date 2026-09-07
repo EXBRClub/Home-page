@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260907-4">
+  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260907-6">
 </head>
 <body class="member-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -139,7 +139,15 @@
         </div>
       </section>
 
-      <div class="member-future-space" aria-hidden="true"></div>
+      <section class="member-operations-panel tactical-panel" aria-labelledby="member-operations-title">
+        <div class="member-operations-header">
+          <span>REGISTRO // PRESENÇA</span>
+          <h2 id="member-operations-title">Operações</h2>
+        </div>
+        <div class="member-operations-list" data-member-operations-list>
+          <p>Carregando participações…</p>
+        </div>
+      </section>
 
       <aside class="medals-panel tactical-panel" aria-labelledby="medals-title" data-reveal>
         <div class="medals-header">
@@ -175,7 +183,7 @@
     <div class="dock-menu">
       <a href="../index.html#inicio"><span class="dock-icon" data-icon="inicio" aria-hidden="true"><span class="dock-icon-fallback">🏠</span></span><span class="visually-hidden">Início</span></a>
       <a href="../index.html#sobre"><span class="dock-icon" data-icon="sobre" aria-hidden="true"><span class="dock-icon-fallback">🛡️</span></span><span class="visually-hidden">Sobre</span></a>
-      <a href="../index.html#operacoes"><span class="dock-icon" data-icon="operacoes" aria-hidden="true"><span class="dock-icon-fallback">⚔️</span></span><span class="visually-hidden">Operações</span></a>
+      <a href="../index.html#operacoes" data-operations-entry><span class="dock-icon" data-icon="operacoes" aria-hidden="true"><span class="dock-icon-fallback">⚔️</span></span><span class="visually-hidden">Operações</span></a>
       <a href="../index.html#recrutamento"><span class="dock-icon" data-icon="recrutamento" aria-hidden="true"><span class="dock-icon-fallback">🎯</span></span><span class="visually-hidden">Recrutamento</span></a>
       <a href="../index.html#comunidade"><span class="dock-icon" data-icon="comunidade" aria-hidden="true"><span class="dock-icon-fallback">👥</span></span><span class="visually-hidden">Comunidade</span></a>
       <a href="perfil.html" aria-current="page"><span class="dock-icon" data-icon="login" aria-hidden="true"><span class="dock-icon-fallback">👤</span></span><span class="visually-hidden">Perfil do membro</span></a>
@@ -183,7 +191,7 @@
     <span class="dock-meta">Brasil // Outfit</span>
   </nav>
 
-  <script src="../js/main.js?v=20260906-11" defer></script>
-  <script src="../js/perfil.js?v=20260907-4" type="module"></script>
+  <script src="../js/main.js?v=20260907-2" defer></script>
+  <script src="../js/perfil.js?v=20260907-6" type="module"></script>
 </body>
 </html>

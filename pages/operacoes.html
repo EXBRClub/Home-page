@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07383d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EXBR">
+  <title>Operações | EXBR</title>
+  <meta name="description" content="Agenda, chamadas e participação nas operações da Outfit EXBR em PlanetSide 2.">
+  <link rel="canonical" href="https://exbrclub.github.io/Home-page/pages/operacoes.html">
+  <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png" sizes="180x180">
+  <link rel="manifest" href="../site.webmanifest">
+  <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
+  <link rel="stylesheet" href="../css/base.css?v=20260906-10">
+  <link rel="stylesheet" href="../css/components.css?v=20260907-15">
+  <link rel="stylesheet" href="../css/pages/operacoes.css?v=20260907-1">
+</head>
+<body class="operations-page has-tactical-dock">
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <div class="screen-grid" aria-hidden="true"></div>
+  <div class="screen-noise" aria-hidden="true"></div>
+
+  <header class="site-header" data-site-header>
+    <div class="header-shell">
+      <a class="brand" href="../index.html#inicio" aria-label="EXBR — voltar ao início">
+        <span class="brand-mark" aria-hidden="true">EXBR</span>
+        <span class="brand-copy"><strong class="brand-title-accent">Exército Brasileiro</strong><small>Outfit Network</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
+        <span class="nav-toggle-label">Menu</span><span class="nav-toggle-icon" aria-hidden="true"><i></i><i></i></span>
+      </button>
+      <nav class="site-nav" id="site-navigation" aria-label="Navegação principal" data-site-nav>
+        <a href="../index.html#inicio">Início</a>
+        <a href="../index.html#sobre">Sobre</a>
+        <a href="operacoes.html" aria-current="page">Operações</a>
+        <a href="../index.html#recrutamento">Recrutamento</a>
+        <a class="nav-community-mobile" href="../index.html#comunidade">Comunidade</a>
+        <a class="nav-login-link" href="login.html" data-session-link><span class="nav-login-text" data-session-label>Login</span></a>
+      </nav>
+      <div class="header-status" aria-label="Status do portal"><span class="status-light" aria-hidden="true"></span><span>Portal ativo</span></div>
+    </div>
+  </header>
+
+  <main class="operations-main" id="conteudo">
+    <div class="container operations-shell">
+      <header class="operations-page-heading">
+        <div>
+          <p class="eyebrow"><span></span> Coordenação EXBR</p>
+          <h1>Setor de<br>Operações</h1>
+        </div>
+        <button class="operation-admin-button" type="button" data-operation-create hidden>Nova operação</button>
+      </header>
+
+      <p class="operations-feedback" data-operations-feedback aria-live="polite">Carregando operações atuais…</p>
+      <section class="operations-list" data-operations-list aria-label="Operações da EXBR"></section>
+    </div>
+  </main>
+
+  <dialog class="operation-editor tactical-panel" data-operation-editor aria-labelledby="operation-editor-title">
+    <form data-operation-form>
+      <div class="operation-editor-header">
+        <div><span>COMANDO // OPERAÇÕES</span><h2 id="operation-editor-title">Nova operação</h2></div>
+        <button type="button" data-operation-close aria-label="Fechar janela">×</button>
+      </div>
+      <input type="hidden" name="operationId" data-operation-id>
+      <div class="operation-editor-grid">
+        <label>Nome da operação<input name="title" type="text" maxlength="60" required></label>
+        <label>Tipo / coordenação<input name="kicker" type="text" maxlength="32" value="Coordenação" required></label>
+        <label class="editor-wide">Descrição<textarea name="description" maxlength="220" rows="3" required></textarea></label>
+        <label class="editor-wide">Informações completas<textarea name="details" maxlength="600" rows="5" required></textarea></label>
+        <label>Data e horário<input name="startsAt" type="datetime-local"></label>
+        <label>Status<select name="status"><option value="open">Inscrições abertas</option><option value="closed">Inscrições encerradas</option><option value="archived">Arquivada</option></select></label>
+        <label class="editor-wide">Imagem PNG — caminho ou URL<input name="imageUrl" type="text" maxlength="300" placeholder="../assets/operations/imagem.png"></label>
+        <label>Medalha prevista<input name="medalName" type="text" maxlength="60" placeholder="Operação Osprey"></label>
+        <label>Ícone temporário<input name="medalEmoji" type="text" maxlength="8" value="🏅"></label>
+        <label class="editor-wide">PNG da medalha — caminho ou URL<input name="medalIconUrl" type="text" maxlength="300" placeholder="../assets/medals/operacao-osprey.png"></label>
+      </div>
+      <p class="operation-editor-feedback" data-operation-editor-feedback aria-live="polite"></p>
+      <button class="operation-save-button" type="submit">Salvar operação</button>
+    </form>
+  </dialog>
+
+  <nav class="tactical-dock" aria-label="Atalhos táticos">
+    <span class="dock-meta">© <span data-current-year>2026</span> EXBR</span>
+    <div class="dock-menu">
+      <a href="../index.html#inicio"><span class="dock-icon" data-icon="inicio" aria-hidden="true"></span><span class="visually-hidden">Início</span></a>
+      <a href="../index.html#sobre"><span class="dock-icon" data-icon="sobre" aria-hidden="true"></span><span class="visually-hidden">Sobre</span></a>
+      <a href="operacoes.html" data-operations-entry aria-current="page"><span class="dock-icon" data-icon="operacoes" aria-hidden="true"></span><span class="visually-hidden">Operações</span></a>
+      <a href="../index.html#recrutamento"><span class="dock-icon" data-icon="recrutamento" aria-hidden="true"></span><span class="visually-hidden">Recrutamento</span></a>
+      <a href="../index.html#comunidade"><span class="dock-icon" data-icon="comunidade" aria-hidden="true"></span><span class="visually-hidden">Comunidade</span></a>
+      <a href="login.html" data-session-dock><span class="dock-icon" data-icon="login" aria-hidden="true"></span><span class="visually-hidden" data-session-dock-label>Login</span></a>
+    </div>
+    <span class="dock-meta">Brasil // Operações</span>
+  </nav>
+
+  <script src="../js/main.js?v=20260907-2" defer></script>
+  <script src="../js/session-ui.js?v=20260907-2" type="module"></script>
+  <script src="../js/operations-page.js?v=20260907-2" type="module"></script>
+</body>
+</html>

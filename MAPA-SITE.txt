@@ -30,22 +30,27 @@ Home-page
 │       ├── admin.css          ← Lista de membros, patentes e janela de medalhas
 │       ├── home.css           ← Layout exclusivo da Home
 │       ├── login.css          ← Layout exclusivo do Login
+│       ├── operacoes.css      ← Lista e editor das operações
 │       └── perfil.css         ← Painel do membro, avatar e medalhas
 │
 ├── data/
 │   ├── medalhas.json          ← Catálogo inicial de condecorações
+│   ├── operacoes.json         ← Conteúdo reserva das operações atuais
 │   └── patentes.json          ← Hierarquia militar usada nos perfis
 │
 ├── pages/
 │   ├── admin.html             ← Gestão protegida de membros
 │   ├── login.html             ← Login e cadastro por e-mail e senha
+│   ├── operacoes.html         ← Página dedicada às operações e participações
 │   └── perfil.html            ← Perfil autenticado do membro
 │
 └── js/
     ├── admin.js               ← Busca, patentes e medalhas administrativas
     ├── firebase-client.js     ← Inicialização do Firebase
+    ├── home-operations.js     ← Resumo das operações exibido na Home
     ├── login.js               ← Entrada, cadastro, sessão e redefinição de senha
     ├── main.js                ← Menu, navegação ativa e animações
+    ├── operations-page.js     ← Operações, participação e editor administrativo
     ├── perfil.js              ← Perfil, medalhas, preferências e logout
     └── session-ui.js          ← Alterna Login/Perfil conforme a sessão
 
@@ -83,7 +88,9 @@ PAINEL ADMINISTRATIVO
 - Pesquisa de membros por nome, e-mail ou patente
 - Dois cliques em um membro abrem seu perfil
 - Alteração de patente com salvamento automático
-- Janela de medalhas com busca, adição e remoção automáticas
+- Janela de medalhas com busca e concessão automática
+- Medalhas repetidas permitidas em datas ou operações diferentes
+- Remoção administrativa feita no perfil do membro
 - Catálogo preparado para substituir emojis por iconUrl PNG
 - Botão Editar perfil visível somente ao dono após clicar no avatar
 - Controles de edição voltam a ficar ocultos após 30 segundos sem atividade
@@ -108,8 +115,19 @@ EFEITOS DE SESSÃO
 - Construção visual da Home executada uma vez por guia
 - Efeitos desativados quando o usuário prefere movimento reduzido
 
+OPERAÇÕES
+
+- A Home mantém até três cartões no setor #operacoes
+- Cada cartão abre pages/operacoes.html na operação correspondente
+- Página dedicada com lista rolável, informações, imagem e medalha prevista
+- Membro autenticado registra a própria participação
+- Participações aparecem no centro do perfil do membro
+- Administradores criam e editam operações pela página dedicada
+- PNGs de operação e de medalha configuráveis por caminho ou URL
+- Primeiro atalho inferior na guia leva ao setor da Home; após visitar a página dedicada, retorna diretamente a ela
+- Registros: users/{uid}/participations/{operationId} e operations/{operationId}/participants/{uid}
+
 PLANEJADO — NÃO IMPLEMENTADO
 
-- Editor de operações
 - Bot do Discord para códigos únicos, membros e presença em operações
 - Pesquisa do Recursion Tracker e futuro complemento de estatísticas

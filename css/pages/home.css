@@ -676,6 +676,107 @@ html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 36
   gap: 0.9rem;
 }
 
+.section-anchor {
+  position: relative;
+  top: calc(var(--header-height) * -1);
+}
+
+.operations-loading {
+  grid-column: 1 / -1;
+  min-height: 12rem;
+  display: grid;
+  place-items: center;
+  color: #6e8991;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.operation-preview-card {
+  position: relative;
+  min-height: 25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  padding: 1rem 1.2rem 1.35rem;
+  border: 1px solid var(--color-line);
+  color: inherit;
+  background: linear-gradient(165deg, rgba(9, 29, 38, 0.84), rgba(5, 13, 19, 0.88) 62%);
+  transition: border-color var(--transition-fast), transform var(--transition-smooth), background var(--transition-fast);
+}
+
+.operation-preview-card::after {
+  content: "";
+  position: absolute;
+  right: -3rem;
+  bottom: -4rem;
+  width: 10rem;
+  height: 10rem;
+  border: 1px solid rgba(44, 157, 172, 0.08);
+  border-radius: 50%;
+}
+
+.operation-preview-card:hover,
+.operation-preview-card:focus-visible {
+  border-color: rgba(104, 210, 221, 0.58);
+  outline: 0;
+  background: linear-gradient(165deg, rgba(12, 46, 56, 0.9), rgba(5, 16, 23, 0.94) 62%);
+  transform: translateY(-0.25rem);
+}
+
+.operation-preview-image {
+  width: 100%;
+  height: 10rem;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: radial-gradient(circle at 42% 55%, rgba(52, 139, 150, 0.12), transparent 68%);
+}
+
+.operation-preview-image img {
+  width: min(92%, 18rem);
+  height: 100%;
+  object-fit: contain;
+  object-position: left center;
+  filter: drop-shadow(0.7rem 0.8rem 0.8rem rgba(0, 0, 0, 0.5));
+  transform: translateX(0);
+  transition: transform 320ms ease, filter 320ms ease;
+}
+
+.operation-preview-card:hover .operation-preview-image img,
+.operation-preview-card:focus-visible .operation-preview-image img {
+  filter: brightness(1.07) drop-shadow(0.8rem 0.8rem 1rem rgba(0, 0, 0, 0.58));
+  transform: translateX(0.45rem);
+}
+
+.operation-preview-card .module-kicker { margin-top: auto; }
+.operation-preview-card h3 { margin: 0.38rem 0 0.7rem; }
+.operation-preview-card > p:not(.module-kicker) { font-size: 0.92rem; }
+
+.operation-preview-meta {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.1rem;
+  color: #6ccbd5;
+  font: 0.65rem/1.4 Consolas, "Courier New", monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.operation-preview-open {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.55rem;
+  color: #9de7ee;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
 .module-card {
   position: relative;
   min-height: 22rem;
@@ -925,6 +1026,10 @@ html.home-first-boot .boot-construction span:nth-child(5n) { animation-delay: 36
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .operation-preview-card,
+  .operation-preview-image img {
+    transition: none;
+  }
   html.home-first-boot .site-header,
   html.home-first-boot .hero-copy[data-reveal],
   html.home-first-boot .command-panel[data-reveal],

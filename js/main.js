@@ -4,6 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const nav = document.querySelector('[data-site-nav]');
   const toggle = document.querySelector('.nav-toggle');
   const menuLinks = [...document.querySelectorAll('.site-nav a')];
+  const operationEntryLinks = [...document.querySelectorAll('[data-operations-entry]')];
+  const isOperationsPage = document.body.classList.contains('operations-page');
+  const insidePages = window.location.pathname.includes('/pages/');
+  try {
+    if (isOperationsPage) sessionStorage.setItem('exbr.operationsVisited', '1');
+    const operationsVisited = sessionStorage.getItem('exbr.operationsVisited') === '1';
+    const operationTarget = operationsVisited
+      ? (insidePages ? 'operacoes.html' : 'pages/operacoes.html')
+      : (insidePages ? '../index.html#operacoes' : '#operacoes');
+    operationEntryLinks.forEach(link => { link.href = operationTarget; });
+  } catch (error) {
+    // Mantém o endereço original quando o armazenamento da guia não está disponível.
+  }
   const navLinks = [...document.querySelectorAll('.site-nav a[href^="#"]')];
   const dockLinks = [...document.querySelectorAll('.dock-menu a[href^="#"]')];
   const sections = [...document.querySelectorAll('main section[id]')];

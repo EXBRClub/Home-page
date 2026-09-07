@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "operacoes": [
+    {
+      "id": "operacao-osprey",
+      "title": "Operação Osprey",
+      "kicker": "Coordenação",
+      "description": "Mobilização da EXBR para atuação coordenada no servidor Osprey.",
+      "details": "Horário e objetivos serão confirmados pela coordenação da Outfit.",
+      "status": "open",
+      "imageUrl": "",
+      "medalName": "Operação Osprey",
+      "medalEmoji": "⚔️",
+      "medalIconUrl": "",
+      "startsAt": ""
+    },
+    {
+      "id": "linha-de-frente",
+      "title": "Linha de Frente",
+      "kicker": "Pelotão",
+      "description": "Operação de combate em equipe com organização de esquadrões e objetivos táticos.",
+      "details": "A chamada e o continente serão definidos antes do início da operação.",
+      "status": "open",
+      "imageUrl": "",
+      "medalName": "Linha de Frente",
+      "medalEmoji": "🛡️",
+      "medalIconUrl": "",
+      "startsAt": ""
+    },
+    {
+      "id": "precisao-tatica",
+      "title": "Precisão Tática",
+      "kicker": "Treinamento",
+      "description": "Treinamento coletivo de posicionamento, comunicação e resposta rápida.",
+      "details": "Atividade aberta aos membros que desejam aperfeiçoar a atuação em equipe.",
+      "status": "open",
+      "imageUrl": "",
+      "medalName": "Precisão Tática",
+      "medalEmoji": "🎯",
+      "medalIconUrl": "",
+      "startsAt": ""
+    }
+  ]
+}

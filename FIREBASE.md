@@ -38,6 +38,7 @@ Campos preparados:
 
 ```text
 name          nome da medalha
+catalogId     identificador da medalha no catálogo
 operationName nome da operação
 operationDate data da operação (Timestamp recomendado)
 emoji         ícone temporário
@@ -46,13 +47,24 @@ iconUrl       caminho/URL do PNG definitivo
 
 Somente administradores podem conceder, editar ou remover medalhas. O membro pode consultar apenas as próprias condecorações.
 
-O catálogo visual inicial está em `data/medalhas.json`. Os emojis são temporários; cada definição já aceita `iconUrl` para receber posteriormente o PNG definitivo. O painel administrativo salva a concessão ou a remoção assim que o administrador seleciona a medalha.
+O catálogo visual inicial está em `data/medalhas.json`. Os emojis são temporários; cada definição já aceita `iconUrl` para receber posteriormente o PNG definitivo. Cada concessão usa um documento automático, por isso o mesmo membro pode receber a mesma medalha em operações ou datas diferentes. O painel administrativo concede medalhas; a remoção é feita pelo administrador dentro do perfil consultado.
 
 ## Operações
 
 Coleção: `operations/{operationId}`
 
 A leitura pública está preparada; criação, edição e exclusão são restritas aos administradores.
+
+Campos atuais: `title`, `kicker`, `description`, `details`, `startsAt`, `status`, `imageUrl`, `medalName`, `medalEmoji` e `medalIconUrl`. Imagens e medalhas aceitam caminhos relativos ou URLs de PNG.
+
+O registro de participação é duplicado em uma operação atômica para facilitar as duas consultas:
+
+```text
+users/{uid}/participations/{operationId}
+operations/{operationId}/participants/{uid}
+```
+
+O membro autenticado pode criar apenas o próprio registro, com estado `confirmed`. Administradores podem consultar e gerenciar os registros. A lista das participações também aparece no perfil do membro.
 
 ## Regras
 
@@ -66,7 +78,9 @@ Rota protegida: `pages/admin.html`
 - usuários `admin` podem pesquisar todos os membros;
 - dois cliques sobre um registro abrem o perfil consultado;
 - mudanças de patente são salvas automaticamente;
-- medalhas podem ser adicionadas ou removidas em uma janela própria;
+- medalhas podem ser concedidas pela janela própria e removidas no perfil consultado;
+- a mesma medalha pode ser concedida novamente em outra data ou operação;
+- operações podem ser criadas e editadas na página dedicada;
 - somente o dono do perfil recebe os controles de avatar e bandeira.
 
 ## Evolução planejada

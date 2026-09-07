@@ -1,8 +1,8 @@
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
 import {
   Timestamp,
+  addDoc,
   collection,
-  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -35,7 +35,6 @@ let users = [];
 let ranks = [];
 let medals = [];
 let selectedUser = null;
-let awardedMedalIds = new Set();
 
 const setFeedback = (message, state = 'info') => {
   if (!feedback) return;
@@ -149,7 +148,6 @@ const renderMedals = () => {
   medalCatalog.replaceChildren();
 
   visibleMedals.forEach(medal => {
-    const awarded = awardedMedalIds.has(medal.id);
     const item = document.createElement('article');
     item.className = 'catalog-medal';
 
@@ -164,72 +162,54 @@ const renderMedals = () => {
     const name = document.createElement('strong');
     name.textContent = medal.nome;
     const detail = document.createElement('small');
-    detail.textContent = awarded ? 'Concedida · clique para remover' : medal.operationName;
+    detail.textContent = medal.operationName || 'Operação EXBR';
     copy.append(name, detail);
 
     const toggle = document.createElement('button');
     toggle.type = 'button';
-    toggle.dataset.awarded = String(awarded);
-    toggle.textContent = awarded ? '−' : '+';
-    toggle.setAttribute('aria-label', `${awarded ? 'Remover' : 'Adicionar'} ${medal.nome}`);
-    toggle.addEventListener('click', () => toggleMedal(medal, toggle));
+    toggle.textContent = '+';
+    toggle.setAttribute('aria-label', `Adicionar ${medal.nome}`);
+    toggle.addEventListener('click', () => addMedal(medal, toggle));
     item.append(icon, copy, toggle);
     medalCatalog.append(item);
   });
 };
 
-const toggleMedal = async (medal, button) => {
+const addMedal = async (medal, button) => {
   if (!selectedUser) return;
-  const awarded = awardedMedalIds.has(medal.id);
   button.disabled = true;
-  setMedalFeedback(`${awarded ? 'Removendo' : 'Adicionando'} ${medal.nome}…`);
+  setMedalFeedback(`Adicionando ${medal.nome}…`);
 
   try {
-    const reference = doc(db, 'users', selectedUser.id, 'medals', medal.id);
-    if (awarded) {
-      await deleteDoc(reference);
-      awardedMedalIds.delete(medal.id);
-      setMedalFeedback(`${medal.nome} removida do perfil.`, 'success');
-    } else {
-      const dateValue = dateField?.value || new Date().toISOString().slice(0, 10);
-      const operationDate = Timestamp.fromDate(new Date(`${dateValue}T12:00:00`));
-      await setDoc(reference, {
-        name: medal.nome,
-        operationName: operationField?.value.trim() || medal.operationName || 'Operação EXBR',
-        operationDate,
-        emoji: medal.emoji || '🏅',
-        iconUrl: medal.iconUrl || '',
-        awardedAt: serverTimestamp()
-      });
-      awardedMedalIds.add(medal.id);
-      setMedalFeedback(`${medal.nome} adicionada ao perfil.`, 'success');
-    }
-    renderMedals();
+    const dateValue = dateField?.value || new Date().toISOString().slice(0, 10);
+    const operationDate = Timestamp.fromDate(new Date(`${dateValue}T12:00:00`));
+    await addDoc(collection(db, 'users', selectedUser.id, 'medals'), {
+      catalogId: medal.id,
+      name: medal.nome,
+      operationName: operationField?.value.trim() || medal.operationName || 'Operação EXBR',
+      operationDate,
+      emoji: medal.emoji || '🏅',
+      iconUrl: medal.iconUrl || '',
+      awardedAt: serverTimestamp()
+    });
+    setMedalFeedback(`${medal.nome} adicionada ao perfil. É possível concedê-la novamente em outra operação.`, 'success');
+    button.disabled = false;
   } catch (error) {
     setMedalFeedback('Não foi possível salvar a medalha.', 'error');
     button.disabled = false;
   }
 };
 
-const openMedalDialog = async user => {
+const openMedalDialog = user => {
   if (!dialog) return;
   selectedUser = user;
-  awardedMedalIds = new Set();
   if (medalTarget) medalTarget.textContent = user.displayName || user.email || 'Membro EXBR';
   if (medalSearch) medalSearch.value = '';
   if (operationField) operationField.value = 'Operação EXBR';
   if (dateField) dateField.value = new Date().toISOString().slice(0, 10);
-  setMedalFeedback('Carregando condecorações do membro…');
+  setMedalFeedback('Use + para conceder uma medalha. A remoção é feita no perfil do membro.');
   dialog.showModal();
-
-  try {
-    const snapshot = await getDocs(collection(db, 'users', user.id, 'medals'));
-    awardedMedalIds = new Set(snapshot.docs.map(item => item.id));
-    setMedalFeedback('Use + para adicionar e − para remover. As mudanças são automáticas.');
-    renderMedals();
-  } catch (error) {
-    setMedalFeedback('Não foi possível carregar as medalhas deste membro.', 'error');
-  }
+  renderMedals();
 };
 
 const loadData = async () => {

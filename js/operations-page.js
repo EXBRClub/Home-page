@@ -1,0 +1,295 @@
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
+import {
+  Timestamp,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+  setDoc,
+  writeBatch
+} from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
+import { auth, db } from './firebase-client.js';
+
+const list = document.querySelector('[data-operations-list]');
+const feedback = document.querySelector('[data-operations-feedback]');
+const createButton = document.querySelector('[data-operation-create]');
+const editor = document.querySelector('[data-operation-editor]');
+const editorForm = document.querySelector('[data-operation-form]');
+const editorTitle = document.querySelector('#operation-editor-title');
+const editorClose = document.querySelector('[data-operation-close]');
+const editorFeedback = document.querySelector('[data-operation-editor-feedback]');
+const fallbackImage = '../assets/icons/dock/operacoes.png';
+
+let operations = [];
+let currentUser = null;
+let currentProfile = null;
+let appliedOperationIds = new Set();
+
+const isAdmin = () => currentProfile?.role === 'admin';
+const setFeedback = (message, state = 'info') => {
+  if (!feedback) return;
+  feedback.textContent = message;
+  feedback.dataset.state = state;
+};
+
+const normalizeDate = value => {
+  if (!value) return 'Data e horário em definição';
+  const date = value?.toDate?.() || new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Data e horário em definição';
+  return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeStyle: 'short' }).format(date);
+};
+
+const createOperationCard = operation => {
+  const card = document.createElement('article');
+  card.className = 'operation-card';
+  card.id = operation.id;
+
+  const identity = document.createElement('div');
+  identity.className = 'operation-identity';
+  const imageArea = document.createElement('div');
+  imageArea.className = 'operation-image';
+  const image = document.createElement('img');
+  image.src = operation.imageUrl || fallbackImage;
+  image.alt = operation.imageUrl ? `Imagem da ${operation.title}` : '';
+  image.addEventListener('error', () => {
+    if (!image.src.endsWith('/operacoes.png')) image.src = fallbackImage;
+  });
+  imageArea.append(image);
+
+  const nameplate = document.createElement('div');
+  nameplate.className = 'operation-nameplate';
+  const kicker = document.createElement('span');
+  kicker.textContent = operation.kicker || 'Coordenação';
+  const title = document.createElement('h2');
+  title.textContent = operation.title || 'Operação EXBR';
+  nameplate.append(kicker, title);
+  identity.append(imageArea, nameplate);
+
+  const content = document.createElement('div');
+  content.className = 'operation-content';
+  const description = document.createElement('p');
+  description.className = 'operation-description';
+  description.textContent = operation.description || 'Informações da operação serão publicadas pela coordenação.';
+  const details = document.createElement('p');
+  details.className = 'operation-details';
+  details.textContent = operation.details || 'Aguarde a confirmação dos objetivos e da formação dos esquadrões.';
+  const date = document.createElement('time');
+  date.className = 'operation-date';
+  date.textContent = normalizeDate(operation.startsAt);
+
+  const reward = document.createElement('div');
+  reward.className = 'operation-reward';
+  const rewardIcon = document.createElement('span');
+  rewardIcon.className = 'operation-reward-icon';
+  rewardIcon.setAttribute('aria-hidden', 'true');
+  if (operation.medalIconUrl) {
+    rewardIcon.style.setProperty('--medal-image', `url("${operation.medalIconUrl}")`);
+  } else {
+    rewardIcon.textContent = operation.medalEmoji || '🏅';
+  }
+  const rewardName = document.createElement('strong');
+  rewardName.textContent = operation.medalName || 'Medalha a definir';
+  reward.append(rewardIcon, rewardName);
+
+  const actions = document.createElement('div');
+  actions.className = 'operation-actions';
+  const edit = document.createElement('button');
+  edit.className = 'operation-edit';
+  edit.type = 'button';
+  edit.textContent = 'Editar';
+  edit.hidden = !isAdmin();
+  edit.addEventListener('click', () => openEditor(operation));
+
+  const apply = document.createElement('button');
+  apply.className = 'operation-apply';
+  apply.type = 'button';
+  const applied = appliedOperationIds.has(operation.id);
+  apply.dataset.applied = String(applied);
+  if (applied) {
+    apply.textContent = 'Participação registrada';
+    apply.disabled = true;
+  } else if (operation.status !== 'open') {
+    apply.textContent = 'Inscrições encerradas';
+    apply.disabled = true;
+  } else if (!currentUser) {
+    apply.textContent = 'Entrar para participar';
+  } else {
+    apply.textContent = 'Participar';
+  }
+  apply.addEventListener('click', () => applyToOperation(operation, apply));
+  actions.append(edit, apply);
+  content.append(description, details, date, reward, actions);
+  card.append(identity, content);
+  return card;
+};
+
+const render = () => {
+  if (!list) return;
+  const visible = operations.filter(operation => operation.status !== 'archived' || isAdmin());
+  list.replaceChildren();
+  if (!visible.length) {
+    const empty = document.createElement('p');
+    empty.className = 'operations-empty';
+    empty.textContent = 'Nenhuma operação publicada no momento.';
+    list.append(empty);
+    return;
+  }
+  visible.forEach(operation => list.append(createOperationCard(operation)));
+  setFeedback(`${visible.length} operação${visible.length === 1 ? '' : 'ões'} no setor.`, 'success');
+
+  const targetId = decodeURIComponent(window.location.hash.slice(1));
+  if (targetId) window.setTimeout(() => document.getElementById(targetId)?.scrollIntoView({ block: 'center' }), 0);
+};
+
+const loadOperations = async () => {
+  try {
+    const snapshot = await getDocs(collection(db, 'operations'));
+    operations = snapshot.docs.map(item => ({ id: item.id, source: 'firestore', ...item.data() }));
+  } catch (error) {
+    operations = [];
+  }
+
+  if (!operations.length) {
+    const response = await fetch('../data/operacoes.json');
+    const data = await response.json();
+    operations = data.operacoes.map(operation => ({ ...operation, source: 'fallback' }));
+  }
+
+  operations.sort((first, second) => {
+    const firstDate = first.startsAt?.seconds ? first.startsAt.seconds * 1000 : new Date(first.startsAt || 0).getTime();
+    const secondDate = second.startsAt?.seconds ? second.startsAt.seconds * 1000 : new Date(second.startsAt || 0).getTime();
+    return firstDate - secondDate;
+  });
+  render();
+};
+
+const loadParticipations = async () => {
+  appliedOperationIds = new Set();
+  if (!currentUser) return;
+  const results = await Promise.allSettled(operations.map(operation => (
+    getDoc(doc(db, 'users', currentUser.uid, 'participations', operation.id))
+  )));
+  results.forEach((result, index) => {
+    if (result.status === 'fulfilled' && result.value.exists()) appliedOperationIds.add(operations[index].id);
+  });
+};
+
+const applyToOperation = async (operation, button) => {
+  if (!currentUser) {
+    window.location.href = 'login.html';
+    return;
+  }
+  if (appliedOperationIds.has(operation.id) || operation.status !== 'open') return;
+
+  button.disabled = true;
+  button.textContent = 'Registrando…';
+  const participation = {
+    operationId: operation.id,
+    title: operation.title || 'Operação EXBR',
+    startsAt: operation.startsAt || null,
+    status: 'confirmed',
+    userId: currentUser.uid,
+    displayName: currentProfile?.displayName || currentUser.displayName || currentUser.email || 'Membro EXBR',
+    joinedAt: serverTimestamp()
+  };
+
+  try {
+    const batch = writeBatch(db);
+    batch.set(doc(db, 'users', currentUser.uid, 'participations', operation.id), participation);
+    batch.set(doc(db, 'operations', operation.id, 'participants', currentUser.uid), participation);
+    await batch.commit();
+    appliedOperationIds.add(operation.id);
+    button.dataset.applied = 'true';
+    button.textContent = 'Participação registrada';
+    setFeedback(`Sua participação em ${operation.title} foi registrada no perfil.`, 'success');
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = 'Participar';
+    setFeedback('Não foi possível registrar a participação. Verifique as regras do Firestore.', 'error');
+  }
+};
+
+const dateInputValue = value => {
+  if (!value) return '';
+  const date = value?.toDate?.() || new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return offsetDate.toISOString().slice(0, 16);
+};
+
+const openEditor = (operation = null) => {
+  if (!editor || !editorForm || !isAdmin()) return;
+  editorForm.reset();
+  editorForm.elements.operationId.value = operation?.id || '';
+  editorForm.elements.title.value = operation?.title || '';
+  editorForm.elements.kicker.value = operation?.kicker || 'Coordenação';
+  editorForm.elements.description.value = operation?.description || '';
+  editorForm.elements.details.value = operation?.details || '';
+  editorForm.elements.startsAt.value = dateInputValue(operation?.startsAt);
+  editorForm.elements.status.value = operation?.status || 'open';
+  editorForm.elements.imageUrl.value = operation?.imageUrl || '';
+  editorForm.elements.medalName.value = operation?.medalName || '';
+  editorForm.elements.medalEmoji.value = operation?.medalEmoji || '🏅';
+  editorForm.elements.medalIconUrl.value = operation?.medalIconUrl || '';
+  if (editorTitle) editorTitle.textContent = operation ? 'Editar operação' : 'Nova operação';
+  if (editorFeedback) editorFeedback.textContent = 'As alterações serão publicadas ao salvar.';
+  editor.showModal();
+};
+
+const saveOperation = async event => {
+  event.preventDefault();
+  if (!editorForm || !isAdmin()) return;
+  const submit = editorForm.querySelector('[type="submit"]');
+  const id = editorForm.elements.operationId.value || doc(collection(db, 'operations')).id;
+  const startsAtValue = editorForm.elements.startsAt.value;
+  const operation = {
+    title: editorForm.elements.title.value.trim(),
+    kicker: editorForm.elements.kicker.value.trim(),
+    description: editorForm.elements.description.value.trim(),
+    details: editorForm.elements.details.value.trim(),
+    startsAt: startsAtValue ? Timestamp.fromDate(new Date(startsAtValue)) : null,
+    status: editorForm.elements.status.value,
+    imageUrl: editorForm.elements.imageUrl.value.trim(),
+    medalName: editorForm.elements.medalName.value.trim(),
+    medalEmoji: editorForm.elements.medalEmoji.value.trim() || '🏅',
+    medalIconUrl: editorForm.elements.medalIconUrl.value.trim(),
+    updatedAt: serverTimestamp()
+  };
+
+  submit.disabled = true;
+  if (editorFeedback) editorFeedback.textContent = 'Salvando operação…';
+  try {
+    await setDoc(doc(db, 'operations', id), operation, { merge: true });
+    editor.close();
+    await loadOperations();
+    setFeedback(`${operation.title} salva e publicada.`, 'success');
+  } catch (error) {
+    if (editorFeedback) editorFeedback.textContent = 'Não foi possível salvar a operação.';
+  } finally {
+    submit.disabled = false;
+  }
+};
+
+createButton?.addEventListener('click', () => openEditor());
+editorClose?.addEventListener('click', () => editor?.close());
+editor?.addEventListener('click', event => { if (event.target === editor) editor.close(); });
+editorForm?.addEventListener('submit', saveOperation);
+
+await loadOperations();
+
+onAuthStateChanged(auth, async user => {
+  currentUser = user;
+  currentProfile = null;
+  if (user) {
+    try {
+      const snapshot = await getDoc(doc(db, 'users', user.uid));
+      if (snapshot.exists()) currentProfile = snapshot.data();
+    } catch (error) {
+      currentProfile = null;
+    }
+  }
+  if (createButton) createButton.hidden = !isAdmin();
+  await loadParticipations();
+  render();
+});

@@ -37,6 +37,17 @@ service cloud.firestore {
         && request.resource.data.bannerId in ['brasil', 'comando', 'noturna'];
     }
 
+    function validParticipation(userId, operationId) {
+      return owns(userId)
+        && request.resource.data.keys().hasOnly([
+          'operationId', 'title', 'startsAt', 'status', 'userId',
+          'displayName', 'joinedAt'
+        ])
+        && request.resource.data.operationId == operationId
+        && request.resource.data.userId == userId
+        && request.resource.data.status == 'confirmed';
+    }
+
     match /users/{userId} {
       allow create: if validNewMember(userId);
       allow read: if owns(userId) || isAdmin();
@@ -47,11 +58,23 @@ service cloud.firestore {
         allow read: if owns(userId) || isAdmin();
         allow create, update, delete: if isAdmin();
       }
+
+      match /participations/{operationId} {
+        allow read: if owns(userId) || isAdmin();
+        allow create: if validParticipation(userId, operationId);
+        allow update, delete: if isAdmin();
+      }
     }
 
     match /operations/{operationId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
+
+      match /participants/{userId} {
+        allow read: if owns(userId) || isAdmin();
+        allow create: if validParticipation(userId, operationId);
+        allow update, delete: if isAdmin();
+      }
     }
 
     match /{document=**} {

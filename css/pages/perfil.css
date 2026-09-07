@@ -32,7 +32,7 @@
 
 .member-dashboard {
   display: grid;
-  grid-template-columns: minmax(20rem, 26rem) minmax(4rem, 1fr) minmax(20rem, 25rem);
+  grid-template-columns: minmax(19rem, 24rem) minmax(13rem, 1fr) minmax(19rem, 23rem);
   align-items: start;
   gap: clamp(1rem, 2.2vw, 2.4rem);
 }
@@ -497,9 +497,59 @@
   text-transform: uppercase;
 }
 
-.member-future-space {
-  min-height: 1px;
+.member-operations-panel {
+  align-self: center;
+  margin-top: 3.4rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(7, 29, 37, 0.9), rgba(4, 15, 21, 0.94));
 }
+
+.member-operations-header {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid rgba(55, 167, 183, 0.3);
+  background: linear-gradient(90deg, rgba(9, 59, 68, 0.88), rgba(7, 38, 45, 0.72));
+}
+
+.member-operations-header span {
+  color: #86b6bd;
+  font: 0.56rem/1 Consolas, "Courier New", monospace;
+  letter-spacing: 0.08em;
+}
+
+.member-operations-header h2 {
+  margin-top: 0.2rem;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+}
+
+.member-operations-list {
+  max-height: 20rem;
+  display: grid;
+  gap: 0.4rem;
+  overflow-y: auto;
+  padding: 0.6rem;
+  scrollbar-color: #49b5c2 rgba(4, 18, 24, 0.75);
+  scrollbar-width: thin;
+}
+
+.member-operation-entry {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.7rem;
+  border: 1px solid rgba(55, 167, 183, 0.22);
+  color: #dceff2;
+  background: rgba(6, 36, 43, 0.68);
+}
+
+.member-operation-entry:hover,
+.member-operation-entry:focus-visible {
+  border-color: rgba(104, 210, 221, 0.65);
+  color: #fff;
+}
+
+.member-operation-entry strong { font-size: 0.72rem; }
+.member-operation-entry span { color: #64cbd5; font: 0.56rem/1.35 Consolas, monospace; }
+.member-operations-empty { min-height: 8rem; display: grid; place-items: center; color: #6d858d; font-size: 0.7rem; text-align: center; }
 
 .medals-panel {
   align-self: center;
@@ -613,6 +663,28 @@
   clip-path: polygon(0 0, calc(100% - 0.55rem) 0, 100% 0.55rem, 100% 100%, 0 100%);
 }
 
+.medal-entry.can-manage {
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+}
+
+.medal-remove {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(255, 92, 82, 0.5);
+  color: #ff746b;
+  background: rgba(92, 8, 8, 0.28);
+  font: 700 1.25rem/1 var(--font-display);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.medal-remove:hover,
+.medal-remove:focus-visible {
+  color: #fff;
+  border-color: #ff746b;
+  background: rgba(185, 25, 25, 0.55);
+}
+
 .medal-icon {
   width: 3rem;
   height: 3rem;
@@ -708,9 +780,8 @@
     margin: 0 auto -1.25rem;
   }
 
-  .member-future-space { display: none; }
-
   .identity-zone,
+  .member-operations-panel,
   .medals-panel {
     width: min(100%, 34rem);
     margin-inline: auto;
@@ -719,6 +790,8 @@
   .medals-panel {
     margin-top: 0;
   }
+
+  .member-operations-panel { margin-top: 0; }
 
   .medals-scroll {
     max-height: 25rem;
