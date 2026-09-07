@@ -48,6 +48,38 @@ service cloud.firestore {
         && request.resource.data.status == 'confirmed';
     }
 
+    function validPublicProfileCreate(userId) {
+      return owns(userId)
+        && request.resource.data.keys().hasOnly([
+          'displayName', 'rankId', 'avatarId', 'bannerId',
+          'featuredMedals', 'recentActivities', 'updatedAt'
+        ])
+        && request.resource.data.displayName == get(/databases/$(database)/documents/users/$(userId)).data.displayName
+        && request.resource.data.rankId == get(/databases/$(database)/documents/users/$(userId)).data.rankId
+        && request.resource.data.avatarId == get(/databases/$(database)/documents/users/$(userId)).data.avatarId
+        && request.resource.data.bannerId == get(/databases/$(database)/documents/users/$(userId)).data.bannerId
+        && request.resource.data.featuredMedals is list
+        && request.resource.data.featuredMedals.size() <= 5
+        && request.resource.data.recentActivities is list
+        && request.resource.data.recentActivities.size() <= 3;
+    }
+
+    function validPublicProfileUpdate(userId) {
+      return owns(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName', 'avatarId', 'bannerId', 'featuredMedals',
+          'recentActivities', 'updatedAt'
+        ])
+        && request.resource.data.displayName == get(/databases/$(database)/documents/users/$(userId)).data.displayName
+        && request.resource.data.rankId == get(/databases/$(database)/documents/users/$(userId)).data.rankId
+        && request.resource.data.avatarId == get(/databases/$(database)/documents/users/$(userId)).data.avatarId
+        && request.resource.data.bannerId == get(/databases/$(database)/documents/users/$(userId)).data.bannerId
+        && request.resource.data.featuredMedals is list
+        && request.resource.data.featuredMedals.size() <= 5
+        && request.resource.data.recentActivities is list
+        && request.resource.data.recentActivities.size() <= 3;
+    }
+
     match /users/{userId} {
       allow create: if validNewMember(userId);
       allow read: if owns(userId) || isAdmin();
@@ -80,6 +112,13 @@ service cloud.firestore {
     match /medalCatalog/{medalId} {
       allow read: if signedIn();
       allow create, update, delete: if isAdmin();
+    }
+
+    match /publicProfiles/{userId} {
+      allow read: if signedIn();
+      allow create: if isAdmin() || validPublicProfileCreate(userId);
+      allow update: if isAdmin() || validPublicProfileUpdate(userId);
+      allow delete: if isAdmin();
     }
 
     match /{document=**} {
