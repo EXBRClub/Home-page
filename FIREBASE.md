@@ -30,6 +30,24 @@ Todo perfil novo recebe `role: member` e `rankId: soldado`. O próprio usuário 
 
 Para definir o primeiro administrador, crie uma conta normalmente no portal, acesse o perfil e depois altere manualmente `users/{uid}.role` para `admin` no Firestore. Um usuário não consegue promover a própria conta pelo site.
 
+## Perfis públicos da Comunidade
+
+Documento: `publicProfiles/{uid}`
+
+```text
+displayName       nome público
+rankId            patente atual
+avatarId          template de soldado
+bannerId          tratamento da bandeira
+featuredMedals    até cinco medalhas em destaque
+recentActivities  até três operações recentes
+updatedAt         última sincronização
+```
+
+Essa coleção não armazena e-mail nem função administrativa. Usuários autenticados podem listar os perfis públicos e abrir `pages/perfil.html?uid={uid}`. Um membro comum recebe apenas os dados públicos, enquanto administradores continuam autorizados a consultar o documento privado e o histórico completo.
+
+O registro é sincronizado quando o membro abre seu Perfil ou a página Comunidade, altera avatar/bandeira ou confirma participação. A Área administrativa também cria e atualiza a identidade pública dos membros cadastrados.
+
 ## Medalhas
 
 Subcoleção: `users/{uid}/medals/{medalId}`
