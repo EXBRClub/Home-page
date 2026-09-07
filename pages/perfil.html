@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260907-7">
+  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260907-8">
 </head>
 <body class="member-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -178,6 +178,23 @@
     </div>
   </main>
 
+  <dialog class="medal-detail tactical-panel" data-medal-detail aria-labelledby="medal-detail-title">
+    <div class="medal-detail-header">
+      <div><span>REGISTRO // CONDECORAÇÃO</span><h2 id="medal-detail-title" data-medal-detail-name>Medalha EXBR</h2></div>
+      <button type="button" data-medal-detail-close aria-label="Fechar detalhes da medalha">×</button>
+    </div>
+    <div class="medal-detail-body">
+      <div class="medal-detail-visual"><img data-medal-detail-image src="../assets/icons/dock/recrutamento.png" alt=""></div>
+      <div class="medal-detail-copy">
+        <p data-medal-detail-description>Condecoração oficial da EXBR.</p>
+        <dl>
+          <div><dt>Operação</dt><dd data-medal-detail-operation>Operação EXBR</dd></div>
+          <div><dt>Recebida em</dt><dd data-medal-detail-date>Data não informada</dd></div>
+        </dl>
+      </div>
+    </div>
+  </dialog>
+
   <nav class="tactical-dock" aria-label="Atalhos táticos">
     <span class="dock-meta">© <span data-current-year>2026</span> EXBR</span>
     <div class="dock-menu">
@@ -192,6 +209,6 @@
   </nav>
 
   <script src="../js/main.js?v=20260907-2" defer></script>
-  <script src="../js/perfil.js?v=20260907-7" type="module"></script>
+  <script src="../js/perfil.js?v=20260907-8" type="module"></script>
 </body>
 </html>

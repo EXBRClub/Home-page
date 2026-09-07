@@ -44,6 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const medalsCount = document.querySelector('[data-medals-count]');
   const medalsLabel = document.querySelector('[data-medals-label]');
   const memberOperationsList = document.querySelector('[data-member-operations-list]');
+  const medalDetail = document.querySelector('[data-medal-detail]');
+  const medalDetailClose = document.querySelector('[data-medal-detail-close]');
+  const medalDetailName = document.querySelector('[data-medal-detail-name]');
+  const medalDetailImage = document.querySelector('[data-medal-detail-image]');
+  const medalDetailDescription = document.querySelector('[data-medal-detail-description]');
+  const medalDetailOperation = document.querySelector('[data-medal-detail-operation]');
+  const medalDetailDate = document.querySelector('[data-medal-detail-date]');
 
   if (!card || !avatarImage || !avatarClass) return;
 
@@ -58,6 +65,42 @@ document.addEventListener('DOMContentLoaded', () => {
   let ranks = new Map();
   let feedbackTimer = 0;
   let editVisibilityTimer = 0;
+
+  const medalDate = medal => medal.operationDate?.toDate?.().toLocaleDateString('pt-BR') || medal.operationDate || 'Data não informada';
+
+  const fillMedalDetail = (medal, definition = {}) => {
+    const name = definition.nome || medal.name || 'Medalha EXBR';
+    const description = definition.description || medal.description || 'Condecoração oficial concedida pela EXBR.';
+    if (medalDetailName) medalDetailName.textContent = name;
+    if (medalDetailDescription) medalDetailDescription.textContent = description;
+    if (medalDetailOperation) medalDetailOperation.textContent = medal.operationName || 'Operação EXBR';
+    if (medalDetailDate) medalDetailDate.textContent = medalDate(medal);
+    if (medalDetailImage) {
+      medalDetailImage.src = resolveMedalIcon(definition.iconUrl || medal.iconUrl);
+      medalDetailImage.alt = `Imagem ampliada da medalha ${name}`;
+    }
+  };
+
+  const openMedalDetail = async medal => {
+    if (!medalDetail) return;
+    fillMedalDetail(medal);
+    medalDetail.showModal();
+    if (!medal.catalogId) return;
+    try {
+      const snapshot = await getDoc(doc(db, 'medalCatalog', medal.catalogId));
+      if (snapshot.exists() && medalDetail.open) fillMedalDetail(medal, snapshot.data());
+    } catch (error) {
+      // Mantém os dados gravados na concessão quando o catálogo estiver indisponível.
+    }
+  };
+
+  medalDetailClose?.addEventListener('click', () => medalDetail?.close());
+  medalDetail?.addEventListener('click', event => {
+    if (event.target === medalDetail) medalDetail.close();
+  });
+  medalDetailImage?.addEventListener('error', () => {
+    if (!medalDetailImage.src.endsWith('/recrutamento.png')) medalDetailImage.src = defaultMedalIcon;
+  });
 
   const announce = (message, persistent = false) => {
     if (!feedback) return;
@@ -192,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     medals.forEach(medal => {
       const item = document.createElement('li');
       item.className = 'medal-entry';
-      const date = medal.operationDate?.toDate?.().toLocaleDateString('pt-BR') || medal.operationDate || 'Data não informada';
+      const date = medalDate(medal);
       const icon = document.createElement('span');
       icon.className = 'medal-icon';
       icon.setAttribute('aria-hidden', 'true');
@@ -211,7 +254,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const detail = document.createElement('small');
       detail.textContent = `${medal.operationName || 'Operação'} · ${date}`;
       copy.append(name, detail);
-      item.append(icon, copy);
+      const open = document.createElement('button');
+      open.className = 'medal-open';
+      open.type = 'button';
+      open.setAttribute('aria-label', `Ver detalhes de ${name.textContent}`);
+      open.append(icon, copy);
+      open.addEventListener('click', () => openMedalDetail(medal));
+      item.append(open);
 
       if (viewerProfile?.role === 'admin') {
         item.classList.add('can-manage');

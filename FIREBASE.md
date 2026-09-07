@@ -51,6 +51,8 @@ O catálogo inicial de segurança está em `data/medalhas.json`, mas o catálogo
 
 Todos os modelos usam `../assets/icons/dock/recrutamento.png` enquanto não houver um caminho ou URL terminado em `.png`. Se a imagem personalizada falhar ao carregar, a interface também retorna automaticamente ao ícone padrão. Cada concessão usa um documento automático, por isso o mesmo membro pode receber a mesma medalha em operações ou datas diferentes. O painel administrativo concede medalhas; a remoção é feita pelo administrador dentro do perfil consultado.
 
+Membros autenticados podem consultar os modelos do catálogo para abrir os detalhes atualizados de suas medalhas. A escrita no catálogo continua exclusiva para administradores. A janela de detalhes apresenta nome, imagem ampliada, descrição, operação e data da concessão.
+
 ## Operações
 
 Coleção: `operations/{operationId}`

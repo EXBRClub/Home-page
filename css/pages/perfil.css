@@ -653,10 +653,9 @@
 .medal-entry {
   min-height: 4.3rem;
   display: grid;
-  grid-template-columns: 3.25rem minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.45rem 0.7rem;
+  padding: 0;
   border: 1px solid rgba(55, 167, 183, 0.2);
   border-left-color: rgba(231, 189, 66, 0.66);
   background: linear-gradient(90deg, rgba(10, 49, 57, 0.8), rgba(4, 18, 24, 0.76));
@@ -664,7 +663,27 @@
 }
 
 .medal-entry.can-manage {
-  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.medal-open {
+  min-width: 0;
+  min-height: 4.2rem;
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0.7rem;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.medal-open:hover,
+.medal-open:focus-visible {
+  background: radial-gradient(circle at 25% 50%, rgba(50, 174, 188, 0.16), transparent 68%);
 }
 
 .medal-remove {
@@ -676,6 +695,7 @@
   font: 700 1.25rem/1 var(--font-display);
   cursor: pointer;
   transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+  margin-right: 0.65rem;
 }
 
 .medal-remove:hover,
@@ -724,6 +744,39 @@
   color: #6fd0d9;
   font: 0.62rem/1 Consolas, "Courier New", monospace;
   letter-spacing: 0.05em;
+}
+
+.medal-detail {
+  width: min(100% - 2rem, 42rem);
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(68, 184, 197, 0.58);
+  color: #eaf7fa;
+  background: rgba(4, 18, 24, 0.99);
+  box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.8), 0 0 2rem rgba(44, 157, 172, 0.16);
+}
+
+.medal-detail::backdrop { background: rgba(0, 7, 11, 0.78); backdrop-filter: blur(5px); }
+.medal-detail-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 1rem; border-bottom: 1px solid rgba(55, 167, 183, 0.35); background: linear-gradient(90deg, rgba(12, 82, 91, 0.94), rgba(6, 37, 44, 0.94)); }
+.medal-detail-header span { color: #7fb8c0; font: 0.62rem/1 Consolas, monospace; letter-spacing: 0.1em; }
+.medal-detail-header h2 { margin-top: 0.25rem; font-size: clamp(1.45rem, 5vw, 2rem); text-transform: uppercase; }
+.medal-detail-header button { width: 2.2rem; height: 2.2rem; border: 0; color: #a4d3d8; background: transparent; font-size: 1.8rem; cursor: pointer; }
+.medal-detail-body { display: grid; grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr); min-height: 20rem; }
+.medal-detail-visual { display: grid; place-items: center; padding: 1.3rem; border-right: 1px solid rgba(55, 167, 183, 0.24); background: radial-gradient(circle at center, rgba(29, 125, 137, 0.2), rgba(3, 14, 19, 0.86) 70%); }
+.medal-detail-visual img { width: min(100%, 13rem); height: min(48vw, 13rem); object-fit: contain; filter: drop-shadow(0 0 1.2rem rgba(72, 193, 205, 0.2)); }
+.medal-detail-copy { display: grid; align-content: center; gap: 1.4rem; padding: 1.5rem; }
+.medal-detail-copy > p { color: #bed0d4; font-size: 1rem; line-height: 1.65; }
+.medal-detail-copy dl { display: grid; gap: 0.8rem; }
+.medal-detail-copy dl div { padding-top: 0.7rem; border-top: 1px solid rgba(55, 167, 183, 0.2); }
+.medal-detail-copy dt { color: #668b92; font: 0.65rem/1.4 Consolas, monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+.medal-detail-copy dd { margin-top: 0.25rem; color: #72d2dc; font-size: 0.85rem; font-weight: 750; }
+
+@media (max-width: 34rem) {
+  .medal-detail-body { grid-template-columns: 1fr; }
+  .medal-detail-visual { min-height: 13rem; border-right: 0; border-bottom: 1px solid rgba(55, 167, 183, 0.24); }
+  .medal-detail-visual img { height: 10rem; }
+  .medal-detail-copy { padding: 1.1rem; }
 }
 
 .medal-slots {
