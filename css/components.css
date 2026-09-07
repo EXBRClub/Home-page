@@ -403,9 +403,7 @@
 }
 
 .dock-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  position: relative;
   z-index: 1;
   width: 3rem;
   height: 3rem;
@@ -416,7 +414,6 @@
   background-repeat: no-repeat;
   background-size: contain;
   filter: drop-shadow(0 0 0.2rem rgba(92, 218, 232, 0.26));
-  transform: translate(-50%, -50%);
   transform-origin: center;
   transition: filter var(--transition-fast), transform var(--transition-fast);
 }
@@ -452,7 +449,7 @@
 .dock-menu a:hover .dock-icon,
 .dock-menu a:focus-visible .dock-icon {
   filter: brightness(1.1) drop-shadow(0 0 0.35rem rgba(92, 218, 232, 0.55));
-  transform: translate(-50%, -50%) scale(1.04);
+  transform: scale(1.04);
 }
 
 .dock-menu a[aria-current="page"] .dock-icon {
