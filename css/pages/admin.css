@@ -128,6 +128,7 @@
 .medal-dialog {
   width: min(100% - 2rem, 34rem);
   max-height: min(88vh, 44rem);
+  margin: auto;
   padding: 0;
   overflow: hidden;
   border: 1px solid rgba(68, 184, 197, 0.52);
@@ -167,7 +168,7 @@
 .catalog-medal-actions button:hover, .catalog-medal-actions button:focus-visible { background: rgba(58, 153, 164, 0.12); }
 .catalog-medal button:disabled { opacity: 0.42; cursor: wait; }
 
-.medal-editor { width: min(100% - 2rem, 31rem); padding: 0; border: 1px solid rgba(68, 184, 197, 0.58); color: #eaf7fa; background: rgba(4, 18, 24, 0.99); box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.78), 0 0 2rem rgba(44, 157, 172, 0.14); }
+.medal-editor { width: min(100% - 2rem, 31rem); margin: auto; padding: 0; border: 1px solid rgba(68, 184, 197, 0.58); color: #eaf7fa; background: rgba(4, 18, 24, 0.99); box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.78), 0 0 2rem rgba(44, 157, 172, 0.14); }
 .medal-editor::backdrop { background: rgba(0, 7, 11, 0.68); backdrop-filter: blur(4px); }
 .medal-editor form { display: grid; }
 .medal-editor-fields { display: grid; gap: 0.8rem; padding: 1rem; }
