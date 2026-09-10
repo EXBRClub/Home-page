@@ -77,7 +77,7 @@ Coleção: `operations/{operationId}`
 
 A leitura pública está preparada; criação, edição e exclusão são restritas aos administradores.
 
-Campos atuais: `title`, `kicker`, `description`, `details`, `startsAt`, `status`, `imageUrl`, `medalName`, `medalEmoji` e `medalIconUrl`. Imagens e medalhas aceitam caminhos relativos ou URLs de PNG.
+Campos atuais: `title`, `kicker`, `description`, `details`, `startsAt`, `status`, `imageUrl`, `medalCatalogId`, `medalName`, `medalDescription` e `medalIconUrl`. O editor usa data e horário separados na interface e grava o resultado em `startsAt`. A medalha prevista é escolhida entre os modelos já existentes em `medalCatalog`.
 
 O registro de participação é duplicado em uma operação atômica para facilitar as duas consultas:
 
@@ -101,9 +101,11 @@ Rota protegida: `pages/admin.html`
 - dois cliques sobre um registro abrem o perfil consultado;
 - mudanças de patente são salvas automaticamente;
 - catálogo de medalhas pode ser criado e editado por administradores;
+- o catálogo possui uma aba própria no painel, sem exigir a abertura de um membro;
 - medalhas podem ser concedidas pela janela própria e removidas no perfil consultado;
+- a data da concessão pode ser escolhida livremente para registrar conquistas retroativas;
 - a mesma medalha pode ser concedida novamente em outra data ou operação;
-- operações podem ser criadas e editadas na página dedicada;
+- operações podem ser criadas e editadas na página dedicada com data, horário e medalha prevista;
 - somente o dono do perfil recebe os controles de avatar e bandeira.
 
 ## Evolução planejada
