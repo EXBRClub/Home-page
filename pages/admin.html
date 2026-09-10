@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/admin.css?v=20260907-3">
+  <link rel="stylesheet" href="../css/pages/admin.css?v=20260910-1">
 </head>
 <body class="admin-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -53,20 +53,40 @@
       <header class="admin-heading">
         <div>
           <p class="eyebrow"><span></span> Área administrativa</p>
-          <h1>Gestão de soldados</h1>
+          <h1 data-admin-title>Gestão de soldados</h1>
         </div>
         <button class="admin-logout" type="button" data-admin-logout>Sair</button>
       </header>
 
-      <label class="admin-search" for="soldier-search">
-        <span aria-hidden="true">⌕</span>
-        <input id="soldier-search" type="search" placeholder="Pesquisar soldado" autocomplete="off" data-soldier-search>
-      </label>
+      <div class="admin-tabs" role="tablist" aria-label="Setores administrativos">
+        <button type="button" role="tab" aria-selected="true" aria-controls="admin-soldiers-panel" data-admin-tab="soldiers">Soldados</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="admin-medals-panel" data-admin-tab="medals">Catálogo de medalhas</button>
+      </div>
 
-      <p class="admin-feedback" data-admin-feedback aria-live="polite">Validando permissão administrativa…</p>
+      <section class="admin-panel" id="admin-soldiers-panel" role="tabpanel" data-admin-panel="soldiers">
+        <label class="admin-search" for="soldier-search">
+          <span aria-hidden="true">⌕</span>
+          <input id="soldier-search" type="search" placeholder="Pesquisar soldado" autocomplete="off" data-soldier-search>
+        </label>
 
-      <section class="soldier-list" aria-label="Membros cadastrados" data-soldier-list>
-        <div class="admin-empty">Carregando registros de membros…</div>
+        <p class="admin-feedback" data-admin-feedback aria-live="polite">Validando permissão administrativa…</p>
+
+        <section class="soldier-list" aria-label="Membros cadastrados" data-soldier-list>
+          <div class="admin-empty">Carregando registros de membros…</div>
+        </section>
+      </section>
+
+      <section class="admin-panel admin-medals-panel" id="admin-medals-panel" role="tabpanel" data-admin-panel="medals" hidden>
+        <div class="admin-catalog-heading">
+          <div><span>CONDECORAÇÕES //</span><h2>Editor de medalhas</h2></div>
+          <button class="medal-create-button" type="button" data-admin-medal-create>Nova medalha</button>
+        </div>
+        <label class="medal-search admin-medal-search" for="admin-medal-search">
+          <span aria-hidden="true">⌕</span>
+          <input id="admin-medal-search" type="search" placeholder="Pesquisar medalhas" autocomplete="off" data-admin-medal-search>
+        </label>
+        <p class="medal-dialog-feedback" data-admin-medal-feedback aria-live="polite">Carregando catálogo de medalhas…</p>
+        <div class="medal-catalog admin-medal-catalog" data-admin-medal-catalog></div>
       </section>
     </div>
   </main>
@@ -82,7 +102,7 @@
     <p class="medal-target">Soldado: <strong data-medal-target>—</strong></p>
     <div class="medal-operation-fields">
       <label>Operação<input type="text" value="Operação EXBR" maxlength="60" data-medal-operation></label>
-      <label>Data<input type="date" data-medal-date></label>
+      <label>Data da conquista<input type="date" required data-medal-date></label>
     </div>
     <label class="medal-search"><span aria-hidden="true">⌕</span><input type="search" placeholder="Pesquisar medalhas" data-medal-search></label>
     <p class="medal-dialog-feedback" data-medal-feedback aria-live="polite">Selecione uma medalha para conceder. A remoção é feita no perfil.</p>
@@ -121,6 +141,6 @@
   </nav>
 
   <script src="../js/main.js?v=20260907-2" defer></script>
-  <script src="../js/admin.js?v=20260907-4" type="module"></script>
+  <script src="../js/admin.js?v=20260910-1" type="module"></script>
 </body>
 </html>
