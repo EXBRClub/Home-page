@@ -140,8 +140,11 @@
 .operations-empty { min-height: 18rem; display: grid; place-items: center; border: 1px solid rgba(55, 167, 183, 0.22); color: #708991; text-align: center; }
 
 .operation-editor {
+  position: fixed;
+  inset: 0;
   width: min(100% - 2rem, 44rem);
   max-height: 90vh;
+  margin: auto;
   padding: 0;
   overflow-y: auto;
   border: 1px solid rgba(68, 184, 197, 0.52);
@@ -158,8 +161,16 @@
 .operation-editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 1rem; }
 .operation-editor-grid label { min-width: 0; display: grid; gap: 0.35rem; color: #91b1b7; font-size: 0.67rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
 .operation-editor-grid .editor-wide { grid-column: 1 / -1; }
-.operation-editor-grid input, .operation-editor-grid textarea, .operation-editor-grid select { width: 100%; min-width: 0; padding: 0.65rem 0.75rem; border: 1px solid rgba(55, 167, 183, 0.3); outline: 0; color: #eaf8fa; background: rgba(2, 13, 18, 0.88); resize: vertical; }
+.operation-editor-grid input, .operation-editor-grid textarea, .operation-editor-grid select { width: 100%; min-width: 0; padding: 0.65rem 0.75rem; border: 1px solid rgba(55, 167, 183, 0.3); outline: 0; color: #eaf8fa; background: rgba(2, 13, 18, 0.88); color-scheme: dark; resize: vertical; }
+.operation-editor-grid input[type="date"], .operation-editor-grid input[type="time"], .operation-editor-grid select { min-height: 2.75rem; cursor: pointer; }
+.operation-editor-grid input::-webkit-calendar-picker-indicator { cursor: pointer; filter: brightness(1.7) saturate(0.8); }
 .operation-editor-grid input:focus, .operation-editor-grid textarea:focus, .operation-editor-grid select:focus { border-color: rgba(104, 210, 221, 0.82); }
+.operation-medal-preview { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); align-items: center; gap: 0.75rem; padding: 0.65rem; border: 1px solid rgba(225, 183, 52, 0.4); background: rgba(41, 32, 8, 0.42); }
+.operation-medal-preview[hidden] { display: none; }
+.operation-medal-preview img { width: 3.2rem; height: 3.2rem; object-fit: contain; border: 1px solid rgba(225, 183, 52, 0.45); background: rgba(4, 17, 21, 0.8); }
+.operation-medal-preview div { min-width: 0; display: grid; gap: 0.2rem; }
+.operation-medal-preview strong { color: #f3d467; font-size: 0.78rem; text-transform: uppercase; }
+.operation-medal-preview small { color: #8fa8ae; font-size: 0.72rem; line-height: 1.4; }
 .operation-editor-feedback { min-height: 1.2rem; margin: 0 1rem 0.6rem; color: #7e989f; font: 0.65rem/1.4 Consolas, monospace; }
 .operation-save-button { min-height: 2.8rem; margin: 0 1rem 1rem; border: 1px solid #8df27a; color: #fff; background: rgba(21, 63, 25, 0.4); font-size: 0.72rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
 
