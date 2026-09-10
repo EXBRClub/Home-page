@@ -31,6 +31,13 @@ const medalEditorForm = document.querySelector('[data-medal-editor-form]');
 const medalEditorTitle = document.querySelector('#medal-editor-title');
 const medalEditorClose = document.querySelector('[data-medal-editor-close]');
 const medalEditorFeedback = document.querySelector('[data-medal-editor-feedback]');
+const adminTabs = [...document.querySelectorAll('[data-admin-tab]')];
+const adminPanels = [...document.querySelectorAll('[data-admin-panel]')];
+const adminMedalSearch = document.querySelector('[data-admin-medal-search]');
+const adminMedalCatalog = document.querySelector('[data-admin-medal-catalog]');
+const adminMedalFeedback = document.querySelector('[data-admin-medal-feedback]');
+const adminMedalCreate = document.querySelector('[data-admin-medal-create]');
+const adminTitle = document.querySelector('[data-admin-title]');
 
 const defaultMedalIcon = '../assets/icons/dock/recrutamento.png';
 
@@ -55,6 +62,19 @@ const setMedalFeedback = (message, state = 'info') => {
   if (!medalFeedback) return;
   medalFeedback.textContent = message;
   medalFeedback.dataset.state = state;
+};
+
+const setAdminMedalFeedback = (message, state = 'info') => {
+  if (!adminMedalFeedback) return;
+  adminMedalFeedback.textContent = message;
+  adminMedalFeedback.dataset.state = state;
+};
+
+const localDateInputValue = (value = new Date()) => {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = number => String(number).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 };
 
 const rankName = rankId => ranks.find(rank => rank.id === rankId)?.nome || 'Soldado';
@@ -192,11 +212,18 @@ const renderUsers = () => {
   });
 };
 
-const renderMedals = () => {
-  if (!medalCatalog) return;
-  const term = medalSearch?.value.trim().toLocaleLowerCase('pt-BR') || '';
+const renderMedalList = (container, term = '', allowAward = false) => {
+  if (!container) return;
   const visibleMedals = medals.filter(medal => medal.nome.toLocaleLowerCase('pt-BR').includes(term));
-  medalCatalog.replaceChildren();
+  container.replaceChildren();
+
+  if (!visibleMedals.length) {
+    const empty = document.createElement('div');
+    empty.className = 'admin-empty';
+    empty.textContent = term ? 'Nenhuma medalha encontrada.' : 'Nenhuma medalha cadastrada.';
+    container.append(empty);
+    return;
+  }
 
   visibleMedals.forEach(medal => {
     const item = document.createElement('article');
@@ -229,16 +256,26 @@ const renderMedals = () => {
     edit.textContent = '✎';
     edit.setAttribute('aria-label', `Editar ${medal.nome}`);
     edit.addEventListener('click', () => openMedalEditor(medal));
-    const add = document.createElement('button');
-    add.className = 'catalog-medal-add';
-    add.type = 'button';
-    add.textContent = '+';
-    add.setAttribute('aria-label', `Conceder ${medal.nome}`);
-    add.addEventListener('click', () => addMedal(medal, add));
-    actions.append(edit, add);
+    actions.append(edit);
+    if (allowAward) {
+      const add = document.createElement('button');
+      add.className = 'catalog-medal-add';
+      add.type = 'button';
+      add.textContent = '+';
+      add.setAttribute('aria-label', `Conceder ${medal.nome}`);
+      add.addEventListener('click', () => addMedal(medal, add));
+      actions.append(add);
+    }
     item.append(icon, copy, actions);
-    medalCatalog.append(item);
+    container.append(item);
   });
+};
+
+const renderMedals = () => {
+  const awardTerm = medalSearch?.value.trim().toLocaleLowerCase('pt-BR') || '';
+  const adminTerm = adminMedalSearch?.value.trim().toLocaleLowerCase('pt-BR') || '';
+  renderMedalList(medalCatalog, awardTerm, true);
+  renderMedalList(adminMedalCatalog, adminTerm, false);
 };
 
 const addMedal = async (medal, button) => {
@@ -247,7 +284,7 @@ const addMedal = async (medal, button) => {
   setMedalFeedback(`Adicionando ${medal.nome}…`);
 
   try {
-    const dateValue = dateField?.value || new Date().toISOString().slice(0, 10);
+    const dateValue = dateField?.value || localDateInputValue();
     const operationDate = Timestamp.fromDate(new Date(`${dateValue}T12:00:00`));
     await addDoc(collection(db, 'users', selectedUser.id, 'medals'), {
       catalogId: medal.id,
@@ -320,6 +357,7 @@ const saveMedalDefinition = async event => {
     renderMedals();
     medalEditor.close();
     setMedalFeedback(`${definition.nome} salva no catálogo.`, 'success');
+    setAdminMedalFeedback(`${definition.nome} salva no catálogo.`, 'success');
   } catch (error) {
     medalEditorFeedback.textContent = 'Não foi possível salvar. Publique as novas regras do Firestore e tente novamente.';
     medalEditorFeedback.dataset.state = 'error';
@@ -363,7 +401,7 @@ const openMedalDialog = user => {
   if (medalTarget) medalTarget.textContent = user.displayName || user.email || 'Membro EXBR';
   if (medalSearch) medalSearch.value = '';
   if (operationField) operationField.value = 'Operação EXBR';
-  if (dateField) dateField.value = new Date().toISOString().slice(0, 10);
+  if (dateField) dateField.value = localDateInputValue();
   setMedalFeedback('Use + para conceder uma medalha. A remoção é feita no perfil do membro.');
   dialog.showModal();
   renderMedals();
@@ -384,12 +422,26 @@ const loadData = async () => {
   users.forEach(user => publicBatch.set(doc(db, 'publicProfiles', user.id), publicProfileData(user), { merge: true }));
   if (users.length) await publicBatch.commit();
   renderUsers();
+  renderMedals();
   setFeedback(`${users.length} membro${users.length === 1 ? '' : 's'} no registro. Duplo clique abre o perfil.`, 'success');
+  setAdminMedalFeedback(`${medals.length} ${medals.length === 1 ? 'medalha disponível' : 'medalhas disponíveis'} para edição.`, 'success');
 };
 
 search?.addEventListener('input', renderUsers);
 medalSearch?.addEventListener('input', renderMedals);
+adminMedalSearch?.addEventListener('input', renderMedals);
 medalCreate?.addEventListener('click', () => openMedalEditor());
+adminMedalCreate?.addEventListener('click', () => openMedalEditor());
+adminTabs.forEach(tab => tab.addEventListener('click', () => {
+  const target = tab.dataset.adminTab;
+  adminTabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
+  adminPanels.forEach(panel => { panel.hidden = panel.dataset.adminPanel !== target; });
+  if (adminTitle) adminTitle.textContent = target === 'medals' ? 'Gestão de medalhas' : 'Gestão de soldados';
+  if (target === 'medals') renderMedals();
+}));
+[...document.querySelectorAll('input[type="date"]')].forEach(field => field.addEventListener('click', () => {
+  try { field.showPicker?.(); } catch (error) { /* O campo continua editável quando showPicker não está disponível. */ }
+}));
 dialogClose?.addEventListener('click', () => dialog?.close());
 dialog?.addEventListener('click', event => {
   if (event.target === dialog) dialog.close();
