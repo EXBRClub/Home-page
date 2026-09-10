@@ -93,7 +93,8 @@ PAINEL ADMINISTRATIVO
 - Pesquisa de membros por nome, e-mail ou patente
 - Dois cliques em um membro abrem seu perfil
 - Alteração de patente com salvamento automático
-- Janela de medalhas com busca e concessão automática
+- Janela de medalhas com busca, data retroativa e concessão automática
+- Aba administrativa independente para criar e editar o catálogo de medalhas
 - Criação e edição de nome, descrição e ícone das medalhas
 - Catálogo persistente: medalCatalog/{medalId}
 - Ícone padrão para medalhas sem PNG válido: assets/icons/dock/recrutamento.png
@@ -132,7 +133,9 @@ OPERAÇÕES
 - Membro autenticado registra a própria participação
 - Participações aparecem no centro do perfil do membro
 - Administradores criam e editam operações pela página dedicada
-- PNGs de operação e de medalha configuráveis por caminho ou URL
+- Data e horário são escolhidos separadamente no editor
+- Medalha prevista é selecionada entre os modelos do catálogo existente
+- PNG da operação é configurável por caminho ou URL; o PNG da medalha vem do catálogo
 - Primeiro atalho inferior na guia leva ao setor da Home; após visitar a página dedicada, retorna diretamente a ela
 - Registros: users/{uid}/participations/{operationId} e operations/{operationId}/participants/{uid}
 
