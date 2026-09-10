@@ -19,6 +19,8 @@ const editorForm = document.querySelector('[data-operation-form]');
 const editorTitle = document.querySelector('#operation-editor-title');
 const editorClose = document.querySelector('[data-operation-close]');
 const editorFeedback = document.querySelector('[data-operation-editor-feedback]');
+const medalSelect = document.querySelector('[data-operation-medal-select]');
+const medalPreview = document.querySelector('[data-operation-medal-preview]');
 const fallbackImage = '../assets/icons/dock/operacoes.png';
 const fallbackMedalIcon = '../assets/icons/dock/recrutamento.png';
 const resolveMedalIcon = value => {
@@ -33,6 +35,7 @@ const resolveMedalIcon = value => {
 };
 
 let operations = [];
+let medalCatalog = [];
 let currentUser = null;
 let currentProfile = null;
 let appliedOperationIds = new Set();
@@ -49,6 +52,72 @@ const normalizeDate = value => {
   const date = value?.toDate?.() || new Date(value);
   if (Number.isNaN(date.getTime())) return 'Data e horário em definição';
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeStyle: 'short' }).format(date);
+};
+
+const localDateParts = (value = new Date()) => {
+  const date = value?.toDate?.() || (value instanceof Date ? value : new Date(value));
+  if (Number.isNaN(date.getTime())) return { date: '', time: '20:00' };
+  const pad = number => String(number).padStart(2, '0');
+  return {
+    date: `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`,
+    time: `${pad(date.getHours())}:${pad(date.getMinutes())}`
+  };
+};
+
+const selectedMedal = () => medalCatalog.find(medal => medal.id === medalSelect?.value);
+
+const updateMedalPreview = () => {
+  if (!medalPreview) return;
+  const medal = selectedMedal();
+  medalPreview.replaceChildren();
+  medalPreview.hidden = !medal;
+  if (!medal) return;
+  const image = document.createElement('img');
+  image.src = resolveMedalIcon(medal.iconUrl);
+  image.alt = '';
+  image.addEventListener('error', () => {
+    if (!image.src.endsWith('/recrutamento.png')) image.src = fallbackMedalIcon;
+  });
+  const copy = document.createElement('div');
+  const name = document.createElement('strong');
+  name.textContent = medal.nome;
+  const description = document.createElement('small');
+  description.textContent = medal.description || 'Condecoração oficial da EXBR.';
+  copy.append(name, description);
+  medalPreview.append(image, copy);
+};
+
+const renderMedalSelector = (catalogId = '', medalName = '') => {
+  if (!medalSelect) return;
+  medalSelect.replaceChildren();
+  const empty = document.createElement('option');
+  empty.value = '';
+  empty.textContent = 'Sem medalha prevista';
+  medalSelect.append(empty);
+  medalCatalog.forEach(medal => {
+    const option = document.createElement('option');
+    option.value = medal.id;
+    option.textContent = medal.nome;
+    medalSelect.append(option);
+  });
+  const matchingMedal = medalCatalog.find(medal => medal.id === catalogId)
+    || medalCatalog.find(medal => medal.nome === medalName);
+  medalSelect.value = matchingMedal?.id || '';
+  updateMedalPreview();
+};
+
+const loadOperationMedals = async () => {
+  const response = await fetch('../data/medalhas.json');
+  const data = await response.json();
+  const fallback = data.medalhas || [];
+  try {
+    const snapshot = await getDocs(collection(db, 'medalCatalog'));
+    medalCatalog = snapshot.empty ? fallback : snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+  } catch (error) {
+    medalCatalog = fallback;
+  }
+  medalCatalog.sort((first, second) => first.nome.localeCompare(second.nome, 'pt-BR'));
+  renderMedalSelector();
 };
 
 const createOperationCard = operation => {
@@ -241,14 +310,6 @@ const applyToOperation = async (operation, button) => {
   }
 };
 
-const dateInputValue = value => {
-  if (!value) return '';
-  const date = value?.toDate?.() || new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return offsetDate.toISOString().slice(0, 16);
-};
-
 const openEditor = (operation = null) => {
   if (!editor || !editorForm || !isAdmin()) return;
   editorForm.reset();
@@ -257,11 +318,12 @@ const openEditor = (operation = null) => {
   editorForm.elements.kicker.value = operation?.kicker || 'Coordenação';
   editorForm.elements.description.value = operation?.description || '';
   editorForm.elements.details.value = operation?.details || '';
-  editorForm.elements.startsAt.value = dateInputValue(operation?.startsAt);
+  const dateParts = localDateParts(operation?.startsAt || new Date());
+  editorForm.elements.operationDate.value = dateParts.date;
+  editorForm.elements.operationTime.value = dateParts.time || '20:00';
   editorForm.elements.status.value = operation?.status || 'open';
   editorForm.elements.imageUrl.value = operation?.imageUrl || '';
-  editorForm.elements.medalName.value = operation?.medalName || '';
-  editorForm.elements.medalIconUrl.value = operation?.medalIconUrl || '';
+  renderMedalSelector(operation?.medalCatalogId || '', operation?.medalName || '');
   if (editorTitle) editorTitle.textContent = operation ? 'Editar operação' : 'Nova operação';
   if (editorFeedback) editorFeedback.textContent = 'As alterações serão publicadas ao salvar.';
   editor.showModal();
@@ -272,17 +334,21 @@ const saveOperation = async event => {
   if (!editorForm || !isAdmin()) return;
   const submit = editorForm.querySelector('[type="submit"]');
   const id = editorForm.elements.operationId.value || doc(collection(db, 'operations')).id;
-  const startsAtValue = editorForm.elements.startsAt.value;
+  const operationDate = editorForm.elements.operationDate.value;
+  const operationTime = editorForm.elements.operationTime.value || '20:00';
+  const medal = selectedMedal();
   const operation = {
     title: editorForm.elements.title.value.trim(),
     kicker: editorForm.elements.kicker.value.trim(),
     description: editorForm.elements.description.value.trim(),
     details: editorForm.elements.details.value.trim(),
-    startsAt: startsAtValue ? Timestamp.fromDate(new Date(startsAtValue)) : null,
+    startsAt: Timestamp.fromDate(new Date(`${operationDate}T${operationTime}:00`)),
     status: editorForm.elements.status.value,
     imageUrl: editorForm.elements.imageUrl.value.trim(),
-    medalName: editorForm.elements.medalName.value.trim(),
-    medalIconUrl: editorForm.elements.medalIconUrl.value.trim(),
+    medalCatalogId: medal?.id || '',
+    medalName: medal?.nome || '',
+    medalDescription: medal?.description || '',
+    medalIconUrl: medal ? resolveMedalIcon(medal.iconUrl) : '',
     updatedAt: serverTimestamp()
   };
 
@@ -301,6 +367,10 @@ const saveOperation = async event => {
 };
 
 createButton?.addEventListener('click', () => openEditor());
+medalSelect?.addEventListener('change', updateMedalPreview);
+[...document.querySelectorAll('input[type="date"], input[type="time"]')].forEach(field => field.addEventListener('click', () => {
+  try { field.showPicker?.(); } catch (error) { /* Mantém a edição manual em navegadores sem showPicker. */ }
+}));
 editorClose?.addEventListener('click', () => editor?.close());
 editor?.addEventListener('click', event => { if (event.target === editor) editor.close(); });
 editorForm?.addEventListener('submit', saveOperation);
@@ -318,6 +388,7 @@ onAuthStateChanged(auth, async user => {
       currentProfile = null;
     }
   }
+  if (isAdmin()) await loadOperationMedals();
   if (createButton) createButton.hidden = !isAdmin();
   await loadParticipations();
   render();
