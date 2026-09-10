@@ -42,6 +42,50 @@
   cursor: pointer;
 }
 
+.admin-tabs {
+  width: min(100%, 46rem);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0 auto 1rem;
+  border: 1px solid rgba(55, 167, 183, 0.34);
+  background: rgba(2, 14, 19, 0.9);
+}
+
+.admin-tabs button {
+  min-height: 2.9rem;
+  padding: 0.55rem 0.8rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #77959c;
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-tabs button + button { border-left: 1px solid rgba(55, 167, 183, 0.22); }
+.admin-tabs button[aria-selected="true"] { border-bottom-color: #55c5d1; color: #eafafd; background: radial-gradient(circle at center, rgba(52, 163, 176, 0.2), transparent 74%); }
+.admin-tabs button:focus-visible { outline: 1px solid #79dce5; outline-offset: -3px; }
+.admin-panel[hidden] { display: none; }
+
+.admin-catalog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(55, 167, 183, 0.3);
+  background: linear-gradient(90deg, rgba(10, 70, 79, 0.82), rgba(4, 25, 31, 0.88));
+}
+.admin-catalog-heading span { color: #7fb8c0; font: 0.7rem/1 Consolas, monospace; letter-spacing: 0.1em; }
+.admin-catalog-heading h2 { margin-top: 0.2rem; font-size: 1.45rem; text-transform: uppercase; }
+.admin-catalog-heading .medal-create-button { min-width: 9rem; }
+.admin-medal-search { width: min(100%, 46rem); margin: 0 auto; }
+.admin-medal-catalog { max-height: min(56vh, 38rem); padding-top: 0.5rem; }
+
 .admin-search,
 .medal-search {
   display: grid;
@@ -142,14 +186,16 @@
 .medal-dialog-header h2 { margin-top: 0.15rem; font-size: 1.6rem; text-transform: uppercase; }
 .medal-dialog-actions { display: flex; align-items: center; gap: 0.55rem; }
 .medal-dialog-header .medal-dialog-close { width: 2rem; height: 2rem; border: 0; color: #a4d3d8; background: transparent; font-size: 1.8rem; cursor: pointer; }
-.medal-dialog-header .medal-create-button { min-width: 7rem; min-height: 2.35rem; padding: 0.45rem 0.8rem; border: 1px solid #8df27a; color: #fff; background: radial-gradient(circle at center, rgba(94, 218, 75, 0.18), rgba(4, 20, 20, 0.88) 76%); font-size: 0.7rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; clip-path: polygon(0.45rem 0, 100% 0, 100% calc(100% - 0.45rem), calc(100% - 0.45rem) 100%, 0 100%, 0 0.45rem); }
-.medal-dialog-header .medal-create-button:hover, .medal-dialog-header .medal-create-button:focus-visible { background: radial-gradient(circle at center, rgba(95, 238, 72, 0.34), rgba(4, 20, 20, 0.9) 78%); }
+.medal-dialog-header .medal-create-button, .admin-catalog-heading .medal-create-button { min-width: 7rem; min-height: 2.35rem; padding: 0.45rem 0.8rem; border: 1px solid #8df27a; color: #fff; background: radial-gradient(circle at center, rgba(94, 218, 75, 0.18), rgba(4, 20, 20, 0.88) 76%); font-size: 0.7rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; clip-path: polygon(0.45rem 0, 100% 0, 100% calc(100% - 0.45rem), calc(100% - 0.45rem) 100%, 0 100%, 0 0.45rem); }
+.medal-dialog-header .medal-create-button:hover, .medal-dialog-header .medal-create-button:focus-visible, .admin-catalog-heading .medal-create-button:hover, .admin-catalog-heading .medal-create-button:focus-visible { background: radial-gradient(circle at center, rgba(95, 238, 72, 0.34), rgba(4, 20, 20, 0.9) 78%); }
 .medal-target { padding: 0.75rem 1rem 0; color: #78939a; font-size: 0.72rem; }
 .medal-target strong { color: #dceff2; }
 
 .medal-operation-fields { display: grid; grid-template-columns: 1.4fr 1fr; gap: 0.55rem; padding: 0.75rem 1rem; }
 .medal-operation-fields label { display: grid; gap: 0.3rem; color: #8eb1b7; font-size: 0.64rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
-.medal-operation-fields input { min-width: 0; min-height: 2.5rem; padding: 0.5rem 0.65rem; border: 1px solid rgba(55, 167, 183, 0.3); outline: 0; color: #e9f8fa; background: rgba(2, 13, 18, 0.88); }
+.medal-operation-fields input { min-width: 0; min-height: 2.5rem; padding: 0.5rem 0.65rem; border: 1px solid rgba(55, 167, 183, 0.3); outline: 0; color: #e9f8fa; background: rgba(2, 13, 18, 0.88); color-scheme: dark; }
+.medal-operation-fields input[type="date"] { cursor: pointer; }
+.medal-operation-fields input::-webkit-calendar-picker-indicator { cursor: pointer; filter: brightness(1.7) saturate(0.8); }
 .medal-search { margin: 0 1rem; grid-template-columns: 2.8rem 1fr; }
 .medal-search input { min-height: 2.8rem; }
 .medal-dialog-feedback { min-height: 1.2rem; margin: 0.55rem 1rem; color: #718b92; font: 0.62rem/1.4 Consolas, monospace; }
@@ -193,4 +239,8 @@
   .soldier-row { grid-template-columns: 3.6rem minmax(0, 1fr); padding: 0.55rem; }
   .soldier-row img { width: 3.5rem; height: 3.8rem; }
   .medal-operation-fields { grid-template-columns: 1fr; }
+  .admin-tabs { grid-template-columns: 1fr; }
+  .admin-tabs button + button { border-left: 0; border-top: 1px solid rgba(55, 167, 183, 0.22); }
+  .admin-catalog-heading { align-items: stretch; flex-direction: column; }
+  .admin-catalog-heading .medal-create-button { width: 100%; }
 }
