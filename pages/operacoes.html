@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/operacoes.css?v=20260907-1">
+  <link rel="stylesheet" href="../css/pages/operacoes.css?v=20260910-1">
 </head>
 <body class="operations-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -72,11 +72,12 @@
         <label>Tipo / coordenação<input name="kicker" type="text" maxlength="32" value="Coordenação" required></label>
         <label class="editor-wide">Descrição<textarea name="description" maxlength="220" rows="3" required></textarea></label>
         <label class="editor-wide">Informações completas<textarea name="details" maxlength="600" rows="5" required></textarea></label>
-        <label>Data e horário<input name="startsAt" type="datetime-local"></label>
+        <label>Data da operação<input name="operationDate" type="date" required></label>
+        <label>Horário<input name="operationTime" type="time" value="20:00" required></label>
         <label>Status<select name="status"><option value="open">Inscrições abertas</option><option value="closed">Inscrições encerradas</option><option value="archived">Arquivada</option></select></label>
         <label class="editor-wide">Imagem PNG — caminho ou URL<input name="imageUrl" type="text" maxlength="300" placeholder="../assets/operations/imagem.png"></label>
-        <label>Medalha prevista<input name="medalName" type="text" maxlength="60" placeholder="Operação Osprey"></label>
-        <label>PNG da medalha — caminho ou URL<input name="medalIconUrl" type="text" maxlength="300" placeholder="../assets/medals/operacao-osprey.png"></label>
+        <label class="editor-wide">Medalha prevista<select name="medalCatalogId" data-operation-medal-select><option value="">Sem medalha prevista</option></select></label>
+        <div class="operation-medal-preview editor-wide" data-operation-medal-preview hidden></div>
       </div>
       <p class="operation-editor-feedback" data-operation-editor-feedback aria-live="polite"></p>
       <button class="operation-save-button" type="submit">Salvar operação</button>
@@ -98,6 +99,6 @@
 
   <script src="../js/main.js?v=20260907-2" defer></script>
   <script src="../js/session-ui.js?v=20260907-2" type="module"></script>
-  <script src="../js/operations-page.js?v=20260907-4" type="module"></script>
+  <script src="../js/operations-page.js?v=20260910-1" type="module"></script>
 </body>
 </html>
