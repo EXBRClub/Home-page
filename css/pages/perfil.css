@@ -318,6 +318,33 @@
   mix-blend-mode: screen;
 }
 
+.member-faction-marker,
+.member-class-marker {
+  position: absolute;
+  z-index: 5;
+  width: 3.25rem;
+  min-height: 3.25rem;
+  display: grid;
+  place-items: center;
+  gap: 0.05rem;
+  padding: 0.28rem;
+  border: 1px solid rgba(91, 200, 212, 0.34);
+  color: #66868d;
+  background: rgba(3, 20, 26, 0.82);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 1rem rgba(55, 178, 191, 0.08);
+  clip-path: polygon(0.4rem 0, 100% 0, 100% calc(100% - 0.4rem), calc(100% - 0.4rem) 100%, 0 100%, 0 0.4rem);
+}
+
+.member-faction-marker { top: 5.3rem; right: 0.85rem; }
+.member-class-marker { left: 0.85rem; bottom: 0.85rem; }
+.member-faction-marker[data-active="true"],
+.member-class-marker[data-active="true"] { border-color: rgba(231, 189, 66, 0.68); color: #ffe16b; background: rgba(41, 33, 11, 0.78); }
+.member-faction-marker span,
+.member-class-marker span { font-size: 1.25rem; line-height: 1; text-shadow: 0 0 0.7rem currentColor; }
+.member-faction-marker small,
+.member-class-marker small { color: #8bb0b7; font: 0.48rem/1 Consolas, monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+
 .profile-edit-toggle {
   position: absolute;
   right: 0.85rem;
@@ -407,7 +434,8 @@
 }
 
 .avatar-options,
-.banner-options {
+.banner-options,
+.symbol-options {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.35rem;
@@ -422,6 +450,36 @@
   cursor: pointer;
   transition: border-color 180ms ease, color 180ms ease, background 180ms ease, transform 180ms ease;
 }
+
+.symbol-options { grid-template-columns: repeat(6, minmax(2.45rem, 1fr)); }
+.faction-options { grid-template-columns: repeat(4, minmax(2.8rem, 1fr)); }
+.symbol-options button {
+  min-height: 2.7rem;
+  border: 1px solid rgba(55, 167, 183, 0.24);
+  color: #75a6ad;
+  background: rgba(7, 31, 38, 0.75);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.symbol-options button:hover,
+.symbol-options button:focus-visible,
+.symbol-options button[aria-pressed="true"] { border-color: #e7bd42; color: #ffdf63; background: radial-gradient(circle, rgba(226, 176, 44, 0.28), rgba(21, 28, 25, 0.86) 72%); box-shadow: inset 0 0 0.85rem rgba(241, 198, 62, 0.13); }
+
+.biography-editor textarea {
+  width: 100%;
+  min-height: 6rem;
+  padding: 0.7rem;
+  resize: vertical;
+  border: 1px solid rgba(55, 167, 183, 0.3);
+  outline: 0;
+  color: #dceff2;
+  background: rgba(2, 14, 19, 0.84);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.biography-editor textarea:focus { border-color: rgba(104, 210, 221, 0.8); }
+.biography-editor button { min-height: 2.5rem; border: 1px solid rgba(104, 210, 221, 0.5); color: #dff8fb; background: rgba(5, 37, 44, 0.8); font-size: 0.7rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.biography-editor button:hover, .biography-editor button:focus-visible { border-color: #e7bd42; color: #fff2a2; }
 
 .avatar-options button {
   height: 3.4rem;
@@ -497,9 +555,33 @@
   text-transform: uppercase;
 }
 
-.member-operations-panel {
+.member-center-stack {
   align-self: center;
   margin-top: 3.4rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.member-bio-monitor {
+  position: relative;
+  isolation: isolate;
+  min-height: 11rem;
+  padding: 0.85rem 1rem 1rem;
+  overflow: hidden;
+  background: linear-gradient(150deg, rgba(6, 37, 44, 0.94), rgba(2, 14, 20, 0.97));
+}
+.member-bio-monitor::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0.32; background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(84, 205, 216, 0.08) 4px); animation: monitor-drift 8s linear infinite; }
+.member-bio-monitor::after { content: "SIGNAL 72%"; position: absolute; right: 0.7rem; bottom: 0.5rem; color: rgba(104, 210, 221, 0.35); font: 0.5rem/1 Consolas, monospace; letter-spacing: 0.08em; }
+.member-bio-monitor header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: #70afb7; font: 0.56rem/1 Consolas, monospace; letter-spacing: 0.1em; }
+.member-bio-monitor header i { width: 0.42rem; height: 0.42rem; border-radius: 50%; background: #65d7e2; box-shadow: 0 0 0.65rem #65d7e2; animation: signal-fault 3.8s steps(1) infinite; }
+.member-bio-monitor h2 { margin-top: 0.55rem; color: #e8f8fa; font-size: 1rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.member-bio-monitor p { margin-top: 0.8rem; color: #a9c3c8; font: 1rem/1.6 Consolas, "Courier New", monospace; text-wrap: pretty; text-shadow: 0.025rem 0 rgba(77, 224, 233, 0.28), -0.025rem 0 rgba(255, 120, 93, 0.16); animation: text-fault 7s steps(1) infinite; }
+
+@keyframes text-fault { 0%, 91%, 94%, 100% { transform: translate(0); filter: none; } 92% { transform: translateX(0.055rem); filter: blur(0.01rem); } 93% { transform: translateX(-0.04rem); } }
+@keyframes signal-fault { 0%, 83%, 87%, 100% { opacity: 1; } 84%, 86% { opacity: 0.15; } }
+@keyframes monitor-drift { to { background-position: 0 2rem; } }
+
+.member-operations-panel {
   overflow: hidden;
   background: linear-gradient(180deg, rgba(7, 29, 37, 0.9), rgba(4, 15, 21, 0.94));
 }
@@ -835,7 +917,7 @@
   }
 
   .identity-zone,
-  .member-operations-panel,
+  .member-center-stack,
   .medals-panel {
     width: min(100%, 34rem);
     margin-inline: auto;
@@ -845,7 +927,7 @@
     margin-top: 0;
   }
 
-  .member-operations-panel { margin-top: 0; }
+  .member-center-stack { margin-top: 0; }
 
   .medals-scroll {
     max-height: 25rem;
@@ -909,6 +991,9 @@
   .banner-options button {
     font-size: 0.56rem;
   }
+
+  .symbol-options { grid-template-columns: repeat(3, 1fr); }
+  .faction-options { grid-template-columns: repeat(4, 1fr); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -917,4 +1002,8 @@
   .identity-scan {
     animation: none !important;
   }
+
+  .member-bio-monitor::before,
+  .member-bio-monitor header i,
+  .member-bio-monitor p { animation: none !important; }
 }
