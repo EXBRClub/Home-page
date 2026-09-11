@@ -27,12 +27,12 @@ Home-page
 │   ├── base.css               ← Tokens, tipografia e base visual
 │   ├── components.css         ← Navegação, botões, painéis e rodapé
 │   └── pages/
-│       ├── admin.css          ← Lista de membros, patentes e janela de medalhas
-│       ├── comunidade.css     ← Lista pública de membros e atividade
+│       ├── admin.css          ← Membros, medalhas e gestão da galeria
+│       ├── comunidade.css     ← Membros, perfis e galeria externa
 │       ├── home.css           ← Layout exclusivo da Home
 │       ├── login.css          ← Layout exclusivo do Login
 │       ├── operacoes.css      ← Lista e editor das operações
-│       └── perfil.css         ← Painel do membro, avatar e medalhas
+│       └── perfil.css         ← Avatar, transmissão pessoal, preferências e medalhas
 │
 ├── data/
 │   ├── medalhas.json          ← Catálogo inicial de condecorações
@@ -47,8 +47,9 @@ Home-page
 │   └── perfil.html            ← Perfil autenticado do membro
 │
 └── js/
-    ├── admin.js               ← Busca, patentes e medalhas administrativas
-    ├── comunidade.js          ← Busca, perfis públicos e atividade recente
+    ├── admin.js               ← Busca, patentes, medalhas e galeria administrativa
+    ├── community-media.js     ← Validação e exibição segura de mídia externa
+    ├── comunidade.js          ← Perfis públicos, preferências, atividade e galeria
     ├── firebase-client.js     ← Inicialização do Firebase
     ├── home-operations.js     ← Resumo das operações exibido na Home
     ├── login.js               ← Entrada, cadastro, sessão e redefinição de senha
@@ -80,7 +81,7 @@ PERFIS E PERMISSÕES
 
 - users/{uid}: dados do perfil, patente e função
 - role: member | admin
-- Membro altera somente nome, avatar e bandeira
+- Membro altera nome, avatar, bandeira, biografia, classe e facção favoritas
 - Somente administradores atribuem patentes e medalhas
 - Medalhas: users/{uid}/medals/{medalId}
 - Regras versionadas em firestore.rules
@@ -104,6 +105,10 @@ PAINEL ADMINISTRATIVO
 - Catálogo preparado para substituir emojis por iconUrl PNG
 - Botão Editar perfil visível somente ao dono após clicar no avatar
 - Controles de edição voltam a ficar ocultos após 30 segundos sem atividade
+- Classe favorita aparece no canto inferior esquerdo do avatar
+- Facção favorita aparece no canto superior direito abaixo do nome
+- Biografia aparece em um monitor tático com falhas visuais discretas
+- Aba administrativa da Galeria publica imagens e vídeos somente por URL HTTPS
 
 COMPONENTE TÁTICO INFERIOR
 
@@ -142,8 +147,10 @@ OPERAÇÕES
 COMUNIDADE
 
 - pages/comunidade.html: área protegida para membros autenticados
-- Pesquisa por nome ou patente
-- Avatar, patente, atividade recente e até cinco medalhas em destaque
+- Abas Membros e Galeria
+- Pesquisa por nome, patente, classe ou facção
+- Avatar, patente, biografia, preferências, atividade recente e até cinco medalhas em destaque
+- Galeria de imagens, vídeos diretos, YouTube e Vimeo hospedados externamente
 - Botão Ver perfil abre pages/perfil.html?uid={uid}
 - Membros comuns veem somente publicProfiles/{uid}
 - E-mails, papéis administrativos e dados privados não são expostos
