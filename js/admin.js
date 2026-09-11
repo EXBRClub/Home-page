@@ -3,6 +3,7 @@ import {
   Timestamp,
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -13,6 +14,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
 import { applyMedalImage, defaultMedalIcon, isValidPngUrl, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
+import { createMediaElement, normalizeExternalUrl } from './community-media.js?v=20260911-1';
 
 const list = document.querySelector('[data-soldier-list]');
 const search = document.querySelector('[data-soldier-search]');
@@ -39,6 +41,9 @@ const adminMedalCatalog = document.querySelector('[data-admin-medal-catalog]');
 const adminMedalFeedback = document.querySelector('[data-admin-medal-feedback]');
 const adminMedalCreate = document.querySelector('[data-admin-medal-create]');
 const adminTitle = document.querySelector('[data-admin-title]');
+const galleryForm = document.querySelector('[data-gallery-form]');
+const galleryAdminList = document.querySelector('[data-gallery-admin-list]');
+const galleryAdminFeedback = document.querySelector('[data-gallery-admin-feedback]');
 
 const avatarSources = {
   assalto: '../assets/profile/avatars/assalto.webp',
@@ -50,6 +55,8 @@ let users = [];
 let ranks = [];
 let medals = [];
 let selectedUser = null;
+let galleryItems = [];
+let currentAdmin = null;
 
 const setFeedback = (message, state = 'info') => {
   if (!feedback) return;
@@ -83,6 +90,9 @@ const publicProfileData = user => ({
   rankId: user.rankId || 'soldado',
   avatarId: user.avatarId || 'assalto',
   bannerId: user.bannerId || 'brasil',
+  bio: user.bio || '',
+  favoriteClass: user.favoriteClass || '',
+  favoriteFaction: user.favoriteFaction || '',
   updatedAt: serverTimestamp()
 });
 
@@ -265,6 +275,92 @@ const renderMedals = () => {
   renderMedalList(adminMedalCatalog, adminTerm, false);
 };
 
+const setGalleryFeedback = (message, state = 'info') => {
+  if (!galleryAdminFeedback) return;
+  galleryAdminFeedback.textContent = message;
+  galleryAdminFeedback.dataset.state = state;
+};
+
+const renderGalleryAdmin = () => {
+  if (!galleryAdminList) return;
+  galleryAdminList.replaceChildren();
+  if (!galleryItems.length) {
+    const empty = document.createElement('div');
+    empty.className = 'admin-empty';
+    empty.textContent = 'Nenhum registro visual publicado.';
+    galleryAdminList.append(empty);
+    return;
+  }
+  galleryItems.forEach(item => {
+    const card = document.createElement('article');
+    card.className = 'gallery-admin-item';
+    const visual = document.createElement('div');
+    visual.className = 'gallery-admin-visual';
+    const media = createMediaElement(item);
+    if (media) visual.append(media);
+    const copy = document.createElement('div');
+    const title = document.createElement('strong');
+    title.textContent = item.title || 'Registro da comunidade';
+    const url = document.createElement('a');
+    url.href = item.url;
+    url.target = '_blank';
+    url.rel = 'noopener noreferrer';
+    url.textContent = item.type === 'video' ? 'Abrir vídeo externo' : 'Abrir imagem externa';
+    copy.append(title, url);
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = 'Remover';
+    remove.addEventListener('click', async () => {
+      if (!window.confirm(`Remover ${title.textContent} da galeria?`)) return;
+      remove.disabled = true;
+      try {
+        await deleteDoc(doc(db, 'communityGallery', item.id));
+        galleryItems = galleryItems.filter(entry => entry.id !== item.id);
+        renderGalleryAdmin();
+        setGalleryFeedback('Registro removido da galeria.', 'success');
+      } catch (error) {
+        remove.disabled = false;
+        setGalleryFeedback('Não foi possível remover o registro.', 'error');
+      }
+    });
+    card.append(visual, copy, remove);
+    galleryAdminList.append(card);
+  });
+};
+
+const saveGalleryItem = async event => {
+  event.preventDefault();
+  if (!galleryForm || !currentAdmin) return;
+  const submit = galleryForm.querySelector('[type="submit"]');
+  const url = normalizeExternalUrl(galleryForm.elements.url.value);
+  if (!url) {
+    setGalleryFeedback('Informe uma URL HTTPS válida.', 'error');
+    return;
+  }
+  submit.disabled = true;
+  setGalleryFeedback('Publicando registro visual…');
+  const item = {
+    type: galleryForm.elements.type.value === 'video' ? 'video' : 'image',
+    url,
+    title: galleryForm.elements.title.value.trim(),
+    description: galleryForm.elements.description.value.trim(),
+    createdBy: currentAdmin.uid,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  };
+  try {
+    const reference = await addDoc(collection(db, 'communityGallery'), item);
+    galleryItems.unshift({ id: reference.id, ...item, createdAt: null, updatedAt: null });
+    galleryForm.reset();
+    renderGalleryAdmin();
+    setGalleryFeedback('Registro publicado na Galeria EXBR.', 'success');
+  } catch (error) {
+    setGalleryFeedback('Não foi possível publicar. Verifique as regras do Firestore.', 'error');
+  } finally {
+    submit.disabled = false;
+  }
+};
+
 const addMedal = async (medal, button) => {
   if (!selectedUser) return;
   button.disabled = true;
@@ -395,21 +491,26 @@ const openMedalDialog = user => {
 };
 
 const loadData = async () => {
-  const [rankResponse, medalDefinitions, usersSnapshot] = await Promise.all([
+  const [rankResponse, medalDefinitions, usersSnapshot, gallerySnapshot] = await Promise.all([
     fetch('../data/patentes.json'),
     loadMedalCatalog(),
-    getDocs(collection(db, 'users'))
+    getDocs(collection(db, 'users')),
+    getDocs(collection(db, 'communityGallery')).catch(() => null)
   ]);
   const rankData = await rankResponse.json();
   ranks = [...rankData.patentes].sort((a, b) => a.ordem - b.ordem);
   medals = medalDefinitions.sort((first, second) => first.nome.localeCompare(second.nome, 'pt-BR'));
   users = usersSnapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+  galleryItems = gallerySnapshot
+    ? gallerySnapshot.docs.map(item => ({ id: item.id, ...item.data() })).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+    : [];
   users.sort((a, b) => (a.displayName || a.email || '').localeCompare(b.displayName || b.email || '', 'pt-BR'));
   const publicBatch = writeBatch(db);
   users.forEach(user => publicBatch.set(doc(db, 'publicProfiles', user.id), publicProfileData(user), { merge: true }));
   if (users.length) await publicBatch.commit();
   renderUsers();
   renderMedals();
+  renderGalleryAdmin();
   setFeedback(`${users.length} membro${users.length === 1 ? '' : 's'} no registro. Duplo clique abre o perfil.`, 'success');
   setAdminMedalFeedback(`${medals.length} ${medals.length === 1 ? 'medalha disponível' : 'medalhas disponíveis'} para edição.`, 'success');
 };
@@ -423,9 +524,10 @@ adminTabs.forEach(tab => tab.addEventListener('click', () => {
   const target = tab.dataset.adminTab;
   adminTabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
   adminPanels.forEach(panel => { panel.hidden = panel.dataset.adminPanel !== target; });
-  if (adminTitle) adminTitle.textContent = target === 'medals' ? 'Gestão de medalhas' : 'Gestão de soldados';
+  if (adminTitle) adminTitle.textContent = target === 'medals' ? 'Gestão de medalhas' : target === 'gallery' ? 'Gestão da galeria' : 'Gestão de soldados';
   if (target === 'medals') renderMedals();
 }));
+galleryForm?.addEventListener('submit', saveGalleryItem);
 [...document.querySelectorAll('input[type="date"]')].forEach(field => field.addEventListener('click', () => {
   try { field.showPicker?.(); } catch (error) { /* O campo continua editável quando showPicker não está disponível. */ }
 }));
@@ -456,6 +558,7 @@ onAuthStateChanged(auth, async user => {
       window.location.replace('perfil.html');
       return;
     }
+    currentAdmin = user;
     await loadData();
   } catch (error) {
     setFeedback('Não foi possível abrir o painel administrativo.', 'error');
