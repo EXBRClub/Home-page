@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const medalsList = document.querySelector('[data-medals-list]');
   const medalsCount = document.querySelector('[data-medals-count]');
   const medalsLabel = document.querySelector('[data-medals-label]');
+  const featuredHint = document.querySelector('[data-featured-hint]');
+  const featuredCount = document.querySelector('[data-featured-count]');
   const memberOperationsList = document.querySelector('[data-member-operations-list]');
   const medalDetail = document.querySelector('[data-medal-detail]');
   const medalDetailClose = document.querySelector('[data-medal-detail-close]');
@@ -63,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let isOwner = false;
   let ranks = new Map();
   let medalDefinitions = new Map();
+  let currentMedals = [];
+  let needsFeaturedMigration = false;
   let feedbackTimer = 0;
   let editVisibilityTimer = 0;
 
@@ -115,6 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
     startsAt: participation.startsAt || null,
     joinedAt: participation.joinedAt || null
   });
+
+  const featuredMedalsFrom = medals => {
+    const ids = currentProfile?.featuredMedalIds || [];
+    const byId = new Map(medals.map(medal => [medal.id, medal]));
+    return ids.map(id => byId.get(id)).filter(Boolean).slice(0, 5);
+  };
+
+  const refreshFeaturedCount = () => {
+    if (featuredCount) featuredCount.textContent = `${Math.min(currentProfile?.featuredMedalIds?.length || 0, 5)}/5`;
+  };
 
   const fillMedalDetail = (medal, definition = {}) => {
     const name = definition.nome || medal.name || 'Medalha EXBR';
@@ -314,6 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const renderMedals = medals => {
     if (!medalsList || !medalsCount) return;
+    currentMedals = medals;
     medalsList.replaceChildren();
     medalsCount.textContent = String(medals.length).padStart(2, '0');
     if (medalsLabel) medalsLabel.textContent = medals.length ? 'Registro oficial' : 'Aguardando condecorações';
@@ -352,6 +367,44 @@ document.addEventListener('DOMContentLoaded', () => {
       open.addEventListener('click', () => openMedalDetail(medal));
       item.append(open);
 
+      if (isOwner) {
+        item.classList.add('can-feature');
+        const highlighted = currentProfile?.featuredMedalIds?.includes(medal.id) || false;
+        const feature = document.createElement('button');
+        feature.className = 'medal-feature';
+        feature.type = 'button';
+        feature.textContent = highlighted ? '★' : '☆';
+        feature.dataset.selected = String(highlighted);
+        feature.setAttribute('aria-pressed', String(highlighted));
+        feature.setAttribute('aria-label', `${highlighted ? 'Remover' : 'Adicionar'} ${name.textContent} ${highlighted ? 'dos' : 'aos'} destaques`);
+        feature.addEventListener('click', async () => {
+          const ids = [...(currentProfile.featuredMedalIds || [])];
+          const index = ids.indexOf(medal.id);
+          if (index < 0 && ids.length >= 5) {
+            announce('Você já escolheu cinco medalhas. Remova uma para trocar.', true);
+            return;
+          }
+          if (index >= 0) ids.splice(index, 1);
+          else ids.push(medal.id);
+          feature.disabled = true;
+          try {
+            await updateDoc(doc(db, 'users', currentProfileUid), { featuredMedalIds: ids, updatedAt: serverTimestamp() });
+            currentProfile.featuredMedalIds = ids;
+            await setDoc(doc(db, 'publicProfiles', currentProfileUid), {
+              featuredMedals: featuredMedalsFrom(currentMedals).map(publicMedal),
+              updatedAt: serverTimestamp()
+            }, { merge: true });
+            refreshFeaturedCount();
+            renderMedals(currentMedals);
+            announce(index >= 0 ? 'Medalha removida dos destaques.' : 'Medalha adicionada aos destaques.');
+          } catch (error) {
+            feature.disabled = false;
+            announce('Não foi possível atualizar os destaques.', true);
+          }
+        });
+        item.append(feature);
+      }
+
       if (viewerProfile?.role === 'admin') {
         item.classList.add('can-manage');
         const remove = document.createElement('button');
@@ -365,8 +418,14 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             await deleteDoc(doc(db, 'users', currentProfileUid, 'medals', medal.id));
             const remainingMedals = await loadMedals(currentProfileUid);
+            const featuredIds = (currentProfile.featuredMedalIds || []).filter(id => id !== medal.id);
+            if (featuredIds.length !== (currentProfile.featuredMedalIds || []).length) {
+              await updateDoc(doc(db, 'users', currentProfileUid), { featuredMedalIds: featuredIds, updatedAt: serverTimestamp() });
+              currentProfile.featuredMedalIds = featuredIds;
+              refreshFeaturedCount();
+            }
             await setDoc(doc(db, 'publicProfiles', currentProfileUid), {
-              featuredMedals: remainingMedals.slice(0, 5).map(publicMedal),
+              featuredMedals: featuredMedalsFrom(remainingMedals).map(publicMedal),
               updatedAt: serverTimestamp()
             }, { merge: true });
             announce(`${name.textContent} removida do perfil.`);
@@ -443,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
       bio: currentProfile.bio || '',
       favoriteClass: currentProfile.favoriteClass || '',
       favoriteFaction: currentProfile.favoriteFaction || '',
-      featuredMedals: medals.slice(0, 5).map(publicMedal),
+      featuredMedals: featuredMedalsFrom(medals).map(publicMedal),
       recentActivities: participations.slice(0, 3).map(publicActivity),
       updatedAt: serverTimestamp()
     }, { merge: true });
@@ -454,13 +513,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const snapshot = await getDoc(reference);
     if (snapshot.exists()) {
       const stored = snapshot.data();
-      const profile = { bio: '', favoriteClass: '', favoriteFaction: '', ...stored };
-      if (!Object.hasOwn(stored, 'bio') || !Object.hasOwn(stored, 'favoriteClass') || !Object.hasOwn(stored, 'favoriteFaction')) {
+      needsFeaturedMigration = !Object.hasOwn(stored, 'featuredMedalIds');
+      const profile = { bio: '', favoriteClass: '', favoriteFaction: '', featuredMedalIds: [], ...stored };
+      if (!Object.hasOwn(stored, 'bio') || !Object.hasOwn(stored, 'favoriteClass') || !Object.hasOwn(stored, 'favoriteFaction') || needsFeaturedMigration) {
         try {
           await updateDoc(reference, {
             bio: profile.bio,
             favoriteClass: profile.favoriteClass,
             favoriteFaction: profile.favoriteFaction,
+            featuredMedalIds: profile.featuredMedalIds,
             updatedAt: serverTimestamp()
           });
         } catch (error) {
@@ -480,13 +541,14 @@ document.addEventListener('DOMContentLoaded', () => {
       bio: '',
       favoriteClass: '',
       favoriteFaction: '',
+      featuredMedalIds: [],
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
     try {
       await setDoc(reference, profile);
     } catch (error) {
-      const { bio, favoriteClass, favoriteFaction, ...legacyProfile } = profile;
+      const { bio, favoriteClass, favoriteFaction, featuredMedalIds, ...legacyProfile } = profile;
       await setDoc(reference, legacyProfile);
     }
     return { ...profile, createdAt: null, updatedAt: null };
@@ -504,6 +566,8 @@ document.addEventListener('DOMContentLoaded', () => {
       memberRole.dataset.role = role;
     }
     if (memberStatus) memberStatus.textContent = isOwner ? 'Perfil ativo' : 'Registro consultado';
+    if (featuredHint) featuredHint.hidden = !isOwner;
+    refreshFeaturedCount();
     document.body.dataset.userRole = viewerProfile?.role === 'admin' ? 'admin' : 'member';
     applyAvatar(avatars.get(profile.avatarId) || avatarOptions[0], false);
     applyBanner(banners.get(profile.bannerId) || bannerOptions[0]);
@@ -564,6 +628,17 @@ document.addEventListener('DOMContentLoaded', () => {
           renderParticipations(currentProfile.recentActivities || []);
         } else {
           const [medals, participations] = await Promise.all([loadMedals(currentProfileUid), loadParticipations(currentProfileUid)]);
+          if (isOwner && needsFeaturedMigration) {
+            const initialHighlights = medals.slice(0, 5).map(medal => medal.id);
+            currentProfile.featuredMedalIds = initialHighlights;
+            try {
+              await updateDoc(doc(db, 'users', currentProfileUid), { featuredMedalIds: initialHighlights, updatedAt: serverTimestamp() });
+              needsFeaturedMigration = false;
+              renderMedals(medals);
+            } catch (error) {
+              // A seleção continuará disponível após a publicação das regras novas.
+            }
+          }
           if (isOwner) {
             try { await syncPublicProfile(medals, participations); } catch (error) { /* Perfil privado continua disponível. */ }
           }
