@@ -21,6 +21,7 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly([
           'email', 'displayName', 'role', 'rankId', 'avatarId', 'bannerId',
           'bio', 'favoriteClass', 'favoriteFaction',
+          'featuredMedalIds',
           'createdAt', 'updatedAt'
         ])
         && request.resource.data.email == request.auth.token.email
@@ -31,19 +32,23 @@ service cloud.firestore {
         && request.resource.data.bio is string
         && request.resource.data.bio.size() <= 220
         && request.resource.data.favoriteClass in ['', 'infiltrador', 'assalto-leve', 'medico', 'engenheiro', 'assalto-pesado', 'max']
-        && request.resource.data.favoriteFaction in ['', 'tr', 'nc', 'vs', 'nso'];
+        && request.resource.data.favoriteFaction in ['', 'tr', 'nc', 'vs', 'nso']
+        && request.resource.data.featuredMedalIds is list
+        && request.resource.data.featuredMedalIds.size() <= 5;
     }
 
     function validMemberProfileUpdate(userId) {
       return owns(userId)
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['displayName', 'avatarId', 'bannerId', 'bio', 'favoriteClass', 'favoriteFaction', 'updatedAt'])
+          .hasOnly(['displayName', 'avatarId', 'bannerId', 'bio', 'favoriteClass', 'favoriteFaction', 'featuredMedalIds', 'updatedAt'])
         && request.resource.data.avatarId in ['assalto', 'pesado', 'reconhecimento']
         && request.resource.data.bannerId in ['brasil', 'comando', 'noturna']
         && request.resource.data.bio is string
         && request.resource.data.bio.size() <= 220
         && request.resource.data.favoriteClass in ['', 'infiltrador', 'assalto-leve', 'medico', 'engenheiro', 'assalto-pesado', 'max']
-        && request.resource.data.favoriteFaction in ['', 'tr', 'nc', 'vs', 'nso'];
+        && request.resource.data.favoriteFaction in ['', 'tr', 'nc', 'vs', 'nso']
+        && request.resource.data.featuredMedalIds is list
+        && request.resource.data.featuredMedalIds.size() <= 5;
     }
 
     function validParticipation(userId, operationId) {
@@ -96,6 +101,26 @@ service cloud.firestore {
         && request.resource.data.recentActivities.size() <= 3;
     }
 
+    function validGalleryCreate() {
+      return signedIn()
+        && request.resource.data.keys().hasOnly([
+          'type', 'url', 'title', 'description', 'createdBy', 'authorName',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.type in ['image', 'video']
+        && request.resource.data.url is string
+        && request.resource.data.url.matches('https://.*')
+        && request.resource.data.url.size() <= 500
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 80
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 220
+        && request.resource.data.authorName is string
+        && request.resource.data.authorName.size() <= 80;
+    }
+
     match /users/{userId} {
       allow create: if validNewMember(userId);
       allow read: if owns(userId) || isAdmin();
@@ -139,7 +164,9 @@ service cloud.firestore {
 
     match /communityGallery/{itemId} {
       allow read: if signedIn();
-      allow create, update, delete: if isAdmin();
+      allow create: if validGalleryCreate();
+      allow update: if isAdmin();
+      allow delete: if isAdmin() || (signedIn() && resource.data.createdBy == request.auth.uid);
     }
 
     match /{document=**} {
