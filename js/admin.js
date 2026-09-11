@@ -12,6 +12,7 @@ import {
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
+import { applyMedalImage, defaultMedalIcon, isValidPngUrl, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 
 const list = document.querySelector('[data-soldier-list]');
 const search = document.querySelector('[data-soldier-search]');
@@ -38,8 +39,6 @@ const adminMedalCatalog = document.querySelector('[data-admin-medal-catalog]');
 const adminMedalFeedback = document.querySelector('[data-admin-medal-feedback]');
 const adminMedalCreate = document.querySelector('[data-admin-medal-create]');
 const adminTitle = document.querySelector('[data-admin-title]');
-
-const defaultMedalIcon = '../assets/icons/dock/recrutamento.png';
 
 const avatarSources = {
   assalto: '../assets/profile/avatars/assalto.webp',
@@ -79,17 +78,6 @@ const localDateInputValue = (value = new Date()) => {
 
 const rankName = rankId => ranks.find(rank => rank.id === rankId)?.nome || 'Soldado';
 
-const isValidPngUrl = value => {
-  if (!value?.trim()) return false;
-  try {
-    return new URL(value.trim(), window.location.href).pathname.toLocaleLowerCase().endsWith('.png');
-  } catch (error) {
-    return false;
-  }
-};
-
-const resolveMedalIcon = value => isValidPngUrl(value) ? value.trim() : defaultMedalIcon;
-
 const publicProfileData = user => ({
   displayName: user.displayName || user.email?.split('@')[0] || 'Membro EXBR',
   rankId: user.rankId || 'soldado',
@@ -98,14 +86,17 @@ const publicProfileData = user => ({
   updatedAt: serverTimestamp()
 });
 
-const publicMedal = medal => ({
-  catalogId: medal.catalogId || '',
-  name: medal.name || 'Medalha EXBR',
-  description: medal.description || '',
-  operationName: medal.operationName || 'Operação EXBR',
-  operationDate: medal.operationDate || null,
-  iconUrl: resolveMedalIcon(medal.iconUrl)
-});
+const publicMedal = medal => {
+  const definition = medals.find(item => item.id === medal.catalogId);
+  return {
+    catalogId: medal.catalogId || '',
+    name: definition?.nome || medal.name || 'Medalha EXBR',
+    description: definition?.description || medal.description || '',
+    operationName: medal.operationName || 'Operação EXBR',
+    operationDate: medal.operationDate || null,
+    iconUrl: normalizeMedalIcon(definition?.iconUrl || medal.iconUrl)
+  };
+};
 
 const syncPublicMedals = async userId => {
   const snapshot = await getDocs(collection(db, 'users', userId, 'medals'));
@@ -233,11 +224,7 @@ const renderMedalList = (container, term = '', allowAward = false) => {
     icon.className = 'catalog-medal-icon';
     icon.setAttribute('aria-hidden', 'true');
     const image = document.createElement('img');
-    image.src = resolveMedalIcon(medal.iconUrl);
-    image.alt = '';
-    image.addEventListener('error', () => {
-      if (!image.src.endsWith('/recrutamento.png')) image.src = defaultMedalIcon;
-    });
+    applyMedalImage(image, medal.iconUrl);
     icon.append(image);
 
     const copy = document.createElement('span');
@@ -292,7 +279,7 @@ const addMedal = async (medal, button) => {
       description: medal.description || '',
       operationName: operationField?.value.trim() || medal.operationName || 'Operação EXBR',
       operationDate,
-      iconUrl: resolveMedalIcon(medal.iconUrl),
+      iconUrl: normalizeMedalIcon(medal.iconUrl),
       awardedAt: serverTimestamp()
     });
     try {
@@ -314,7 +301,7 @@ const openMedalEditor = (medal = null) => {
   medalEditorForm.elements.medalId.value = medal?.id || '';
   medalEditorForm.elements.name.value = medal?.nome || '';
   medalEditorForm.elements.description.value = medal?.description || '';
-  medalEditorForm.elements.iconUrl.value = medal?.iconUrl === defaultMedalIcon ? '' : (medal?.iconUrl || '');
+  medalEditorForm.elements.iconUrl.value = normalizeMedalIcon(medal?.iconUrl) === defaultMedalIcon ? '' : (medal?.iconUrl || '');
   if (medalEditorTitle) medalEditorTitle.textContent = medal ? 'Editar medalha' : 'Nova medalha';
   if (medalEditorFeedback) {
     medalEditorFeedback.textContent = medal ? 'Altere os dados e salve o catálogo.' : 'Cadastre uma nova condecoração para a EXBR.';
@@ -339,7 +326,7 @@ const saveMedalDefinition = async event => {
   const definition = {
     nome: medalEditorForm.elements.name.value.trim(),
     description: medalEditorForm.elements.description.value.trim(),
-    iconUrl: resolveMedalIcon(iconUrlInput),
+    iconUrl: normalizeMedalIcon(iconUrlInput),
     updatedAt: serverTimestamp()
   };
   if (!existingId) definition.createdAt = serverTimestamp();
@@ -369,7 +356,7 @@ const saveMedalDefinition = async event => {
 const loadMedalCatalog = async () => {
   const response = await fetch('../data/medalhas.json');
   const data = await response.json();
-  const defaults = data.medalhas.map(medal => ({ ...medal, iconUrl: resolveMedalIcon(medal.iconUrl) }));
+  const defaults = data.medalhas.map(medal => ({ ...medal, iconUrl: normalizeMedalIcon(medal.iconUrl) }));
   let snapshot;
   try {
     snapshot = await getDocs(collection(db, 'medalCatalog'));
