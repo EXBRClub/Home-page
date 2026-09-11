@@ -7,7 +7,7 @@ Projeto: `exbr-0709`
 - Método inicial: e-mail e senha.
 - Os próprios membros podem criar suas contas no portal.
 - O cadastro atual solicita um código temporário de seis dígitos: `070922`.
-- O primeiro acesso cria automaticamente o perfil padrão no Firestore.
+- O cadastro cria imediatamente o perfil padrão no Firestore. A página de Perfil mantém uma rotina de reparo para contas antigas sem documento em `users/{uid}`.
 
 O código atual é apenas uma etapa funcional provisória da interface. Como ele está no JavaScript público do site, não deve ser considerado uma barreira de segurança. A versão definitiva deverá validar códigos únicos no servidor por uma Cloud Function ou outro backend confiável, sem expor a regra de validação no navegador.
 
