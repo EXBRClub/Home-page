@@ -109,11 +109,18 @@ const publicMedal = medal => {
 };
 
 const syncPublicMedals = async userId => {
-  const snapshot = await getDocs(collection(db, 'users', userId, 'medals'));
-  const featuredMedals = snapshot.docs.map(item => ({ id: item.id, ...item.data() }))
-    .sort((a, b) => (b.operationDate?.seconds || 0) - (a.operationDate?.seconds || 0))
-    .slice(0, 5)
-    .map(publicMedal);
+  const [snapshot, profileSnapshot] = await Promise.all([
+    getDocs(collection(db, 'users', userId, 'medals')),
+    getDoc(doc(db, 'users', userId))
+  ]);
+  const allMedals = snapshot.docs.map(item => ({ id: item.id, ...item.data() }))
+    .sort((a, b) => (b.operationDate?.seconds || 0) - (a.operationDate?.seconds || 0));
+  const profile = profileSnapshot.data() || {};
+  const byId = new Map(allMedals.map(medal => [medal.id, medal]));
+  const selected = Object.hasOwn(profile, 'featuredMedalIds')
+    ? (profile.featuredMedalIds || []).map(id => byId.get(id)).filter(Boolean)
+    : allMedals.slice(0, 5);
+  const featuredMedals = selected.slice(0, 5).map(publicMedal);
   await setDoc(doc(db, 'publicProfiles', userId), { featuredMedals, updatedAt: serverTimestamp() }, { merge: true });
 };
 
@@ -345,6 +352,7 @@ const saveGalleryItem = async event => {
     title: galleryForm.elements.title.value.trim(),
     description: galleryForm.elements.description.value.trim(),
     createdBy: currentAdmin.uid,
+    authorName: currentAdmin.displayName || 'Administração EXBR',
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   };
