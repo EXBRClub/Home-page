@@ -20,21 +20,30 @@ service cloud.firestore {
       return owns(userId)
         && request.resource.data.keys().hasOnly([
           'email', 'displayName', 'role', 'rankId', 'avatarId', 'bannerId',
+          'bio', 'favoriteClass', 'favoriteFaction',
           'createdAt', 'updatedAt'
         ])
         && request.resource.data.email == request.auth.token.email
         && request.resource.data.role == 'member'
         && request.resource.data.rankId == 'soldado'
         && request.resource.data.avatarId in ['assalto', 'pesado', 'reconhecimento']
-        && request.resource.data.bannerId in ['brasil', 'comando', 'noturna'];
+        && request.resource.data.bannerId in ['brasil', 'comando', 'noturna']
+        && request.resource.data.bio is string
+        && request.resource.data.bio.size() <= 220
+        && request.resource.data.favoriteClass in ['', 'infiltrador', 'assalto-leve', 'medico', 'engenheiro', 'assalto-pesado', 'max']
+        && request.resource.data.favoriteFaction in ['', 'tr', 'nc', 'vs', 'nso'];
     }
 
     function validMemberProfileUpdate(userId) {
       return owns(userId)
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['displayName', 'avatarId', 'bannerId', 'updatedAt'])
+          .hasOnly(['displayName', 'avatarId', 'bannerId', 'bio', 'favoriteClass', 'favoriteFaction', 'updatedAt'])
         && request.resource.data.avatarId in ['assalto', 'pesado', 'reconhecimento']
-        && request.resource.data.bannerId in ['brasil', 'comando', 'noturna'];
+        && request.resource.data.bannerId in ['brasil', 'comando', 'noturna']
+        && request.resource.data.bio is string
+        && request.resource.data.bio.size() <= 220
+        && request.resource.data.favoriteClass in ['', 'infiltrador', 'assalto-leve', 'medico', 'engenheiro', 'assalto-pesado', 'max']
+        && request.resource.data.favoriteFaction in ['', 'tr', 'nc', 'vs', 'nso'];
     }
 
     function validParticipation(userId, operationId) {
@@ -52,12 +61,16 @@ service cloud.firestore {
       return owns(userId)
         && request.resource.data.keys().hasOnly([
           'displayName', 'rankId', 'avatarId', 'bannerId',
+          'bio', 'favoriteClass', 'favoriteFaction',
           'featuredMedals', 'recentActivities', 'updatedAt'
         ])
         && request.resource.data.displayName == get(/databases/$(database)/documents/users/$(userId)).data.displayName
         && request.resource.data.rankId == get(/databases/$(database)/documents/users/$(userId)).data.rankId
         && request.resource.data.avatarId == get(/databases/$(database)/documents/users/$(userId)).data.avatarId
         && request.resource.data.bannerId == get(/databases/$(database)/documents/users/$(userId)).data.bannerId
+        && request.resource.data.bio == get(/databases/$(database)/documents/users/$(userId)).data.bio
+        && request.resource.data.favoriteClass == get(/databases/$(database)/documents/users/$(userId)).data.favoriteClass
+        && request.resource.data.favoriteFaction == get(/databases/$(database)/documents/users/$(userId)).data.favoriteFaction
         && request.resource.data.featuredMedals is list
         && request.resource.data.featuredMedals.size() <= 5
         && request.resource.data.recentActivities is list
@@ -67,13 +80,16 @@ service cloud.firestore {
     function validPublicProfileUpdate(userId) {
       return owns(userId)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'displayName', 'avatarId', 'bannerId', 'featuredMedals',
+          'displayName', 'avatarId', 'bannerId', 'bio', 'favoriteClass', 'favoriteFaction', 'featuredMedals',
           'recentActivities', 'updatedAt'
         ])
         && request.resource.data.displayName == get(/databases/$(database)/documents/users/$(userId)).data.displayName
         && request.resource.data.rankId == get(/databases/$(database)/documents/users/$(userId)).data.rankId
         && request.resource.data.avatarId == get(/databases/$(database)/documents/users/$(userId)).data.avatarId
         && request.resource.data.bannerId == get(/databases/$(database)/documents/users/$(userId)).data.bannerId
+        && request.resource.data.bio == get(/databases/$(database)/documents/users/$(userId)).data.bio
+        && request.resource.data.favoriteClass == get(/databases/$(database)/documents/users/$(userId)).data.favoriteClass
+        && request.resource.data.favoriteFaction == get(/databases/$(database)/documents/users/$(userId)).data.favoriteFaction
         && request.resource.data.featuredMedals is list
         && request.resource.data.featuredMedals.size() <= 5
         && request.resource.data.recentActivities is list
@@ -119,6 +135,11 @@ service cloud.firestore {
       allow create: if isAdmin() || validPublicProfileCreate(userId);
       allow update: if isAdmin() || validPublicProfileUpdate(userId);
       allow delete: if isAdmin();
+    }
+
+    match /communityGallery/{itemId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
     }
 
     match /{document=**} {
