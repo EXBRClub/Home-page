@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="EXBR">
 
   <title>Área administrativa | EXBR</title>
-  <meta name="description" content="Painel administrativo de membros, patentes e medalhas da Outfit EXBR.">
+  <meta name="description" content="Painel administrativo de membros, patentes, medalhas e galeria da Outfit EXBR.">
   <meta name="robots" content="noindex, nofollow">
   <link rel="canonical" href="https://exbrclub.github.io/Home-page/pages/admin.html">
   <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/admin.css?v=20260910-1">
+  <link rel="stylesheet" href="../css/pages/admin.css?v=20260911-2">
 </head>
 <body class="admin-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -61,6 +61,7 @@
       <div class="admin-tabs" role="tablist" aria-label="Setores administrativos">
         <button type="button" role="tab" aria-selected="true" aria-controls="admin-soldiers-panel" data-admin-tab="soldiers">Soldados</button>
         <button type="button" role="tab" aria-selected="false" aria-controls="admin-medals-panel" data-admin-tab="medals">Catálogo de medalhas</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="admin-gallery-panel" data-admin-tab="gallery">Galeria</button>
       </div>
 
       <section class="admin-panel" id="admin-soldiers-panel" role="tabpanel" data-admin-panel="soldiers">
@@ -87,6 +88,29 @@
         </label>
         <p class="medal-dialog-feedback" data-admin-medal-feedback aria-live="polite">Carregando catálogo de medalhas…</p>
         <div class="medal-catalog admin-medal-catalog" data-admin-medal-catalog></div>
+      </section>
+
+      <section class="admin-panel admin-gallery-panel" id="admin-gallery-panel" role="tabpanel" data-admin-panel="gallery" hidden>
+        <div class="admin-catalog-heading">
+          <div><span>ARQUIVO VISUAL //</span><h2>Editor da galeria</h2></div>
+        </div>
+        <form class="gallery-admin-form" data-gallery-form>
+          <label>Tipo
+            <select name="type" required><option value="image">Imagem</option><option value="video">Vídeo</option></select>
+          </label>
+          <label class="gallery-url-field">URL HTTPS
+            <input name="url" type="url" inputmode="url" maxlength="500" placeholder="https://..." required>
+          </label>
+          <label>Título
+            <input name="title" type="text" maxlength="80" required>
+          </label>
+          <label>Descrição
+            <textarea name="description" maxlength="220" rows="3"></textarea>
+          </label>
+          <button type="submit">Publicar na galeria</button>
+        </form>
+        <p class="admin-feedback" data-gallery-admin-feedback aria-live="polite">Somente o endereço externo será salvo. O arquivo não será enviado ao site.</p>
+        <div class="gallery-admin-list" data-gallery-admin-list><div class="admin-empty">Carregando galeria…</div></div>
       </section>
     </div>
   </main>
@@ -141,6 +165,6 @@
   </nav>
 
   <script src="../js/main.js?v=20260907-2" defer></script>
-  <script src="../js/admin.js?v=20260911-1" type="module"></script>
+  <script src="../js/admin.js?v=20260911-2" type="module"></script>
 </body>
 </html>
