@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="EXBR">
 
   <title>Área do membro | EXBR</title>
-  <meta name="description" content="Perfil demonstrativo de membros da Outfit EXBR em PlanetSide 2.">
+  <meta name="description" content="Perfil de membros da Outfit EXBR com patente, preferências, operações e condecorações.">
   <meta name="robots" content="noindex, nofollow">
   <link rel="canonical" href="https://exbrclub.github.io/Home-page/pages/perfil.html">
   <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260907-8">
+  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260911-2">
 </head>
 <body class="member-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -93,6 +93,13 @@
 
           <img class="member-avatar" data-member-avatar src="../assets/profile/avatars/assalto.webp" alt="Avatar selecionado: soldado da classe Assalto" role="button" tabindex="0" aria-label="Mostrar opções de edição do perfil">
 
+          <div class="member-faction-marker" data-favorite-faction title="Facção favorita não definida">
+            <span aria-hidden="true">◇</span><small>Facção</small>
+          </div>
+          <div class="member-class-marker" data-favorite-class title="Classe favorita não definida">
+            <span aria-hidden="true">◇</span><small>Classe</small>
+          </div>
+
           <div class="identity-scan" aria-hidden="true"></div>
 
           <button class="profile-edit-toggle" type="button" data-profile-edit-toggle aria-expanded="false" aria-controls="profile-customizer" hidden>
@@ -135,19 +142,56 @@
             </div>
           </div>
 
+          <div class="customizer-group">
+            <div class="customizer-heading"><strong>Classe favorita</strong><span>Ícones temporários</span></div>
+            <div class="symbol-options" role="group" aria-label="Classe favorita em PlanetSide 2">
+              <button type="button" data-class-option="infiltrador" data-symbol="◇" aria-label="Infiltrador" title="Infiltrador" aria-pressed="false">◇</button>
+              <button type="button" data-class-option="assalto-leve" data-symbol="△" aria-label="Assalto leve" title="Assalto leve" aria-pressed="false">△</button>
+              <button type="button" data-class-option="medico" data-symbol="✚" aria-label="Médico de combate" title="Médico de combate" aria-pressed="false">✚</button>
+              <button type="button" data-class-option="engenheiro" data-symbol="⚙" aria-label="Engenheiro" title="Engenheiro" aria-pressed="false">⚙</button>
+              <button type="button" data-class-option="assalto-pesado" data-symbol="⬡" aria-label="Assalto pesado" title="Assalto pesado" aria-pressed="false">⬡</button>
+              <button type="button" data-class-option="max" data-symbol="◆" aria-label="MAX" title="MAX" aria-pressed="false">◆</button>
+            </div>
+          </div>
+
+          <div class="customizer-group">
+            <div class="customizer-heading"><strong>Facção favorita</strong><span>Ícones temporários</span></div>
+            <div class="symbol-options faction-options" role="group" aria-label="Facção favorita em PlanetSide 2">
+              <button type="button" data-faction-option="tr" data-symbol="●" aria-label="Terran Republic" title="Terran Republic" aria-pressed="false">●</button>
+              <button type="button" data-faction-option="nc" data-symbol="■" aria-label="New Conglomerate" title="New Conglomerate" aria-pressed="false">■</button>
+              <button type="button" data-faction-option="vs" data-symbol="◆" aria-label="Vanu Sovereignty" title="Vanu Sovereignty" aria-pressed="false">◆</button>
+              <button type="button" data-faction-option="nso" data-symbol="⬢" aria-label="Nanite Systems Operatives" title="Nanite Systems Operatives" aria-pressed="false">⬢</button>
+            </div>
+          </div>
+
+          <div class="customizer-group biography-editor">
+            <div class="customizer-heading"><strong>Transmissão pessoal</strong><span>Até 220 caracteres</span></div>
+            <label for="member-bio" class="visually-hidden">Breve descrição sobre você</label>
+            <textarea id="member-bio" maxlength="220" rows="4" placeholder="Escreva uma breve descrição sobre você…" data-member-bio-input></textarea>
+            <button type="button" data-member-bio-save>Salvar transmissão</button>
+          </div>
+
           <p class="profile-feedback" data-profile-feedback aria-live="polite">Configuração vinculada à sua conta EXBR.</p>
         </div>
       </section>
 
-      <section class="member-operations-panel tactical-panel" aria-labelledby="member-operations-title">
-        <div class="member-operations-header">
-          <span>REGISTRO // PRESENÇA</span>
-          <h2 id="member-operations-title">Operações</h2>
-        </div>
-        <div class="member-operations-list" data-member-operations-list>
-          <p>Carregando participações…</p>
-        </div>
-      </section>
+      <div class="member-center-stack">
+        <section class="member-bio-monitor tactical-panel" aria-labelledby="member-bio-title">
+          <header><span>TRANSMISSÃO // OPERADOR</span><i aria-hidden="true"></i></header>
+          <h2 id="member-bio-title">Sobre o membro</h2>
+          <p data-member-bio>Nenhuma transmissão pessoal registrada.</p>
+        </section>
+
+        <section class="member-operations-panel tactical-panel" aria-labelledby="member-operations-title">
+          <div class="member-operations-header">
+            <span>REGISTRO // PRESENÇA</span>
+            <h2 id="member-operations-title">Operações</h2>
+          </div>
+          <div class="member-operations-list" data-member-operations-list>
+            <p>Carregando participações…</p>
+          </div>
+        </section>
+      </div>
 
       <aside class="medals-panel tactical-panel" aria-labelledby="medals-title" data-reveal>
         <div class="medals-header">
@@ -209,6 +253,6 @@
   </nav>
 
   <script src="../js/main.js?v=20260907-2" defer></script>
-  <script src="../js/perfil.js?v=20260911-1" type="module"></script>
+  <script src="../js/perfil.js?v=20260911-2" type="module"></script>
 </body>
 </html>
