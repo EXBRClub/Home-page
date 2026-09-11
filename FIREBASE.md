@@ -22,11 +22,14 @@ role        member | admin
 rankId      identificador presente em data/patentes.json
 avatarId    assalto | pesado | reconhecimento
 bannerId    brasil | comando | noturna
+bio         apresentação pessoal de até 220 caracteres
+favoriteClass  classe favorita em PlanetSide 2
+favoriteFaction facção favorita em PlanetSide 2
 createdAt   criação do perfil
 updatedAt   última atualização
 ```
 
-Todo perfil novo recebe `role: member` e `rankId: soldado`. O próprio usuário só pode alterar nome, avatar e bandeira. Função, patente e medalhas são protegidas para administradores. A administração não precisa criar as contas dos membros.
+Todo perfil novo recebe `role: member` e `rankId: soldado`. O próprio usuário pode alterar nome, avatar, bandeira, apresentação pessoal, classe favorita e facção favorita. Função, patente e medalhas são protegidas para administradores. A administração não precisa criar as contas dos membros.
 
 Para definir o primeiro administrador, crie uma conta normalmente no portal, acesse o perfil e depois altere manualmente `users/{uid}.role` para `admin` no Firestore. Um usuário não consegue promover a própria conta pelo site.
 
@@ -39,6 +42,9 @@ displayName       nome público
 rankId            patente atual
 avatarId          template de soldado
 bannerId          tratamento da bandeira
+bio               apresentação pessoal
+favoriteClass     classe favorita
+favoriteFaction   facção favorita
 featuredMedals    até cinco medalhas em destaque
 recentActivities  até três operações recentes
 updatedAt         última sincronização
@@ -47,6 +53,22 @@ updatedAt         última sincronização
 Essa coleção não armazena e-mail nem função administrativa. Usuários autenticados podem listar os perfis públicos e abrir `pages/perfil.html?uid={uid}`. Um membro comum recebe apenas os dados públicos, enquanto administradores continuam autorizados a consultar o documento privado e o histórico completo.
 
 O registro é sincronizado quando o membro abre seu Perfil ou a página Comunidade, altera avatar/bandeira ou confirma participação. A Área administrativa também cria e atualiza a identidade pública dos membros cadastrados.
+
+## Galeria da Comunidade
+
+Coleção: `communityGallery/{itemId}`
+
+```text
+type         image | video
+url          endereço HTTPS do arquivo ou serviço externo
+title        título público
+description  descrição opcional
+createdBy    UID do administrador
+createdAt    data de publicação
+updatedAt    última atualização
+```
+
+Usuários autenticados podem consultar a galeria. Apenas administradores podem publicar ou remover registros. O Firestore armazena somente URL e metadados; fotos e vídeos permanecem hospedados externamente. A interface aceita imagens, vídeos diretos, YouTube e Vimeo e não executa URLs que não utilizem HTTPS.
 
 ## Medalhas
 
@@ -106,7 +128,8 @@ Rota protegida: `pages/admin.html`
 - a data da concessão pode ser escolhida livremente para registrar conquistas retroativas;
 - a mesma medalha pode ser concedida novamente em outra data ou operação;
 - operações podem ser criadas e editadas na página dedicada com data, horário e medalha prevista;
-- somente o dono do perfil recebe os controles de avatar e bandeira.
+- somente o dono do perfil recebe os controles de avatar, bandeira, biografia, classe e facção;
+- a aba Galeria permite publicar e remover fotos ou vídeos por URL externa.
 
 ## Evolução planejada
 
