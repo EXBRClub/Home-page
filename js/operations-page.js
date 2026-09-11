@@ -10,6 +10,7 @@ import {
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
+import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 
 const list = document.querySelector('[data-operations-list]');
 const feedback = document.querySelector('[data-operations-feedback]');
@@ -22,17 +23,6 @@ const editorFeedback = document.querySelector('[data-operation-editor-feedback]'
 const medalSelect = document.querySelector('[data-operation-medal-select]');
 const medalPreview = document.querySelector('[data-operation-medal-preview]');
 const fallbackImage = '../assets/icons/dock/operacoes.png';
-const fallbackMedalIcon = '../assets/icons/dock/recrutamento.png';
-const resolveMedalIcon = value => {
-  if (!value?.trim()) return fallbackMedalIcon;
-  try {
-    return new URL(value.trim(), window.location.href).pathname.toLocaleLowerCase().endsWith('.png')
-      ? value.trim()
-      : fallbackMedalIcon;
-  } catch (error) {
-    return fallbackMedalIcon;
-  }
-};
 
 let operations = [];
 let medalCatalog = [];
@@ -73,11 +63,7 @@ const updateMedalPreview = () => {
   medalPreview.hidden = !medal;
   if (!medal) return;
   const image = document.createElement('img');
-  image.src = resolveMedalIcon(medal.iconUrl);
-  image.alt = '';
-  image.addEventListener('error', () => {
-    if (!image.src.endsWith('/recrutamento.png')) image.src = fallbackMedalIcon;
-  });
+  applyMedalImage(image, medal.iconUrl);
   const copy = document.createElement('div');
   const name = document.createElement('strong');
   name.textContent = medal.nome;
@@ -163,15 +149,12 @@ const createOperationCard = operation => {
   const rewardIcon = document.createElement('span');
   rewardIcon.className = 'operation-reward-icon';
   rewardIcon.setAttribute('aria-hidden', 'true');
+  const currentMedal = medalCatalog.find(medal => medal.id === operation.medalCatalogId);
   const rewardImage = document.createElement('img');
-  rewardImage.src = resolveMedalIcon(operation.medalIconUrl);
-  rewardImage.alt = '';
-  rewardImage.addEventListener('error', () => {
-    if (!rewardImage.src.endsWith('/recrutamento.png')) rewardImage.src = fallbackMedalIcon;
-  });
+  applyMedalImage(rewardImage, currentMedal?.iconUrl || operation.medalIconUrl);
   rewardIcon.append(rewardImage);
   const rewardName = document.createElement('strong');
-  rewardName.textContent = operation.medalName || 'Medalha a definir';
+  rewardName.textContent = currentMedal?.nome || operation.medalName || 'Medalha a definir';
   reward.append(rewardIcon, rewardName);
 
   const actions = document.createElement('div');
@@ -348,7 +331,7 @@ const saveOperation = async event => {
     medalCatalogId: medal?.id || '',
     medalName: medal?.nome || '',
     medalDescription: medal?.description || '',
-    medalIconUrl: medal ? resolveMedalIcon(medal.iconUrl) : '',
+    medalIconUrl: medal ? normalizeMedalIcon(medal.iconUrl) : '',
     updatedAt: serverTimestamp()
   };
 
@@ -388,7 +371,7 @@ onAuthStateChanged(auth, async user => {
       currentProfile = null;
     }
   }
-  if (isAdmin()) await loadOperationMedals();
+  if (user) await loadOperationMedals();
   if (createButton) createButton.hidden = !isAdmin();
   await loadParticipations();
   render();
