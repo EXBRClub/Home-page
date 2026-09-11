@@ -149,8 +149,9 @@ COMUNIDADE
 - pages/comunidade.html: área protegida para membros autenticados
 - Abas Membros e Galeria
 - Pesquisa por nome, patente, classe ou facção
-- Avatar, patente, biografia, preferências, atividade recente e até cinco medalhas em destaque
+- Avatar, patente, biografia, preferências, atividade recente e até cinco medalhas escolhidas pelo membro
 - Galeria de imagens, vídeos diretos, YouTube e Vimeo hospedados externamente
+- Membros autenticados publicam por URL e removem os próprios registros; administradores gerenciam todos
 - Botão Ver perfil abre pages/perfil.html?uid={uid}
 - Membros comuns veem somente publicProfiles/{uid}
 - E-mails, papéis administrativos e dados privados não são expostos
