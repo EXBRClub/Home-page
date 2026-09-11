@@ -1,11 +1,11 @@
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
 import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
+import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 
 const list = document.querySelector('[data-community-list]');
 const search = document.querySelector('[data-community-search]');
 const feedback = document.querySelector('[data-community-feedback]');
-const defaultMedalIcon = '../assets/icons/dock/recrutamento.png';
 const avatarSources = {
   assalto: '../assets/profile/avatars/assalto.webp',
   pesado: '../assets/profile/avatars/pesado.webp',
@@ -14,20 +14,12 @@ const avatarSources = {
 
 let members = [];
 let ranks = new Map();
+let medalDefinitions = new Map();
 
 const setFeedback = (message, state = 'info') => {
   if (!feedback) return;
   feedback.textContent = message;
   feedback.dataset.state = state;
-};
-
-const resolveMedalIcon = value => {
-  if (!value?.trim()) return defaultMedalIcon;
-  try {
-    return new URL(value.trim(), window.location.href).pathname.toLocaleLowerCase().endsWith('.png') ? value.trim() : defaultMedalIcon;
-  } catch (error) {
-    return defaultMedalIcon;
-  }
 };
 
 const publicMedal = medal => ({
@@ -36,7 +28,7 @@ const publicMedal = medal => ({
   description: medal.description || '',
   operationName: medal.operationName || 'Operação EXBR',
   operationDate: medal.operationDate || null,
-  iconUrl: resolveMedalIcon(medal.iconUrl)
+  iconUrl: normalizeMedalIcon(medal.iconUrl)
 });
 
 const publicActivity = participation => ({
@@ -74,14 +66,18 @@ const ensureViewerPublicProfile = async user => {
   }, { merge: true });
 };
 
-const createMedal = medal => {
+const createMedal = storedMedal => {
+  const definition = medalDefinitions.get(storedMedal.catalogId);
+  const medal = definition ? {
+    ...storedMedal,
+    name: definition.nome || storedMedal.name,
+    iconUrl: definition.iconUrl || storedMedal.iconUrl
+  } : storedMedal;
   const slot = document.createElement('span');
   slot.className = 'community-medal';
   slot.title = medal.name || 'Medalha EXBR';
   const image = document.createElement('img');
-  image.src = resolveMedalIcon(medal.iconUrl);
-  image.alt = medal.name || 'Medalha EXBR';
-  image.addEventListener('error', () => { if (!image.src.endsWith('/recrutamento.png')) image.src = defaultMedalIcon; });
+  applyMedalImage(image, medal.iconUrl, medal.name || 'Medalha EXBR');
   slot.append(image);
   return slot;
 };
@@ -155,12 +151,14 @@ const render = () => {
 
 const loadCommunity = async user => {
   try { await ensureViewerPublicProfile(user); } catch (error) { /* O restante da comunidade ainda pode ser carregado. */ }
-  const [rankResponse, snapshot] = await Promise.all([
+  const [rankResponse, snapshot, catalogSnapshot] = await Promise.all([
     fetch('../data/patentes.json'),
-    getDocs(collection(db, 'publicProfiles'))
+    getDocs(collection(db, 'publicProfiles')),
+    getDocs(collection(db, 'medalCatalog'))
   ]);
   const rankData = await rankResponse.json();
   ranks = new Map(rankData.patentes.map(rank => [rank.id, rank.nome]));
+  medalDefinitions = new Map(catalogSnapshot.docs.map(item => [item.id, item.data()]));
   members = snapshot.docs.map(item => ({ id: item.id, ...item.data() }))
     .sort((a, b) => (a.displayName || '').localeCompare(b.displayName || '', 'pt-BR'));
   render();
