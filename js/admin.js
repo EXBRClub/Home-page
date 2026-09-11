@@ -7,6 +7,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -57,6 +58,7 @@ let medals = [];
 let selectedUser = null;
 let galleryItems = [];
 let currentAdmin = null;
+let stopUsersListener = null;
 
 const setFeedback = (message, state = 'info') => {
   if (!feedback) return;
@@ -499,28 +501,36 @@ const openMedalDialog = user => {
 };
 
 const loadData = async () => {
-  const [rankResponse, medalDefinitions, usersSnapshot, gallerySnapshot] = await Promise.all([
+  const [rankResponse, medalDefinitions, gallerySnapshot] = await Promise.all([
     fetch('../data/patentes.json'),
     loadMedalCatalog(),
-    getDocs(collection(db, 'users')),
     getDocs(collection(db, 'communityGallery')).catch(() => null)
   ]);
   const rankData = await rankResponse.json();
   ranks = [...rankData.patentes].sort((a, b) => a.ordem - b.ordem);
   medals = medalDefinitions.sort((first, second) => first.nome.localeCompare(second.nome, 'pt-BR'));
-  users = usersSnapshot.docs.map(item => ({ id: item.id, ...item.data() }));
   galleryItems = gallerySnapshot
     ? gallerySnapshot.docs.map(item => ({ id: item.id, ...item.data() })).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
     : [];
-  users.sort((a, b) => (a.displayName || a.email || '').localeCompare(b.displayName || b.email || '', 'pt-BR'));
-  const publicBatch = writeBatch(db);
-  users.forEach(user => publicBatch.set(doc(db, 'publicProfiles', user.id), publicProfileData(user), { merge: true }));
-  if (users.length) await publicBatch.commit();
-  renderUsers();
   renderMedals();
   renderGalleryAdmin();
-  setFeedback(`${users.length} membro${users.length === 1 ? '' : 's'} no registro. Duplo clique abre o perfil.`, 'success');
   setAdminMedalFeedback(`${medals.length} ${medals.length === 1 ? 'medalha disponível' : 'medalhas disponíveis'} para edição.`, 'success');
+
+  stopUsersListener?.();
+  stopUsersListener = onSnapshot(collection(db, 'users'), async usersSnapshot => {
+    users = usersSnapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+    users.sort((a, b) => (a.displayName || a.email || '').localeCompare(b.displayName || b.email || '', 'pt-BR'));
+    renderUsers();
+    setFeedback(`${users.length} membro${users.length === 1 ? '' : 's'} no registro. Atualização automática ativa.`, 'success');
+
+    const publicBatch = writeBatch(db);
+    users.forEach(user => publicBatch.set(doc(db, 'publicProfiles', user.id), publicProfileData(user), { merge: true }));
+    if (users.length) {
+      try { await publicBatch.commit(); } catch (error) { /* A lista privada permanece atualizada. */ }
+    }
+  }, () => {
+    setFeedback('A atualização automática da lista foi interrompida. Recarregue o painel.', 'error');
+  });
 };
 
 search?.addEventListener('input', renderUsers);
