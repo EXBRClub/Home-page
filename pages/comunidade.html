@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/comunidade.css?v=20260911-2">
+  <link rel="stylesheet" href="../css/pages/comunidade.css?v=20260911-3">
 </head>
 <body class="community-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -75,6 +75,17 @@
           <div><span>ARQUIVO // COMUNIDADE</span><h2>Galeria EXBR</h2></div>
           <p>Fotos e vídeos das operações, transmitidos por links externos.</p>
         </header>
+        <details class="gallery-publisher" data-gallery-publisher>
+          <summary>Publicar foto ou vídeo</summary>
+          <form data-community-gallery-form>
+            <label>Tipo<select name="type" required><option value="image">Imagem</option><option value="video">Vídeo</option></select></label>
+            <label class="gallery-publisher-url">URL HTTPS<input name="url" type="url" inputmode="url" maxlength="500" placeholder="https://..." required></label>
+            <label>Título<input name="title" type="text" maxlength="80" required></label>
+            <label>Descrição<textarea name="description" maxlength="220" rows="3"></textarea></label>
+            <button type="submit">Transmitir para a galeria</button>
+          </form>
+          <p>Somente o endereço será salvo. A foto ou o vídeo continuará hospedado no serviço externo.</p>
+        </details>
         <p class="community-feedback" data-gallery-feedback aria-live="polite">Carregando registros visuais…</p>
         <div class="community-gallery" data-community-gallery>
           <div class="community-empty">Carregando galeria…</div>
@@ -98,6 +109,6 @@
 
   <script src="../js/main.js?v=20260907-2" defer></script>
   <script src="../js/session-ui.js?v=20260907-2" type="module"></script>
-  <script src="../js/comunidade.js?v=20260911-2" type="module"></script>
+  <script src="../js/comunidade.js?v=20260911-3" type="module"></script>
 </body>
 </html>
