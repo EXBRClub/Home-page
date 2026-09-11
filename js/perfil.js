@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const avatarClass = document.querySelector('[data-avatar-class]');
   const avatarOptions = [...document.querySelectorAll('[data-avatar-option]')];
   const bannerOptions = [...document.querySelectorAll('[data-banner-option]')];
+  const classOptions = [...document.querySelectorAll('[data-class-option]')];
+  const factionOptions = [...document.querySelectorAll('[data-faction-option]')];
+  const favoriteClass = document.querySelector('[data-favorite-class]');
+  const favoriteFaction = document.querySelector('[data-favorite-faction]');
+  const memberBio = document.querySelector('[data-member-bio]');
+  const bioInput = document.querySelector('[data-member-bio-input]');
+  const bioSave = document.querySelector('[data-member-bio-save]');
   const feedback = document.querySelector('[data-profile-feedback]');
   const editToggle = document.querySelector('[data-profile-edit-toggle]');
   const editLabel = document.querySelector('[data-profile-edit-label]');
@@ -46,6 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const avatars = new Map(avatarOptions.map(option => [option.dataset.avatar, option]));
   const banners = new Map(bannerOptions.map(option => [option.dataset.banner, option]));
+  const classes = new Map(classOptions.map(option => [option.dataset.classOption, option]));
+  const factions = new Map(factionOptions.map(option => [option.dataset.factionOption, option]));
   const requestedUid = new URLSearchParams(window.location.search).get('uid');
   let currentUser = null;
   let currentProfile = null;
@@ -58,6 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
   let editVisibilityTimer = 0;
 
   const medalDate = medal => medal.operationDate?.toDate?.().toLocaleDateString('pt-BR') || medal.operationDate || 'Data não informada';
+  const classNames = {
+    infiltrador: 'Infiltrador',
+    'assalto-leve': 'Assalto leve',
+    medico: 'Médico de combate',
+    engenheiro: 'Engenheiro',
+    'assalto-pesado': 'Assalto pesado',
+    max: 'MAX'
+  };
+  const factionNames = { tr: 'Terran Republic', nc: 'New Conglomerate', vs: 'Vanu Sovereignty', nso: 'Nanite Systems Operatives' };
 
   const effectiveMedal = medal => {
     const definition = medalDefinitions.get(medal.catalogId);
@@ -169,13 +187,29 @@ document.addEventListener('DOMContentLoaded', () => {
     bannerOptions.forEach(button => button.setAttribute('aria-pressed', String(button === option)));
   };
 
+  const renderFavoriteMarker = (marker, symbol, label, name) => {
+    if (!marker) return;
+    const icon = marker.querySelector('span');
+    const caption = marker.querySelector('small');
+    if (icon) icon.textContent = symbol;
+    if (caption) caption.textContent = label;
+    marker.title = name ? `${label} favorita: ${name}` : `${label} favorita não definida`;
+    marker.dataset.active = String(Boolean(name));
+  };
+
   const savePreference = async (field, value, successMessage) => {
     if (!currentUser || !currentProfileUid || !isOwner) return;
     announce('Sincronizando perfil…', true);
     try {
+      const profileUpdate = { [field]: value, updatedAt: serverTimestamp() };
+      if (['bio', 'favoriteClass', 'favoriteFaction'].includes(field)) {
+        profileUpdate.bio = currentProfile.bio || '';
+        profileUpdate.favoriteClass = currentProfile.favoriteClass || '';
+        profileUpdate.favoriteFaction = currentProfile.favoriteFaction || '';
+        profileUpdate[field] = value;
+      }
       await updateDoc(doc(db, 'users', currentProfileUid), {
-        [field]: value,
-        updatedAt: serverTimestamp()
+        ...profileUpdate
       });
       currentProfile[field] = value;
       try {
@@ -203,6 +237,31 @@ document.addEventListener('DOMContentLoaded', () => {
     applyBanner(option);
     savePreference('bannerId', option.dataset.banner, `Bandeira ${option.textContent.trim()} selecionada.`);
   }));
+
+  classOptions.forEach(option => option.addEventListener('click', () => {
+    if (!isOwner) return;
+    const value = option.dataset.classOption;
+    classOptions.forEach(button => button.setAttribute('aria-pressed', String(button === option)));
+    renderFavoriteMarker(favoriteClass, option.dataset.symbol, 'Classe', classNames[value]);
+    savePreference('favoriteClass', value, `${classNames[value]} definida como classe favorita.`);
+  }));
+
+  factionOptions.forEach(option => option.addEventListener('click', () => {
+    if (!isOwner) return;
+    const value = option.dataset.factionOption;
+    factionOptions.forEach(button => button.setAttribute('aria-pressed', String(button === option)));
+    renderFavoriteMarker(favoriteFaction, option.dataset.symbol, 'Facção', factionNames[value]);
+    savePreference('favoriteFaction', value, `${factionNames[value]} definida como facção favorita.`);
+  }));
+
+  bioSave?.addEventListener('click', async () => {
+    if (!isOwner || !bioInput) return;
+    const value = bioInput.value.trim().slice(0, 220);
+    bioSave.disabled = true;
+    if (memberBio) memberBio.textContent = value || 'Nenhuma transmissão pessoal registrada.';
+    await savePreference('bio', value, 'Transmissão pessoal atualizada.');
+    bioSave.disabled = false;
+  });
 
   const hideOwnerControls = () => {
     window.clearTimeout(editVisibilityTimer);
@@ -381,6 +440,9 @@ document.addEventListener('DOMContentLoaded', () => {
       rankId: currentProfile.rankId || 'soldado',
       avatarId: currentProfile.avatarId || 'assalto',
       bannerId: currentProfile.bannerId || 'brasil',
+      bio: currentProfile.bio || '',
+      favoriteClass: currentProfile.favoriteClass || '',
+      favoriteFaction: currentProfile.favoriteFaction || '',
       featuredMedals: medals.slice(0, 5).map(publicMedal),
       recentActivities: participations.slice(0, 3).map(publicActivity),
       updatedAt: serverTimestamp()
@@ -390,7 +452,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const ensureProfile = async user => {
     const reference = doc(db, 'users', user.uid);
     const snapshot = await getDoc(reference);
-    if (snapshot.exists()) return snapshot.data();
+    if (snapshot.exists()) {
+      const stored = snapshot.data();
+      const profile = { bio: '', favoriteClass: '', favoriteFaction: '', ...stored };
+      if (!Object.hasOwn(stored, 'bio') || !Object.hasOwn(stored, 'favoriteClass') || !Object.hasOwn(stored, 'favoriteFaction')) {
+        try {
+          await updateDoc(reference, {
+            bio: profile.bio,
+            favoriteClass: profile.favoriteClass,
+            favoriteFaction: profile.favoriteFaction,
+            updatedAt: serverTimestamp()
+          });
+        } catch (error) {
+          // Mantém compatibilidade enquanto as novas regras ainda não foram publicadas.
+        }
+      }
+      return profile;
+    }
     const displayName = user.displayName || user.email?.split('@')[0] || 'Membro EXBR';
     const profile = {
       email: user.email || '',
@@ -399,10 +477,18 @@ document.addEventListener('DOMContentLoaded', () => {
       rankId: 'soldado',
       avatarId: 'assalto',
       bannerId: 'brasil',
+      bio: '',
+      favoriteClass: '',
+      favoriteFaction: '',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
-    await setDoc(reference, profile);
+    try {
+      await setDoc(reference, profile);
+    } catch (error) {
+      const { bio, favoriteClass, favoriteFaction, ...legacyProfile } = profile;
+      await setDoc(reference, legacyProfile);
+    }
     return { ...profile, createdAt: null, updatedAt: null };
   };
 
@@ -421,6 +507,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.dataset.userRole = viewerProfile?.role === 'admin' ? 'admin' : 'member';
     applyAvatar(avatars.get(profile.avatarId) || avatarOptions[0], false);
     applyBanner(banners.get(profile.bannerId) || bannerOptions[0]);
+    const selectedClass = classes.get(profile.favoriteClass);
+    const selectedFaction = factions.get(profile.favoriteFaction);
+    classOptions.forEach(option => option.setAttribute('aria-pressed', String(option === selectedClass)));
+    factionOptions.forEach(option => option.setAttribute('aria-pressed', String(option === selectedFaction)));
+    renderFavoriteMarker(favoriteClass, selectedClass?.dataset.symbol || '◇', 'Classe', classNames[profile.favoriteClass]);
+    renderFavoriteMarker(favoriteFaction, selectedFaction?.dataset.symbol || '◇', 'Facção', factionNames[profile.favoriteFaction]);
+    if (memberBio) memberBio.textContent = profile.bio?.trim() || 'Nenhuma transmissão pessoal registrada.';
+    if (bioInput) bioInput.value = profile.bio || '';
 
     if (isOwner) {
       avatarImage.setAttribute('role', 'button');
@@ -470,7 +564,9 @@ document.addEventListener('DOMContentLoaded', () => {
           renderParticipations(currentProfile.recentActivities || []);
         } else {
           const [medals, participations] = await Promise.all([loadMedals(currentProfileUid), loadParticipations(currentProfileUid)]);
-          if (isOwner) await syncPublicProfile(medals, participations);
+          if (isOwner) {
+            try { await syncPublicProfile(medals, participations); } catch (error) { /* Perfil privado continua disponível. */ }
+          }
         }
         document.body.classList.add('profile-ready');
       } catch (error) {
