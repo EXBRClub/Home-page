@@ -25,11 +25,12 @@ bannerId    brasil | comando | noturna
 bio         apresentação pessoal de até 220 caracteres
 favoriteClass  classe favorita em PlanetSide 2
 favoriteFaction facção favorita em PlanetSide 2
+featuredMedalIds IDs de até cinco concessões escolhidas para destaque
 createdAt   criação do perfil
 updatedAt   última atualização
 ```
 
-Todo perfil novo recebe `role: member` e `rankId: soldado`. O próprio usuário pode alterar nome, avatar, bandeira, apresentação pessoal, classe favorita e facção favorita. Função, patente e medalhas são protegidas para administradores. A administração não precisa criar as contas dos membros.
+Todo perfil novo recebe `role: member` e `rankId: soldado`. O próprio usuário pode alterar nome, avatar, bandeira, apresentação pessoal, classe favorita, facção favorita e a seleção de até cinco medalhas já recebidas para destaque. Função, patente e concessões de medalhas são protegidas para administradores. A administração não precisa criar as contas dos membros.
 
 Para definir o primeiro administrador, crie uma conta normalmente no portal, acesse o perfil e depois altere manualmente `users/{uid}.role` para `admin` no Firestore. Um usuário não consegue promover a própria conta pelo site.
 
@@ -63,12 +64,13 @@ type         image | video
 url          endereço HTTPS do arquivo ou serviço externo
 title        título público
 description  descrição opcional
-createdBy    UID do administrador
+createdBy    UID do membro ou administrador que publicou
+authorName  nome público do autor
 createdAt    data de publicação
 updatedAt    última atualização
 ```
 
-Usuários autenticados podem consultar a galeria. Apenas administradores podem publicar ou remover registros. O Firestore armazena somente URL e metadados; fotos e vídeos permanecem hospedados externamente. A interface aceita imagens, vídeos diretos, YouTube e Vimeo e não executa URLs que não utilizem HTTPS.
+Usuários autenticados podem consultar e publicar na galeria. Cada membro pode remover as próprias publicações; administradores podem remover qualquer registro e continuam com a gestão central. O Firestore armazena somente URL e metadados; fotos e vídeos permanecem hospedados externamente. A interface aceita imagens, vídeos diretos, YouTube e Vimeo e não executa URLs que não utilizem HTTPS.
 
 ## Medalhas
 
