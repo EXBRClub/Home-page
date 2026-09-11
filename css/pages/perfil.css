@@ -682,6 +682,10 @@
   text-transform: uppercase;
 }
 
+.featured-medals-hint { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.55rem 1rem; border-bottom: 1px solid rgba(231, 189, 66, 0.2); color: #8ea8ae; background: rgba(38, 31, 10, 0.2); font: 0.7rem/1.4 Consolas, monospace; }
+.featured-medals-hint[hidden] { display: none; }
+.featured-medals-hint strong { flex: 0 0 auto; color: #ffe06b; font-size: 0.78rem; }
+
 .medals-scroll {
   max-height: min(54vh, 31rem);
   overflow-y: auto;
@@ -747,6 +751,12 @@
 .medal-entry.can-manage {
   grid-template-columns: minmax(0, 1fr) auto;
 }
+
+.medal-entry.can-feature { grid-template-columns: minmax(0, 1fr) auto; }
+.medal-entry.can-feature.can-manage { grid-template-columns: minmax(0, 1fr) auto auto; }
+
+.medal-feature { width: 2.25rem; height: 2.25rem; margin-right: 0.55rem; border: 1px solid rgba(231, 189, 66, 0.3); color: #7b8790; background: rgba(32, 28, 12, 0.24); font-size: 1.25rem; cursor: pointer; }
+.medal-feature:hover, .medal-feature:focus-visible, .medal-feature[data-selected="true"] { border-color: rgba(240, 198, 75, 0.82); color: #ffdc54; background: radial-gradient(circle, rgba(226, 176, 44, 0.28), rgba(19, 19, 12, 0.72) 72%); text-shadow: 0 0 0.7rem rgba(255, 210, 66, 0.7); }
 
 .medal-open {
   min-width: 0;
