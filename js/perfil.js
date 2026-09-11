@@ -10,19 +10,9 @@ import {
   updateDoc
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
+import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const defaultMedalIcon = '../assets/icons/dock/recrutamento.png';
-  const resolveMedalIcon = value => {
-    if (!value?.trim()) return defaultMedalIcon;
-    try {
-      return new URL(value.trim(), window.location.href).pathname.toLocaleLowerCase().endsWith('.png')
-        ? value.trim()
-        : defaultMedalIcon;
-    } catch (error) {
-      return defaultMedalIcon;
-    }
-  };
   const card = document.querySelector('[data-profile-card]');
   const identityZone = document.querySelector('.identity-zone');
   const avatarImage = document.querySelector('[data-member-avatar]');
@@ -63,19 +53,42 @@ document.addEventListener('DOMContentLoaded', () => {
   let viewerProfile = null;
   let isOwner = false;
   let ranks = new Map();
+  let medalDefinitions = new Map();
   let feedbackTimer = 0;
   let editVisibilityTimer = 0;
 
   const medalDate = medal => medal.operationDate?.toDate?.().toLocaleDateString('pt-BR') || medal.operationDate || 'Data não informada';
 
-  const publicMedal = medal => ({
-    catalogId: medal.catalogId || '',
-    name: medal.name || 'Medalha EXBR',
-    description: medal.description || '',
-    operationName: medal.operationName || 'Operação EXBR',
-    operationDate: medal.operationDate || null,
-    iconUrl: resolveMedalIcon(medal.iconUrl)
-  });
+  const effectiveMedal = medal => {
+    const definition = medalDefinitions.get(medal.catalogId);
+    return definition ? {
+      ...medal,
+      name: definition.nome || medal.name,
+      description: definition.description || medal.description,
+      iconUrl: definition.iconUrl || medal.iconUrl
+    } : medal;
+  };
+
+  const publicMedal = storedMedal => {
+    const medal = effectiveMedal(storedMedal);
+    return {
+      catalogId: medal.catalogId || '',
+      name: medal.name || 'Medalha EXBR',
+      description: medal.description || '',
+      operationName: medal.operationName || 'Operação EXBR',
+      operationDate: medal.operationDate || null,
+      iconUrl: normalizeMedalIcon(medal.iconUrl)
+    };
+  };
+
+  const loadMedalDefinitions = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, 'medalCatalog'));
+      medalDefinitions = new Map(snapshot.docs.map(item => [item.id, item.data()]));
+    } catch (error) {
+      medalDefinitions = new Map();
+    }
+  };
 
   const publicActivity = participation => ({
     operationId: participation.operationId || participation.id || '',
@@ -93,8 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (medalDetailOperation) medalDetailOperation.textContent = medal.operationName || 'Operação EXBR';
     if (medalDetailDate) medalDetailDate.textContent = medalDate(medal);
     if (medalDetailImage) {
-      medalDetailImage.src = resolveMedalIcon(definition.iconUrl || medal.iconUrl);
-      medalDetailImage.alt = `Imagem ampliada da medalha ${name}`;
+      applyMedalImage(medalDetailImage, definition.iconUrl || medal.iconUrl, `Imagem ampliada da medalha ${name}`);
     }
   };
 
@@ -114,9 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
   medalDetailClose?.addEventListener('click', () => medalDetail?.close());
   medalDetail?.addEventListener('click', event => {
     if (event.target === medalDetail) medalDetail.close();
-  });
-  medalDetailImage?.addEventListener('error', () => {
-    if (!medalDetailImage.src.endsWith('/recrutamento.png')) medalDetailImage.src = defaultMedalIcon;
   });
 
   const announce = (message, persistent = false) => {
@@ -257,7 +266,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    medals.forEach(medal => {
+    medals.forEach(storedMedal => {
+      const medal = effectiveMedal(storedMedal);
       const item = document.createElement('li');
       item.className = 'medal-entry';
       const date = medalDate(medal);
@@ -265,11 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
       icon.className = 'medal-icon';
       icon.setAttribute('aria-hidden', 'true');
       const image = document.createElement('img');
-      image.src = resolveMedalIcon(medal.iconUrl);
-      image.alt = '';
-      image.addEventListener('error', () => {
-        if (!image.src.endsWith('/recrutamento.png')) image.src = defaultMedalIcon;
-      });
+      applyMedalImage(image, medal.iconUrl);
       icon.classList.add('has-image');
       icon.append(image);
       const copy = document.createElement('span');
@@ -438,6 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentUser = user;
       try {
         viewerProfile = await ensureProfile(user);
+        await loadMedalDefinitions();
         const viewingAnotherProfile = Boolean(requestedUid && requestedUid !== user.uid);
         currentProfileUid = viewingAnotherProfile ? requestedUid : user.uid;
         isOwner = currentProfileUid === user.uid;
