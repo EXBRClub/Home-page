@@ -5,7 +5,8 @@ import {
   signInWithEmailAndPassword,
   updateProfile
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
-import { auth } from './firebase-client.js';
+import { doc, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
+import { auth, db } from './firebase-client.js';
 
 const TEMP_REGISTRATION_CODE = '070922';
 const form = document.querySelector('[data-login-form]');
@@ -160,9 +161,34 @@ form?.addEventListener('submit', async event => {
     try {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(credential.user, { displayName });
+      const profile = {
+        email: credential.user.email || email,
+        displayName,
+        role: 'member',
+        rankId: 'soldado',
+        avatarId: 'assalto',
+        bannerId: 'brasil',
+        bio: '',
+        favoriteClass: '',
+        favoriteFaction: '',
+        featuredMedalIds: [],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+      try {
+        await setDoc(doc(db, 'users', credential.user.uid), profile);
+      } catch (profileError) {
+        const { bio, favoriteClass, favoriteFaction, featuredMedalIds, ...legacyProfile } = profile;
+        await setDoc(doc(db, 'users', credential.user.uid), legacyProfile);
+      }
       showMessage('Conta criada. Preparando seu perfil de Soldado…', 'success');
       window.location.replace('perfil.html');
     } catch (error) {
+      if (auth.currentUser) {
+        showMessage('A conta foi criada. Concluindo o registro pelo seu Perfil…', 'progress');
+        window.setTimeout(() => window.location.replace('perfil.html'), 900);
+        return;
+      }
       showMessage(messages[error.code] || 'Não foi possível criar a conta. Tente novamente.', 'error');
       setBusy(false);
     }
