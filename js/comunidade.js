@@ -2,10 +2,15 @@ import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.18.0/f
 import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
 import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
+import { createMediaElement } from './community-media.js?v=20260911-1';
 
 const list = document.querySelector('[data-community-list]');
 const search = document.querySelector('[data-community-search]');
 const feedback = document.querySelector('[data-community-feedback]');
+const galleryFeedback = document.querySelector('[data-gallery-feedback]');
+const gallery = document.querySelector('[data-community-gallery]');
+const tabs = [...document.querySelectorAll('[data-community-tab]')];
+const panels = [...document.querySelectorAll('[data-community-panel]')];
 const avatarSources = {
   assalto: '../assets/profile/avatars/assalto.webp',
   pesado: '../assets/profile/avatars/pesado.webp',
@@ -15,6 +20,12 @@ const avatarSources = {
 let members = [];
 let ranks = new Map();
 let medalDefinitions = new Map();
+let galleryItems = [];
+
+const classNames = { infiltrador: 'Infiltrador', 'assalto-leve': 'Assalto leve', medico: 'Médico de combate', engenheiro: 'Engenheiro', 'assalto-pesado': 'Assalto pesado', max: 'MAX' };
+const classSymbols = { infiltrador: '◇', 'assalto-leve': '△', medico: '✚', engenheiro: '⚙', 'assalto-pesado': '⬡', max: '◆' };
+const factionNames = { tr: 'Terran Republic', nc: 'New Conglomerate', vs: 'Vanu Sovereignty', nso: 'Nanite Systems Operatives' };
+const factionSymbols = { tr: '●', nc: '■', vs: '◆', nso: '⬢' };
 
 const setFeedback = (message, state = 'info') => {
   if (!feedback) return;
@@ -60,6 +71,9 @@ const ensureViewerPublicProfile = async user => {
     rankId: profile.rankId || 'soldado',
     avatarId: profile.avatarId || 'assalto',
     bannerId: profile.bannerId || 'brasil',
+    bio: profile.bio || '',
+    favoriteClass: profile.favoriteClass || '',
+    favoriteFaction: profile.favoriteFaction || '',
     featuredMedals: medals,
     recentActivities: activities,
     updatedAt: serverTimestamp()
@@ -85,7 +99,7 @@ const createMedal = storedMedal => {
 const render = () => {
   if (!list) return;
   const term = search?.value.trim().toLocaleLowerCase('pt-BR') || '';
-  const visible = members.filter(member => `${member.displayName || ''} ${ranks.get(member.rankId) || ''}`.toLocaleLowerCase('pt-BR').includes(term));
+  const visible = members.filter(member => `${member.displayName || ''} ${ranks.get(member.rankId) || ''} ${classNames[member.favoriteClass] || ''} ${factionNames[member.favoriteFaction] || ''}`.toLocaleLowerCase('pt-BR').includes(term));
   list.replaceChildren();
   if (!visible.length) {
     const empty = document.createElement('div');
@@ -121,7 +135,17 @@ const render = () => {
     } else {
       activity.textContent = 'Disponível na comunidade';
     }
-    identity.append(name, rank, activity);
+    const specifications = document.createElement('span');
+    specifications.className = 'community-specifications';
+    const className = classNames[member.favoriteClass];
+    const factionName = factionNames[member.favoriteFaction];
+    specifications.textContent = className || factionName
+      ? `${classSymbols[member.favoriteClass] || '◇'} ${className || 'Classe não definida'} · ${factionSymbols[member.favoriteFaction] || '◇'} ${factionName || 'Facção não definida'}`
+      : 'Classe e facção ainda não definidas';
+    const biography = document.createElement('span');
+    biography.className = 'community-biography';
+    biography.textContent = member.bio?.trim() || 'Sem transmissão pessoal.';
+    identity.append(name, rank, specifications, biography, activity);
 
     const featured = document.createElement('div');
     featured.className = 'community-featured';
@@ -149,22 +173,69 @@ const render = () => {
   setFeedback(`${visible.length} membro${visible.length === 1 ? '' : 's'} na rede EXBR.`, 'success');
 };
 
+const renderGallery = () => {
+  if (!gallery) return;
+  gallery.replaceChildren();
+  if (!galleryItems.length) {
+    const empty = document.createElement('div');
+    empty.className = 'community-empty';
+    empty.textContent = 'Nenhum registro visual publicado ainda.';
+    gallery.append(empty);
+    if (galleryFeedback) galleryFeedback.textContent = 'Arquivo visual aguardando transmissões.';
+    return;
+  }
+
+  galleryItems.forEach(item => {
+    const card = document.createElement('article');
+    card.className = 'gallery-card';
+    const visual = document.createElement('div');
+    visual.className = 'gallery-visual';
+    const media = createMediaElement(item, { onError: () => card.remove() });
+    if (!media) return;
+    visual.append(media);
+    const copy = document.createElement('div');
+    copy.className = 'gallery-copy';
+    const label = document.createElement('span');
+    label.textContent = item.type === 'video' ? 'VÍDEO // EXBR' : 'IMAGEM // EXBR';
+    const title = document.createElement('h3');
+    title.textContent = item.title || 'Registro da comunidade';
+    const description = document.createElement('p');
+    description.textContent = item.description || 'Arquivo visual da Outfit EXBR.';
+    copy.append(label, title, description);
+    card.append(visual, copy);
+    gallery.append(card);
+  });
+  if (galleryFeedback) galleryFeedback.textContent = `${galleryItems.length} registro${galleryItems.length === 1 ? '' : 's'} no arquivo visual.`;
+};
+
 const loadCommunity = async user => {
   try { await ensureViewerPublicProfile(user); } catch (error) { /* O restante da comunidade ainda pode ser carregado. */ }
-  const [rankResponse, snapshot, catalogSnapshot] = await Promise.all([
+  const [rankResponse, snapshot, catalogSnapshot, gallerySnapshot] = await Promise.all([
     fetch('../data/patentes.json'),
     getDocs(collection(db, 'publicProfiles')),
-    getDocs(collection(db, 'medalCatalog'))
+    getDocs(collection(db, 'medalCatalog')),
+    getDocs(collection(db, 'communityGallery')).catch(() => null)
   ]);
   const rankData = await rankResponse.json();
   ranks = new Map(rankData.patentes.map(rank => [rank.id, rank.nome]));
   medalDefinitions = new Map(catalogSnapshot.docs.map(item => [item.id, item.data()]));
   members = snapshot.docs.map(item => ({ id: item.id, ...item.data() }))
     .sort((a, b) => (a.displayName || '').localeCompare(b.displayName || '', 'pt-BR'));
+  galleryItems = gallerySnapshot
+    ? gallerySnapshot.docs.map(item => ({ id: item.id, ...item.data() }))
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+    : [];
   render();
+  renderGallery();
 };
 
 search?.addEventListener('input', render);
+tabs.forEach(tab => tab.addEventListener('click', () => {
+  const target = tab.dataset.communityTab;
+  tabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
+  panels.forEach(panel => { panel.hidden = panel.dataset.communityPanel !== target; });
+  if (target === 'gallery') gallery?.querySelector('button, a, video')?.focus({ preventScroll: true });
+}));
 onAuthStateChanged(auth, async user => {
   if (!user) {
     window.location.replace('login.html');
