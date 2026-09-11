@@ -1,8 +1,8 @@
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
-import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
 import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
-import { createMediaElement } from './community-media.js?v=20260911-1';
+import { createMediaElement, normalizeExternalUrl } from './community-media.js?v=20260911-1';
 
 const list = document.querySelector('[data-community-list]');
 const search = document.querySelector('[data-community-search]');
@@ -11,6 +11,7 @@ const galleryFeedback = document.querySelector('[data-gallery-feedback]');
 const gallery = document.querySelector('[data-community-gallery]');
 const tabs = [...document.querySelectorAll('[data-community-tab]')];
 const panels = [...document.querySelectorAll('[data-community-panel]')];
+const galleryForm = document.querySelector('[data-community-gallery-form]');
 const avatarSources = {
   assalto: '../assets/profile/avatars/assalto.webp',
   pesado: '../assets/profile/avatars/pesado.webp',
@@ -21,6 +22,8 @@ let members = [];
 let ranks = new Map();
 let medalDefinitions = new Map();
 let galleryItems = [];
+let currentUser = null;
+let viewerProfile = null;
 
 const classNames = { infiltrador: 'Infiltrador', 'assalto-leve': 'Assalto leve', medico: 'Médico de combate', engenheiro: 'Engenheiro', 'assalto-pesado': 'Assalto pesado', max: 'MAX' };
 const classSymbols = { infiltrador: '◇', 'assalto-leve': '△', medico: '✚', engenheiro: '⚙', 'assalto-pesado': '⬡', max: '◆' };
@@ -52,16 +55,19 @@ const publicActivity = participation => ({
 
 const ensureViewerPublicProfile = async user => {
   const profileSnapshot = await getDoc(doc(db, 'users', user.uid));
-  if (!profileSnapshot.exists()) return;
+  if (!profileSnapshot.exists()) return null;
   const profile = profileSnapshot.data();
   const [medalsSnapshot, participationsSnapshot] = await Promise.all([
     getDocs(collection(db, 'users', user.uid, 'medals')),
     getDocs(collection(db, 'users', user.uid, 'participations'))
   ]);
-  const medals = medalsSnapshot.docs.map(item => ({ id: item.id, ...item.data() }))
-    .sort((a, b) => (b.operationDate?.seconds || 0) - (a.operationDate?.seconds || 0))
-    .slice(0, 5)
-    .map(publicMedal);
+  const allMedals = medalsSnapshot.docs.map(item => ({ id: item.id, ...item.data() }))
+    .sort((a, b) => (b.operationDate?.seconds || 0) - (a.operationDate?.seconds || 0));
+  const medalById = new Map(allMedals.map(medal => [medal.id, medal]));
+  const selectedMedals = Object.hasOwn(profile, 'featuredMedalIds')
+    ? (profile.featuredMedalIds || []).map(id => medalById.get(id)).filter(Boolean)
+    : allMedals;
+  const medals = selectedMedals.slice(0, 5).map(publicMedal);
   const activities = participationsSnapshot.docs.map(item => ({ id: item.id, ...item.data() }))
     .sort((a, b) => (b.joinedAt?.seconds || 0) - (a.joinedAt?.seconds || 0))
     .slice(0, 3)
@@ -78,6 +84,7 @@ const ensureViewerPublicProfile = async user => {
     recentActivities: activities,
     updatedAt: serverTimestamp()
   }, { merge: true });
+  return profile;
 };
 
 const createMedal = storedMedal => {
@@ -201,15 +208,72 @@ const renderGallery = () => {
     title.textContent = item.title || 'Registro da comunidade';
     const description = document.createElement('p');
     description.textContent = item.description || 'Arquivo visual da Outfit EXBR.';
-    copy.append(label, title, description);
+    const author = document.createElement('small');
+    author.textContent = `Publicado por ${item.authorName || 'Membro EXBR'}`;
+    copy.append(label, title, description, author);
     card.append(visual, copy);
+    if (currentUser && item.createdBy === currentUser.uid) {
+      const remove = document.createElement('button');
+      remove.className = 'gallery-owner-remove';
+      remove.type = 'button';
+      remove.textContent = 'Remover minha publicação';
+      remove.addEventListener('click', async () => {
+        if (!window.confirm(`Remover ${title.textContent} da galeria?`)) return;
+        remove.disabled = true;
+        try {
+          await deleteDoc(doc(db, 'communityGallery', item.id));
+          galleryItems = galleryItems.filter(entry => entry.id !== item.id);
+          renderGallery();
+          if (galleryFeedback) galleryFeedback.textContent = 'Sua publicação foi removida.';
+        } catch (error) {
+          remove.disabled = false;
+          if (galleryFeedback) galleryFeedback.textContent = 'Não foi possível remover sua publicação.';
+        }
+      });
+      card.append(remove);
+    }
     gallery.append(card);
   });
   if (galleryFeedback) galleryFeedback.textContent = `${galleryItems.length} registro${galleryItems.length === 1 ? '' : 's'} no arquivo visual.`;
 };
 
+galleryForm?.addEventListener('submit', async event => {
+  event.preventDefault();
+  if (!currentUser) return;
+  const submit = galleryForm.querySelector('[type="submit"]');
+  const url = normalizeExternalUrl(galleryForm.elements.url.value);
+  if (!url) {
+    if (galleryFeedback) galleryFeedback.textContent = 'Informe uma URL HTTPS válida.';
+    return;
+  }
+  const item = {
+    type: galleryForm.elements.type.value === 'video' ? 'video' : 'image',
+    url,
+    title: galleryForm.elements.title.value.trim(),
+    description: galleryForm.elements.description.value.trim(),
+    createdBy: currentUser.uid,
+    authorName: viewerProfile?.displayName || currentUser.displayName || 'Membro EXBR',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  };
+  submit.disabled = true;
+  if (galleryFeedback) galleryFeedback.textContent = 'Transmitindo registro visual…';
+  try {
+    const reference = await addDoc(collection(db, 'communityGallery'), item);
+    galleryItems.unshift({ id: reference.id, ...item, createdAt: null, updatedAt: null });
+    galleryForm.reset();
+    document.querySelector('[data-gallery-publisher]')?.removeAttribute('open');
+    renderGallery();
+    if (galleryFeedback) galleryFeedback.textContent = 'Publicação adicionada à Galeria EXBR.';
+  } catch (error) {
+    if (galleryFeedback) galleryFeedback.textContent = 'Não foi possível publicar. Verifique se as novas regras do Firestore estão ativas.';
+  } finally {
+    submit.disabled = false;
+  }
+});
+
 const loadCommunity = async user => {
-  try { await ensureViewerPublicProfile(user); } catch (error) { /* O restante da comunidade ainda pode ser carregado. */ }
+  try { viewerProfile = await ensureViewerPublicProfile(user); } catch (error) { /* O restante da comunidade ainda pode ser carregado. */ }
   const [rankResponse, snapshot, catalogSnapshot, gallerySnapshot] = await Promise.all([
     fetch('../data/patentes.json'),
     getDocs(collection(db, 'publicProfiles')),
@@ -241,6 +305,7 @@ onAuthStateChanged(auth, async user => {
     window.location.replace('login.html');
     return;
   }
+  currentUser = user;
   try {
     await loadCommunity(user);
   } catch (error) {
