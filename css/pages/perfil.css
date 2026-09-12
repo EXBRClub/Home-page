@@ -855,14 +855,39 @@
 .medal-detail-header h2 { margin-top: 0.25rem; font-size: clamp(1.45rem, 5vw, 2rem); text-transform: uppercase; }
 .medal-detail-header button { width: 2.2rem; height: 2.2rem; border: 0; color: #a4d3d8; background: transparent; font-size: 1.8rem; cursor: pointer; }
 .medal-detail-body { display: grid; grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr); min-height: 20rem; }
-.medal-detail-visual { display: grid; place-items: center; padding: 1.3rem; border-right: 1px solid rgba(55, 167, 183, 0.24); background: radial-gradient(circle at center, rgba(29, 125, 137, 0.2), rgba(3, 14, 19, 0.86) 70%); }
-.medal-detail-visual img { width: min(100%, 13rem); height: min(48vw, 13rem); object-fit: contain; filter: drop-shadow(0 0 1.2rem rgba(72, 193, 205, 0.2)); }
+.medal-detail-visual { --zoom-x: 50%; --zoom-y: 50%; position: relative; display: grid; place-items: center; min-width: 0; padding: 1.3rem; overflow: hidden; isolation: isolate; border-right: 1px solid rgba(55, 167, 183, 0.24); background: radial-gradient(circle at center, rgba(29, 125, 137, 0.2), rgba(3, 14, 19, 0.86) 70%); }
+.medal-detail-visual img { width: min(100%, 13rem); height: min(48vw, 13rem); object-fit: contain; transform: scale(1); transform-origin: var(--zoom-x) var(--zoom-y); filter: drop-shadow(0 0 1.2rem rgba(72, 193, 205, 0.2)); transition: transform 180ms ease, filter 180ms ease; }
 .medal-detail-copy { display: grid; align-content: center; gap: 1.4rem; padding: 1.5rem; }
 .medal-detail-copy > p { color: #bed0d4; font-size: 1rem; line-height: 1.65; }
 .medal-detail-copy dl { display: grid; gap: 0.8rem; }
 .medal-detail-copy dl div { padding-top: 0.7rem; border-top: 1px solid rgba(55, 167, 183, 0.2); }
 .medal-detail-copy dt { color: #668b92; font: 0.65rem/1.4 Consolas, monospace; letter-spacing: 0.08em; text-transform: uppercase; }
 .medal-detail-copy dd { margin-top: 0.25rem; color: #72d2dc; font-size: 0.85rem; font-weight: 750; }
+
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
+  .medal-detail-visual { cursor: zoom-in; }
+  .medal-detail-visual::after {
+    content: "MOVA PARA INSPECIONAR";
+    position: absolute;
+    right: 0.65rem;
+    bottom: 0.55rem;
+    z-index: 2;
+    padding: 0.28rem 0.4rem;
+    border-left: 1px solid rgba(93, 216, 228, 0.55);
+    color: rgba(144, 218, 226, 0.78);
+    background: rgba(2, 13, 18, 0.7);
+    font: 0.52rem/1 Consolas, monospace;
+    letter-spacing: 0.08em;
+    pointer-events: none;
+    transition: opacity 140ms ease;
+  }
+  .medal-detail-visual.is-zooming { cursor: crosshair; }
+  .medal-detail-visual.is-zooming::after { opacity: 0; }
+  .medal-detail-visual.is-zooming img {
+    transform: scale(2.4);
+    filter: drop-shadow(0 0 0.7rem rgba(72, 193, 205, 0.16));
+  }
+}
 
 @media (max-width: 34rem) {
   .medal-detail-body { grid-template-columns: 1fr; }
