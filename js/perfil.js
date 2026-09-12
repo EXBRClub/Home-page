@@ -250,11 +250,20 @@ document.addEventListener('DOMContentLoaded', () => {
     bannerOptions.forEach(button => button.setAttribute('aria-pressed', String(button === option)));
   };
 
-  const renderFavoriteMarker = (marker, symbol, label, name) => {
+  const renderFavoriteMarker = (marker, symbol, label, name, iconUrl = '') => {
     if (!marker) return;
     const icon = marker.querySelector('span');
     const caption = marker.querySelector('small');
-    if (icon) icon.textContent = symbol;
+    if (icon) {
+      if (iconUrl) {
+        const image = document.createElement('img');
+        image.src = iconUrl;
+        image.alt = '';
+        icon.replaceChildren(image);
+      } else {
+        icon.textContent = symbol;
+      }
+    }
     if (caption) caption.textContent = label;
     marker.title = name ? `${label} favorita: ${name}` : `${label} favorita não definida`;
     marker.dataset.active = String(Boolean(name));
@@ -313,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isOwner) return;
     const value = option.dataset.factionOption;
     factionOptions.forEach(button => button.setAttribute('aria-pressed', String(button === option)));
-    renderFavoriteMarker(favoriteFaction, option.dataset.symbol, 'Facção', factionNames[value]);
+    renderFavoriteMarker(favoriteFaction, option.dataset.symbol, 'Facção', factionNames[value], option.dataset.icon);
     savePreference('favoriteFaction', value, `${factionNames[value]} definida como facção favorita.`);
   }));
 
@@ -706,7 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
     classOptions.forEach(option => option.setAttribute('aria-pressed', String(option === selectedClass)));
     factionOptions.forEach(option => option.setAttribute('aria-pressed', String(option === selectedFaction)));
     renderFavoriteMarker(favoriteClass, selectedClass?.dataset.symbol || '◇', 'Classe', classNames[profile.favoriteClass]);
-    renderFavoriteMarker(favoriteFaction, selectedFaction?.dataset.symbol || '◇', 'Facção', factionNames[profile.favoriteFaction]);
+    renderFavoriteMarker(favoriteFaction, selectedFaction?.dataset.symbol || '◇', 'Facção', factionNames[profile.favoriteFaction], selectedFaction?.dataset.icon || '');
     if (memberBio) memberBio.textContent = profile.bio?.trim() || 'Nenhuma transmissão pessoal registrada.';
     if (bioInput) bioInput.value = profile.bio || '';
 
