@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/comunidade.css?v=20260911-3">
+  <link rel="stylesheet" href="../css/pages/comunidade.css?v=20260912-1">
 </head>
 <body class="community-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -54,11 +54,11 @@
       </header>
 
       <div class="community-tabs" role="tablist" aria-label="Setores da comunidade">
-        <button type="button" role="tab" aria-selected="true" aria-controls="community-members-panel" data-community-tab="members">Membros</button>
-        <button type="button" role="tab" aria-selected="false" aria-controls="community-gallery-panel" data-community-tab="gallery">Galeria</button>
+        <button type="button" role="tab" aria-selected="true" aria-controls="community-gallery-panel" data-community-tab="gallery">Galeria</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="community-members-panel" data-community-tab="members">Membros</button>
       </div>
 
-      <section id="community-members-panel" role="tabpanel" data-community-panel="members">
+      <section id="community-members-panel" role="tabpanel" data-community-panel="members" hidden>
         <label class="community-search" for="community-search">
           <span aria-hidden="true">⌕</span>
           <input id="community-search" type="search" placeholder="Pesquisar soldado, patente, classe ou facção" autocomplete="off" data-community-search>
@@ -70,7 +70,7 @@
         </section>
       </section>
 
-      <section id="community-gallery-panel" class="community-gallery-panel" role="tabpanel" data-community-panel="gallery" hidden>
+      <section id="community-gallery-panel" class="community-gallery-panel" role="tabpanel" data-community-panel="gallery">
         <header class="gallery-heading">
           <div><span>ARQUIVO // COMUNIDADE</span><h2>Galeria EXBR</h2></div>
           <p>Fotos arquivadas pela EXBR e vídeos transmitidos por links externos.</p>
