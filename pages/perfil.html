@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260912-7">
+  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260912-8">
 </head>
 <body class="member-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -75,7 +75,7 @@
           <span class="member-online"><i aria-hidden="true"></i> <span data-member-status>Conectando…</span></span>
         </header>
 
-        <article class="identity-card" data-profile-card data-banner="brasil">
+        <article class="identity-card" data-profile-card data-banner="Bunner_022">
           <div class="flag-stage" aria-hidden="true">
             <div class="flag-texture"></div>
             <div class="flag-light"></div>
@@ -86,7 +86,6 @@
             <h1 id="member-name" data-member-name>MEMBRO EXBR</h1>
             <span class="member-service-line">
               <strong data-member-rank data-rank-id="soldado">Soldado</strong>
-              <small data-avatar-class>Classe Assalto</small>
               <em class="member-role-badge" data-member-role data-role="member">Membro</em>
             </span>
           </div>
@@ -126,10 +125,10 @@
               <strong>Bandeira</strong>
               <span>Defina o tratamento visual</span>
             </div>
-            <div class="banner-options" role="group" aria-label="Tratamentos da bandeira">
-              <button type="button" data-banner-option data-banner="brasil" aria-pressed="true"><i></i> Brasil</button>
-              <button type="button" data-banner-option data-banner="comando" aria-pressed="false"><i></i> Comando</button>
-              <button type="button" data-banner-option data-banner="noturna" aria-pressed="false"><i></i> Noturna</button>
+            <div class="banner-slider-shell">
+              <button class="banner-slide-control" type="button" data-banner-slide="-1" aria-label="Ver banners anteriores">‹</button>
+              <div class="banner-options" data-banner-options role="group" aria-label="Banners do perfil"></div>
+              <button class="banner-slide-control" type="button" data-banner-slide="1" aria-label="Ver próximos banners">›</button>
             </div>
           </div>
 
@@ -262,6 +261,6 @@
   </nav>
 
   <script src="../js/main.js?v=20260907-2" defer></script>
-  <script src="../js/perfil.js?v=20260912-6" type="module"></script>
+  <script src="../js/perfil.js?v=20260912-7" type="module"></script>
 </body>
 </html>
