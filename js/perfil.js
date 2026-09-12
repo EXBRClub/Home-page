@@ -261,10 +261,18 @@ document.addEventListener('DOMContentLoaded', () => {
         image.alt = '';
         icon.replaceChildren(image);
       } else {
-        icon.textContent = symbol;
+        const image = document.createElement('img');
+        image.src = '../assets/icons/dock/recrutamento.png';
+        image.alt = '';
+        icon.replaceChildren(image);
       }
     }
-    if (caption) caption.textContent = label;
+    if (caption) {
+      const captionText = name || label;
+      const captionSize = captionText.length > 22 ? 0.27 : captionText.length > 16 ? 0.31 : captionText.length > 11 ? 0.36 : 0.46;
+      caption.textContent = captionText;
+      caption.style.setProperty('--marker-caption-size', `${captionSize}rem`);
+    }
     marker.title = name ? `${label} favorita: ${name}` : `${label} favorita não definida`;
     marker.dataset.active = String(Boolean(name));
   };

@@ -38,10 +38,10 @@ const classIcons = {
 };
 const factionNames = { tr: 'Terran Republic', nc: 'New Conglomerate', vs: 'Vanu Sovereignty', nso: 'Nanite Systems Operatives' };
 const factionIcons = {
-  nc: 'https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_pad,w_256,h_256,b_black/v1789223897/exbr-site/factions/zfgxv0lzxseaksbvp6um.jpg',
-  tr: 'https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_pad,w_256,h_256,b_black/v1789223907/exbr-site/factions/nrjcglhjneak1jsfaw28.jpg',
-  vs: 'https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_pad,w_256,h_256,b_black/v1789223929/exbr-site/factions/qlybaxakjsbuede3k7yk.jpg',
-  nso: 'https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_pad,w_256,h_256,b_black/v1789223939/exbr-site/factions/labmwrezkoulfdxz24um.jpg'
+  nc: 'https://res.cloudinary.com/uofznsju/image/upload/v1789227363/exbr-site/factions-v2/wuzxzjfvsyvozqecvdwz.png',
+  tr: 'https://res.cloudinary.com/uofznsju/image/upload/v1789227373/exbr-site/factions-v2/dvuz7ij53agnvbfdpmkr.png',
+  vs: 'https://res.cloudinary.com/uofznsju/image/upload/v1789227385/exbr-site/factions-v2/pnjy20rev044nq6ddsvn.png',
+  nso: 'https://res.cloudinary.com/uofznsju/image/upload/v1789227395/exbr-site/factions-v2/vpmerleuuqstlpozn6aw.png'
 };
 
 const setFeedback = (message, state = 'info') => {

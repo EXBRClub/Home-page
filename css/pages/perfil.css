@@ -324,8 +324,8 @@
 .member-class-marker {
   position: absolute;
   z-index: 5;
-  width: 3.25rem;
-  min-height: 3.25rem;
+  width: 4.1rem;
+  min-height: 4.15rem;
   display: grid;
   place-items: center;
   gap: 0.05rem;
@@ -345,10 +345,19 @@
 .member-faction-marker span,
 .member-class-marker span { font-size: 1.25rem; line-height: 1; text-shadow: 0 0 0.7rem currentColor; }
 .member-faction-marker span img,
-.member-class-marker span img { width: 2.25rem; height: 2.25rem; display: block; object-fit: contain; }
+.member-class-marker span img { width: 2.55rem; height: 2.55rem; display: block; object-fit: contain; }
 .member-class-marker span img { filter: drop-shadow(0 0 0.35rem rgba(35, 197, 255, 0.72)); }
 .member-faction-marker small,
-.member-class-marker small { color: #8bb0b7; font: 0.48rem/1 Consolas, monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+.member-class-marker small {
+  width: 100%;
+  min-width: 0;
+  color: #8bb0b7;
+  font: var(--marker-caption-size, 0.46rem)/1.05 Consolas, monospace;
+  letter-spacing: 0.035em;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-transform: uppercase;
+}
 
 .profile-edit-toggle {
   position: absolute;
