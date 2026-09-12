@@ -109,7 +109,7 @@
           </label>
           <button type="submit">Publicar na galeria</button>
         </form>
-        <p class="admin-feedback" data-gallery-admin-feedback aria-live="polite">Somente o endereço externo será salvo. O arquivo não será enviado ao site.</p>
+        <p class="admin-feedback" data-gallery-admin-feedback aria-live="polite">Fotos serão arquivadas no Cloudinary; vídeos permanecem externos.</p>
         <div class="gallery-admin-list" data-gallery-admin-list><div class="admin-empty">Carregando galeria…</div></div>
       </section>
     </div>
@@ -143,8 +143,8 @@
       <div class="medal-editor-fields">
         <label>Nome da medalha<input name="name" type="text" maxlength="60" required></label>
         <label>Descrição<textarea name="description" maxlength="220" rows="4" required></textarea></label>
-        <label>URL ou caminho do ícone PNG<input name="iconUrl" type="text" maxlength="300" placeholder="../assets/medals/medalha.png"></label>
-        <small>Sem um endereço PNG válido, será usado o ícone padrão recrutamento.png.</small>
+        <label>URL ou caminho da imagem<input name="iconUrl" type="text" maxlength="500" placeholder="https://... ou ../assets/medals/medalha.png"></label>
+        <small>URLs externas serão arquivadas e entregues como PNG. Sem imagem, será usado recrutamento.png.</small>
       </div>
       <p class="medal-editor-feedback" data-medal-editor-feedback aria-live="polite"></p>
       <button class="medal-editor-save" type="submit">Salvar medalha</button>
@@ -165,6 +165,6 @@
   </nav>
 
   <script src="../js/main.js?v=20260907-2" defer></script>
-  <script src="../js/admin.js?v=20260911-4" type="module"></script>
+  <script src="../js/admin.js?v=20260912-1" type="module"></script>
 </body>
 </html>
