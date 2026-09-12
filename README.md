@@ -108,7 +108,7 @@ Na mesma guia, o primeiro uso do atalho inferior de Operações leva ao setor da
 
 A rota protegida `pages/comunidade.html` reúne os perfis públicos dos membros autenticados. A aba Membros permite pesquisar por nome, patente, classe ou facção e mostra avatar, patente, apresentação pessoal, preferências, atividade recente, até cinco medalhas escolhidas pelo próprio membro e acesso ao perfil público completo. Na aba Galeria, cada membro autenticado pode publicar imagens e vídeos por URL e remover suas próprias publicações; administradores mantêm o controle geral. Fotos são importadas para a conta Cloudinary da EXBR antes do registro no Firestore. Vídeos permanecem externos. O Firestore guarda somente a URL permanente e os textos da publicação.
 
-O módulo `js/cloudinary-images.js` centraliza a conta `uofznsju`, o preset público limitado `exbr_site_images`, a importação remota e a entrega PNG. Ao abrir a Área administrativa, URLs antigas de medalhas e fotos da Galeria são migradas quando possível. URLs antigas de operações são migradas quando um administrador abre a página dedicada de Operações.
+O módulo `js/cloudinary-images.js` centraliza a conta `uofznsju`, o preset público limitado `exbr_site_images`, a importação remota e a entrega PNG. Ao abrir a Área administrativa, URLs antigas de medalhas, fotos da Galeria e imagens de operações são migradas automaticamente quando possível.
 
 Os dados comunitários usam `publicProfiles/{uid}`, separado do documento privado `users/{uid}`. E-mail, função administrativa e outros dados privados não são publicados. Membros autenticados podem consultar os perfis públicos; apenas o próprio membro ou um administrador pode atualizar seu registro público.
 
