@@ -61,7 +61,7 @@ Coleção: `communityGallery/{itemId}`
 
 ```text
 type         image | video
-url          endereço HTTPS do arquivo ou serviço externo
+url          URL permanente do Cloudinary para fotos ou endereço externo para vídeos
 title        título público
 description  descrição opcional
 createdBy    UID do membro ou administrador que publicou
@@ -70,7 +70,7 @@ createdAt    data de publicação
 updatedAt    última atualização
 ```
 
-Usuários autenticados podem consultar e publicar na galeria. Cada membro pode remover as próprias publicações; administradores podem remover qualquer registro e continuam com a gestão central. O Firestore armazena somente URL e metadados; fotos e vídeos permanecem hospedados externamente. A interface aceita imagens, vídeos diretos, YouTube e Vimeo e não executa URLs que não utilizem HTTPS.
+Usuários autenticados podem consultar e publicar na galeria. Cada membro pode remover as próprias publicações; administradores podem remover qualquer registro e continuam com a gestão central. Fotos informadas por URL são importadas para o Cloudinary da EXBR e entregues em PNG; vídeos diretos, YouTube e Vimeo permanecem externos. O Firestore armazena a URL resultante e os metadados e não executa endereços que não utilizem HTTPS.
 
 ## Medalhas
 
@@ -84,14 +84,14 @@ catalogId     identificador da medalha no catálogo
 operationName nome da operação
 operationDate data da operação (Timestamp recomendado)
 emoji         ícone temporário
-iconUrl       caminho/URL do PNG definitivo; usa recrutamento.png como padrão
+iconUrl       caminho local ou URL PNG permanente do Cloudinary; usa recrutamento.png como padrão
 ```
 
 Somente administradores podem conceder, editar ou remover medalhas. O membro pode consultar apenas as próprias condecorações.
 
 O catálogo inicial de segurança está em `data/medalhas.json`, mas o catálogo editável fica em `medalCatalog/{medalId}` no Firestore. Na primeira abertura administrativa, os modelos locais são copiados para essa coleção quando ela ainda estiver vazia. Administradores podem criar novas medalhas e editar nome, descrição e URL do ícone das medalhas existentes.
 
-Todos os modelos usam `../assets/icons/dock/recrutamento.png` enquanto não houver um caminho ou URL HTTPS terminado em `.png`. O módulo compartilhado `js/medal-images.js` normaliza caminhos locais, converte links `github.com/.../blob/...` para `raw.githubusercontent.com`, evita o envio de referenciador a servidores externos e retorna automaticamente ao ícone padrão se a imagem falhar. Perfil, comunidade e operações consultam a definição atual em `medalCatalog`, então uma imagem corrigida no catálogo também substitui snapshots antigos já concedidos. Cada concessão usa um documento automático, por isso o mesmo membro pode receber a mesma medalha em operações ou datas diferentes. O painel administrativo concede medalhas; a remoção é feita pelo administrador dentro do perfil consultado.
+Todos os modelos usam `../assets/icons/dock/recrutamento.png` enquanto não houver uma imagem definida. O módulo `js/cloudinary-images.js` importa URLs externas usando o preset `exbr_site_images` da conta `uofznsju` e gera a entrega em PNG permanente; `js/medal-images.js` normaliza a exibição e retorna automaticamente ao ícone padrão se a imagem falhar. Perfil, comunidade e operações consultam a definição atual em `medalCatalog`, então uma imagem corrigida no catálogo também substitui snapshots antigos já concedidos. Cada concessão usa um documento automático, por isso o mesmo membro pode receber a mesma medalha em operações ou datas diferentes. O painel administrativo concede medalhas; a remoção é feita pelo administrador dentro do perfil consultado.
 
 Membros autenticados podem consultar os modelos do catálogo para abrir os detalhes atualizados de suas medalhas. A escrita no catálogo continua exclusiva para administradores. A janela de detalhes apresenta nome, imagem ampliada, descrição, operação e data da concessão.
 
@@ -131,7 +131,7 @@ Rota protegida: `pages/admin.html`
 - a mesma medalha pode ser concedida novamente em outra data ou operação;
 - operações podem ser criadas e editadas na página dedicada com data, horário e medalha prevista;
 - somente o dono do perfil recebe os controles de avatar, bandeira, biografia, classe e facção;
-- a aba Galeria permite publicar e remover fotos ou vídeos por URL externa.
+- a aba Galeria arquiva fotos no Cloudinary, mantém vídeos externos e permite remover os registros.
 
 ## Evolução planejada
 
