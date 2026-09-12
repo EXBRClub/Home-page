@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260912-1">
+  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260912-2">
 </head>
 <body class="member-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -199,7 +199,7 @@
             <span>REGISTRO // CONDECORAÇÕES</span>
             <h2 id="medals-title">Medalhas</h2>
           </div>
-          <span class="medals-count" data-medals-count>00</span>
+          <button class="profile-medal-add" type="button" data-profile-medal-add aria-label="Adicionar medalha ao perfil" title="Adicionar medalha" hidden>+</button>
         </div>
 
         <p class="medals-demo-label" data-medals-label>Carregando registro…</p>
@@ -210,9 +210,6 @@
             <li class="medals-empty"><span aria-hidden="true">◇</span><strong>Carregando condecorações</strong><small>Aguarde a sincronização do perfil.</small></li>
           </ol>
 
-          <div class="medal-slots" aria-label="Espaços para novas medalhas">
-            <span></span><span></span><span></span>
-          </div>
         </div>
 
         <div class="medals-footer">
@@ -236,8 +233,28 @@
           <div><dt>Operação</dt><dd data-medal-detail-operation>Operação EXBR</dd></div>
           <div><dt>Recebida em</dt><dd data-medal-detail-date>Data não informada</dd></div>
         </dl>
+        <div class="medal-detail-actions" data-medal-detail-actions hidden>
+          <button type="button" data-medal-detail-feature data-tooltip="Ao favoritar, suas medalhas serão destacadas na área Membros da aba Comunidade.">Favoritar medalha ☆</button>
+        </div>
       </div>
     </div>
+  </dialog>
+
+  <dialog class="profile-medal-catalog tactical-panel" data-profile-medal-catalog aria-labelledby="profile-medal-catalog-title">
+    <div class="profile-medal-catalog-header">
+      <div><span>ADMINISTRAÇÃO // CONDECORAÇÕES</span><h2 id="profile-medal-catalog-title">Adicionar medalha</h2></div>
+      <button type="button" data-profile-medal-catalog-close aria-label="Fechar lista de medalhas">×</button>
+    </div>
+    <div class="profile-medal-award-fields">
+      <label>Operação<input type="text" maxlength="60" value="Operação EXBR" data-profile-medal-operation></label>
+      <label>Data da conquista<input type="date" data-profile-medal-date></label>
+    </div>
+    <label class="profile-medal-search">
+      <span aria-hidden="true">⌕</span>
+      <input type="search" placeholder="Pesquisar medalhas" autocomplete="off" data-profile-medal-search>
+    </label>
+    <p class="profile-medal-catalog-feedback" data-profile-medal-catalog-feedback aria-live="polite">Escolha uma medalha para conceder ao membro.</p>
+    <div class="profile-medal-catalog-grid" data-profile-medal-catalog-grid></div>
   </dialog>
 
   <nav class="tactical-dock" aria-label="Atalhos táticos">
@@ -254,6 +271,6 @@
   </nav>
 
   <script src="../js/main.js?v=20260907-2" defer></script>
-  <script src="../js/perfil.js?v=20260912-1" type="module"></script>
+  <script src="../js/perfil.js?v=20260912-2" type="module"></script>
 </body>
 </html>
