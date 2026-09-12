@@ -48,6 +48,7 @@ Home-page
 │
 └── js/
     ├── admin.js               ← Busca, patentes, medalhas e galeria administrativa
+    ├── cloudinary-images.js   ← Importação permanente e entrega PNG pelo Cloudinary
     ├── community-media.js     ← Validação e exibição segura de mídia externa
     ├── comunidade.js          ← Perfis públicos, preferências, atividade e galeria
     ├── firebase-client.js     ← Inicialização do Firebase
@@ -108,7 +109,7 @@ PAINEL ADMINISTRATIVO
 - Classe favorita aparece no canto inferior esquerdo do avatar
 - Facção favorita aparece no canto superior direito abaixo do nome
 - Biografia aparece em um monitor tático com falhas visuais discretas
-- Aba administrativa da Galeria publica imagens e vídeos somente por URL HTTPS
+- Aba administrativa da Galeria arquiva fotos no Cloudinary e mantém vídeos por URL HTTPS
 
 COMPONENTE TÁTICO INFERIOR
 
@@ -140,7 +141,7 @@ OPERAÇÕES
 - Administradores criam e editam operações pela página dedicada
 - Data e horário são escolhidos separadamente no editor
 - Medalha prevista é selecionada entre os modelos do catálogo existente
-- PNG da operação é configurável por caminho ou URL; o PNG da medalha vem do catálogo
+- Imagens externas das operações são arquivadas no Cloudinary; o PNG da medalha vem do catálogo
 - Primeiro atalho inferior na guia leva ao setor da Home; após visitar a página dedicada, retorna diretamente a ela
 - Registros: users/{uid}/participations/{operationId} e operations/{operationId}/participants/{uid}
 
@@ -150,7 +151,7 @@ COMUNIDADE
 - Abas Membros e Galeria
 - Pesquisa por nome, patente, classe ou facção
 - Avatar, patente, biografia, preferências, atividade recente e até cinco medalhas escolhidas pelo membro
-- Galeria de imagens, vídeos diretos, YouTube e Vimeo hospedados externamente
+- Fotos da Galeria arquivadas no Cloudinary; vídeos diretos, YouTube e Vimeo permanecem externos
 - Membros autenticados publicam por URL e removem os próprios registros; administradores gerenciam todos
 - Botão Ver perfil abre pages/perfil.html?uid={uid}
 - Membros comuns veem somente publicProfiles/{uid}
