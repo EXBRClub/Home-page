@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const memberOperationsList = document.querySelector('[data-member-operations-list]');
   const medalDetail = document.querySelector('[data-medal-detail]');
   const medalDetailClose = document.querySelector('[data-medal-detail-close]');
+  const medalDetailVisual = document.querySelector('.medal-detail-visual');
   const medalDetailName = document.querySelector('[data-medal-detail-name]');
   const medalDetailImage = document.querySelector('[data-medal-detail-image]');
   const medalDetailDescription = document.querySelector('[data-medal-detail-description]');
@@ -155,7 +156,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const desktopMedalZoom = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)');
+  const resetMedalZoom = () => {
+    if (!medalDetailVisual) return;
+    medalDetailVisual.classList.remove('is-zooming');
+    medalDetailVisual.style.setProperty('--zoom-x', '50%');
+    medalDetailVisual.style.setProperty('--zoom-y', '50%');
+  };
+
+  medalDetailVisual?.addEventListener('pointerenter', () => {
+    if (desktopMedalZoom.matches) medalDetailVisual.classList.add('is-zooming');
+  });
+  medalDetailVisual?.addEventListener('pointermove', event => {
+    if (!desktopMedalZoom.matches) return;
+    const bounds = medalDetailVisual.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((event.clientX - bounds.left) / bounds.width) * 100));
+    const y = Math.max(0, Math.min(100, ((event.clientY - bounds.top) / bounds.height) * 100));
+    medalDetailVisual.style.setProperty('--zoom-x', `${x}%`);
+    medalDetailVisual.style.setProperty('--zoom-y', `${y}%`);
+  });
+  medalDetailVisual?.addEventListener('pointerleave', resetMedalZoom);
+
   medalDetailClose?.addEventListener('click', () => medalDetail?.close());
+  medalDetail?.addEventListener('close', resetMedalZoom);
   medalDetail?.addEventListener('click', event => {
     if (event.target === medalDetail) medalDetail.close();
   });
