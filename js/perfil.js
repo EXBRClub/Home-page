@@ -14,12 +14,12 @@ import {
 import { auth, db } from './firebase-client.js';
 import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 import { AVATAR_CATALOG, AVATAR_GROUPS, DEFAULT_AVATAR_ID, avatarSource, normalizeAvatarId } from './avatar-catalog.js?v=20260912-1';
+import { BANNER_CATALOG, DEFAULT_BANNER_ID, bannerSource, normalizeBannerId } from './banner-catalog.js?v=20260912-1';
 
 document.addEventListener('DOMContentLoaded', () => {
   const card = document.querySelector('[data-profile-card]');
   const identityZone = document.querySelector('.identity-zone');
   const avatarImage = document.querySelector('[data-member-avatar]');
-  const avatarClass = document.querySelector('[data-avatar-class]');
   const avatarOptionsContainer = document.querySelector('[data-avatar-options]');
   AVATAR_GROUPS.forEach(groupName => {
     const groupAvatars = AVATAR_CATALOG.filter(avatar => avatar.group === groupName);
@@ -54,7 +54,29 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   const avatarOptions = [...document.querySelectorAll('[data-avatar-option]')];
   const avatarSlideButtons = [...document.querySelectorAll('[data-avatar-slide]')];
+  const bannerOptionsContainer = document.querySelector('[data-banner-options]');
+  BANNER_CATALOG.forEach(banner => {
+    if (!bannerOptionsContainer) return;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.bannerOption = '';
+    button.dataset.banner = banner.id;
+    button.dataset.bannerName = banner.name;
+    button.dataset.bannerSrc = bannerSource(banner.id);
+    button.title = banner.name;
+    button.setAttribute('aria-label', banner.name);
+    button.setAttribute('aria-pressed', String(banner.id === DEFAULT_BANNER_ID));
+    const image = document.createElement('img');
+    image.src = bannerSource(banner.id, 'thumb');
+    image.alt = '';
+    image.loading = 'lazy';
+    const number = document.createElement('small');
+    number.textContent = String(BANNER_CATALOG.indexOf(banner) + 1).padStart(2, '0');
+    button.append(image, number);
+    bannerOptionsContainer.append(button);
+  });
   const bannerOptions = [...document.querySelectorAll('[data-banner-option]')];
+  const bannerSlideButtons = [...document.querySelectorAll('[data-banner-slide]')];
   const classOptions = [...document.querySelectorAll('[data-class-option]')];
   const factionOptions = [...document.querySelectorAll('[data-faction-option]')];
   const favoriteClass = document.querySelector('[data-favorite-class]');
@@ -97,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileMedalOperation = document.querySelector('[data-profile-medal-operation]');
   const profileMedalDate = document.querySelector('[data-profile-medal-date]');
 
-  if (!card || !avatarImage || !avatarClass) return;
+  if (!card || !avatarImage) return;
 
   const avatars = new Map(avatarOptions.map(option => [option.dataset.avatar, option]));
   const banners = new Map(bannerOptions.map(option => [option.dataset.banner, option]));
@@ -272,7 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.setTimeout(() => {
       avatarImage.src = source;
       avatarImage.alt = `Avatar selecionado: soldado da classe ${name}`;
-      avatarClass.textContent = `Classe ${name}`;
       avatarOptions.forEach(button => button.setAttribute('aria-pressed', String(button === option)));
       card.classList.remove('is-changing');
     }, animate ? 180 : 0);
@@ -287,9 +308,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }));
 
+  bannerSlideButtons.forEach(button => button.addEventListener('click', () => {
+    if (!bannerOptionsContainer) return;
+    const direction = Number(button.dataset.bannerSlide) || 1;
+    bannerOptionsContainer.scrollBy({
+      left: direction * Math.max(260, bannerOptionsContainer.clientWidth * 0.86),
+      behavior: 'smooth'
+    });
+  }));
+
   const applyBanner = option => {
     if (!option) return;
-    card.dataset.banner = option.dataset.banner;
+    const bannerId = normalizeBannerId(option.dataset.banner);
+    card.dataset.banner = bannerId;
+    card.style.setProperty('--profile-banner-image', `url("${option.dataset.bannerSrc || bannerSource(bannerId)}")`);
     bannerOptions.forEach(button => button.setAttribute('aria-pressed', String(button === option)));
   };
 
@@ -312,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (caption) {
       const captionText = name || label;
-      const captionSize = captionText.length > 22 ? 0.27 : captionText.length > 16 ? 0.31 : captionText.length > 11 ? 0.36 : 0.46;
+      const captionSize = captionText.length > 22 ? 0.22 : captionText.length > 16 ? 0.24 : captionText.length > 11 ? 0.27 : 0.42;
       caption.textContent = captionText;
       caption.style.setProperty('--marker-caption-size', `${captionSize}rem`);
     }
@@ -358,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
   bannerOptions.forEach(option => option.addEventListener('click', () => {
     if (!isOwner) return;
     applyBanner(option);
-    savePreference('bannerId', option.dataset.banner, `Bandeira ${option.textContent.trim()} selecionada.`);
+    savePreference('bannerId', option.dataset.banner, `${option.dataset.bannerName} selecionado.`);
   }));
 
   classOptions.forEach(option => option.addEventListener('click', () => {
@@ -687,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
       displayName: currentProfile.displayName || 'Membro EXBR',
       rankId: currentProfile.rankId || 'soldado',
       avatarId: normalizeAvatarId(currentProfile.avatarId || DEFAULT_AVATAR_ID),
-      bannerId: currentProfile.bannerId || 'brasil',
+      bannerId: normalizeBannerId(currentProfile.bannerId || DEFAULT_BANNER_ID),
       bio: currentProfile.bio || '',
       favoriteClass: currentProfile.favoriteClass || '',
       favoriteFaction: currentProfile.favoriteFaction || '',
@@ -726,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
       role: 'member',
       rankId: 'soldado',
       avatarId: DEFAULT_AVATAR_ID,
-      bannerId: 'brasil',
+      bannerId: DEFAULT_BANNER_ID,
       bio: '',
       favoriteClass: '',
       favoriteFaction: '',
@@ -760,7 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshFeaturedCount();
     document.body.dataset.userRole = viewerProfile?.role === 'admin' ? 'admin' : 'member';
     applyAvatar(avatars.get(normalizeAvatarId(profile.avatarId)) || avatars.get(DEFAULT_AVATAR_ID) || avatarOptions[0], false);
-    applyBanner(banners.get(profile.bannerId) || bannerOptions[0]);
+    applyBanner(banners.get(normalizeBannerId(profile.bannerId)) || banners.get(DEFAULT_BANNER_ID) || bannerOptions[0]);
     const selectedClass = classes.get(profile.favoriteClass);
     const selectedFaction = factions.get(profile.favoriteFaction);
     classOptions.forEach(option => option.setAttribute('aria-pressed', String(option === selectedClass)));
