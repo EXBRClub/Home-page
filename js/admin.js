@@ -14,7 +14,8 @@ import {
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
-import { applyMedalImage, defaultMedalIcon, isValidPngUrl, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
+import { archiveImage, shouldArchiveImage } from './cloudinary-images.js?v=20260912-1';
+import { applyMedalImage, defaultMedalIcon, isImportableMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260912-1';
 import { createMediaElement, normalizeExternalUrl } from './community-media.js?v=20260911-1';
 
 const list = document.querySelector('[data-soldier-list]');
@@ -348,8 +349,9 @@ const saveGalleryItem = async event => {
   }
   submit.disabled = true;
   setGalleryFeedback('Publicando registro visual…');
+  const type = galleryForm.elements.type.value === 'video' ? 'video' : 'image';
   const item = {
-    type: galleryForm.elements.type.value === 'video' ? 'video' : 'image',
+    type,
     url,
     title: galleryForm.elements.title.value.trim(),
     description: galleryForm.elements.description.value.trim(),
@@ -359,17 +361,32 @@ const saveGalleryItem = async event => {
     updatedAt: serverTimestamp()
   };
   try {
+    if (type === 'image') {
+      setGalleryFeedback('Arquivando imagem permanentemente…');
+      item.url = await archiveImage(url);
+    }
     const reference = await addDoc(collection(db, 'communityGallery'), item);
     galleryItems.unshift({ id: reference.id, ...item, createdAt: null, updatedAt: null });
     galleryForm.reset();
     renderGalleryAdmin();
     setGalleryFeedback('Registro publicado na Galeria EXBR.', 'success');
   } catch (error) {
-    setGalleryFeedback('Não foi possível publicar. Verifique as regras do Firestore.', 'error');
+    setGalleryFeedback(error.message || 'Não foi possível publicar a imagem.', 'error');
   } finally {
     submit.disabled = false;
   }
 };
+
+const migrateGalleryImages = async items => Promise.all(items.map(async item => {
+  if (item.type !== 'image' || !shouldArchiveImage(item.url)) return item;
+  try {
+    const url = await archiveImage(item.url);
+    await setDoc(doc(db, 'communityGallery', item.id), { url, updatedAt: serverTimestamp() }, { merge: true });
+    return { ...item, url };
+  } catch (error) {
+    return item;
+  }
+}));
 
 const addMedal = async (medal, button) => {
   if (!selectedUser) return;
@@ -420,8 +437,8 @@ const saveMedalDefinition = async event => {
   event.preventDefault();
   if (!medalEditorForm) return;
   const iconUrlInput = medalEditorForm.elements.iconUrl.value.trim();
-  if (iconUrlInput && !isValidPngUrl(iconUrlInput)) {
-    medalEditorFeedback.textContent = 'Informe um caminho ou URL terminado em .png, ou deixe o campo vazio.';
+  if (iconUrlInput && !isImportableMedalImage(iconUrlInput)) {
+    medalEditorFeedback.textContent = 'Informe um caminho local ou uma URL HTTPS de imagem.';
     medalEditorFeedback.dataset.state = 'error';
     return;
   }
@@ -432,15 +449,18 @@ const saveMedalDefinition = async event => {
   const definition = {
     nome: medalEditorForm.elements.name.value.trim(),
     description: medalEditorForm.elements.description.value.trim(),
-    iconUrl: normalizeMedalIcon(iconUrlInput),
+    iconUrl: iconUrlInput ? '' : defaultMedalIcon,
     updatedAt: serverTimestamp()
   };
   if (!existingId) definition.createdAt = serverTimestamp();
 
   submit.disabled = true;
-  medalEditorFeedback.textContent = 'Salvando medalha…';
+  medalEditorFeedback.textContent = iconUrlInput ? 'Arquivando imagem e salvando medalha…' : 'Salvando medalha…';
   medalEditorFeedback.dataset.state = 'info';
   try {
+    definition.iconUrl = iconUrlInput
+      ? normalizeMedalIcon(await archiveImage(iconUrlInput))
+      : defaultMedalIcon;
     await setDoc(reference, definition, { merge: true });
     const saved = { id: reference.id, ...definition, updatedAt: null, createdAt: null };
     const index = medals.findIndex(medal => medal.id === reference.id);
@@ -452,7 +472,7 @@ const saveMedalDefinition = async event => {
     setMedalFeedback(`${definition.nome} salva no catálogo.`, 'success');
     setAdminMedalFeedback(`${definition.nome} salva no catálogo.`, 'success');
   } catch (error) {
-    medalEditorFeedback.textContent = 'Não foi possível salvar. Publique as novas regras do Firestore e tente novamente.';
+    medalEditorFeedback.textContent = error.message || 'Não foi possível arquivar e salvar a medalha.';
     medalEditorFeedback.dataset.state = 'error';
   } finally {
     submit.disabled = false;
@@ -466,7 +486,19 @@ const loadMedalCatalog = async () => {
   let snapshot;
   try {
     snapshot = await getDocs(collection(db, 'medalCatalog'));
-    if (!snapshot.empty) return snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+    if (!snapshot.empty) {
+      const storedMedals = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      return Promise.all(storedMedals.map(async medal => {
+        if (!shouldArchiveImage(medal.iconUrl)) return medal;
+        try {
+          const iconUrl = await archiveImage(medal.iconUrl);
+          await setDoc(doc(db, 'medalCatalog', medal.id), { iconUrl, updatedAt: serverTimestamp() }, { merge: true });
+          return { ...medal, iconUrl };
+        } catch (error) {
+          return medal;
+        }
+      }));
+    }
   } catch (error) {
     return defaults;
   }
@@ -512,6 +544,7 @@ const loadData = async () => {
   galleryItems = gallerySnapshot
     ? gallerySnapshot.docs.map(item => ({ id: item.id, ...item.data() })).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
     : [];
+  galleryItems = await migrateGalleryImages(galleryItems);
   renderMedals();
   renderGalleryAdmin();
   setAdminMedalFeedback(`${medals.length} ${medals.length === 1 ? 'medalha disponível' : 'medalhas disponíveis'} para edição.`, 'success');
