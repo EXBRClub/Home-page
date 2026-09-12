@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isOwner) return;
     const value = option.dataset.classOption;
     classOptions.forEach(button => button.setAttribute('aria-pressed', String(button === option)));
-    renderFavoriteMarker(favoriteClass, option.dataset.symbol, 'Classe', classNames[value]);
+    renderFavoriteMarker(favoriteClass, option.dataset.symbol, 'Classe', classNames[value], option.dataset.icon);
     savePreference('favoriteClass', value, `${classNames[value]} definida como classe favorita.`);
   }));
 
@@ -714,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedFaction = factions.get(profile.favoriteFaction);
     classOptions.forEach(option => option.setAttribute('aria-pressed', String(option === selectedClass)));
     factionOptions.forEach(option => option.setAttribute('aria-pressed', String(option === selectedFaction)));
-    renderFavoriteMarker(favoriteClass, selectedClass?.dataset.symbol || '◇', 'Classe', classNames[profile.favoriteClass]);
+    renderFavoriteMarker(favoriteClass, selectedClass?.dataset.symbol || '◇', 'Classe', classNames[profile.favoriteClass], selectedClass?.dataset.icon || '');
     renderFavoriteMarker(favoriteFaction, selectedFaction?.dataset.symbol || '◇', 'Facção', factionNames[profile.favoriteFaction], selectedFaction?.dataset.icon || '');
     if (memberBio) memberBio.textContent = profile.bio?.trim() || 'Nenhuma transmissão pessoal registrada.';
     if (bioInput) bioInput.value = profile.bio || '';

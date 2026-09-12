@@ -28,6 +28,14 @@ let viewerProfile = null;
 
 const classNames = { infiltrador: 'Infiltrador', 'assalto-leve': 'Assalto leve', medico: 'Médico de combate', engenheiro: 'Engenheiro', 'assalto-pesado': 'Assalto pesado', max: 'MAX' };
 const classSymbols = { infiltrador: '◇', 'assalto-leve': '△', medico: '✚', engenheiro: '⚙', 'assalto-pesado': '⬡', max: '◆' };
+const classIcons = {
+  infiltrador: 'https://res.cloudinary.com/uofznsju/image/upload/v1789226044/exbr-site/classes/n4vssk15kqxqd4c6obgi.png',
+  'assalto-leve': 'https://res.cloudinary.com/uofznsju/image/upload/v1789226054/exbr-site/classes/qkv2u8faf5cywdqa7eot.png',
+  medico: 'https://res.cloudinary.com/uofznsju/image/upload/v1789226064/exbr-site/classes/melgfelpgez4cb1dcbig.png',
+  engenheiro: 'https://res.cloudinary.com/uofznsju/image/upload/v1789226075/exbr-site/classes/tupc2fprhxjq1ykrzouz.png',
+  'assalto-pesado': 'https://res.cloudinary.com/uofznsju/image/upload/v1789226084/exbr-site/classes/oxihdaqkerwop0l10ihy.png',
+  max: 'https://res.cloudinary.com/uofznsju/image/upload/v1789226096/exbr-site/classes/eosv1y4g0vl2m5zsa67w.png'
+};
 const factionNames = { tr: 'Terran Republic', nc: 'New Conglomerate', vs: 'Vanu Sovereignty', nso: 'Nanite Systems Operatives' };
 const factionIcons = {
   nc: 'https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_pad,w_256,h_256,b_black/v1789223897/exbr-site/factions/zfgxv0lzxseaksbvp6um.jpg',
@@ -154,7 +162,16 @@ const render = () => {
     const factionName = factionNames[member.favoriteFaction];
     if (className || factionName) {
       const classSpecification = document.createElement('span');
-      classSpecification.textContent = (classSymbols[member.favoriteClass] || '◇') + ' ' + (className || 'Classe não definida');
+      classSpecification.className = 'community-class-specification';
+      if (classIcons[member.favoriteClass]) {
+        const classIcon = document.createElement('img');
+        classIcon.src = classIcons[member.favoriteClass];
+        classIcon.alt = '';
+        classSpecification.append(classIcon);
+      } else {
+        classSpecification.append((classSymbols[member.favoriteClass] || '◇') + ' ');
+      }
+      classSpecification.append(className || 'Classe não definida');
       const separator = document.createTextNode(' · ');
       const factionSpecification = document.createElement('span');
       factionSpecification.className = 'community-faction-specification';

@@ -344,7 +344,9 @@
 .member-class-marker[data-active="true"] { border-color: rgba(231, 189, 66, 0.68); color: #ffe16b; background: rgba(41, 33, 11, 0.78); }
 .member-faction-marker span,
 .member-class-marker span { font-size: 1.25rem; line-height: 1; text-shadow: 0 0 0.7rem currentColor; }
-.member-faction-marker span img { width: 2.25rem; height: 2.25rem; display: block; object-fit: contain; }
+.member-faction-marker span img,
+.member-class-marker span img { width: 2.25rem; height: 2.25rem; display: block; object-fit: contain; }
+.member-class-marker span img { filter: drop-shadow(0 0 0.35rem rgba(35, 197, 255, 0.72)); }
 .member-faction-marker small,
 .member-class-marker small { color: #8bb0b7; font: 0.48rem/1 Consolas, monospace; letter-spacing: 0.08em; text-transform: uppercase; }
 
@@ -466,6 +468,11 @@
 }
 .faction-options button { padding: 0.18rem; }
 .faction-options button img { width: 2.35rem; height: 2.35rem; display: block; margin: auto; object-fit: contain; pointer-events: none; transition: transform 180ms ease, filter 180ms ease; }
+.class-options button { min-height: 3.35rem; padding: 0.12rem; background: radial-gradient(circle, rgba(18, 119, 158, 0.17), rgba(7, 31, 38, 0.78) 70%); }
+.class-options button img { width: 2.9rem; height: 2.9rem; display: block; margin: auto; object-fit: contain; pointer-events: none; filter: drop-shadow(0 0 0.35rem rgba(35, 197, 255, 0.45)); transition: transform 180ms ease, filter 180ms ease; }
+.class-options button:hover img,
+.class-options button:focus-visible img,
+.class-options button[aria-pressed="true"] img { transform: scale(1.08); filter: drop-shadow(0 0 0.62rem rgba(69, 220, 255, 0.85)); }
 .faction-options button:hover img,
 .faction-options button:focus-visible img,
 .faction-options button[aria-pressed="true"] img { transform: scale(1.08); filter: drop-shadow(0 0 0.45rem rgba(92, 210, 221, 0.48)); }
