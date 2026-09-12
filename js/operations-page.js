@@ -10,6 +10,7 @@ import {
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
+import { archiveImage, shouldArchiveImage } from './cloudinary-images.js?v=20260912-1';
 import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 
 const list = document.querySelector('[data-operations-list]');
@@ -320,6 +321,7 @@ const saveOperation = async event => {
   const operationDate = editorForm.elements.operationDate.value;
   const operationTime = editorForm.elements.operationTime.value || '20:00';
   const medal = selectedMedal();
+  const imageUrlInput = editorForm.elements.imageUrl.value.trim();
   const operation = {
     title: editorForm.elements.title.value.trim(),
     kicker: editorForm.elements.kicker.value.trim(),
@@ -327,7 +329,7 @@ const saveOperation = async event => {
     details: editorForm.elements.details.value.trim(),
     startsAt: Timestamp.fromDate(new Date(`${operationDate}T${operationTime}:00`)),
     status: editorForm.elements.status.value,
-    imageUrl: editorForm.elements.imageUrl.value.trim(),
+    imageUrl: imageUrlInput,
     medalCatalogId: medal?.id || '',
     medalName: medal?.nome || '',
     medalDescription: medal?.description || '',
@@ -336,17 +338,35 @@ const saveOperation = async event => {
   };
 
   submit.disabled = true;
-  if (editorFeedback) editorFeedback.textContent = 'Salvando operação…';
+  if (editorFeedback) editorFeedback.textContent = imageUrlInput ? 'Arquivando imagem e salvando operação…' : 'Salvando operação…';
   try {
+    if (imageUrlInput) operation.imageUrl = await archiveImage(imageUrlInput);
     await setDoc(doc(db, 'operations', id), operation, { merge: true });
     editor.close();
     await loadOperations();
     setFeedback(`${operation.title} salva e publicada.`, 'success');
   } catch (error) {
-    if (editorFeedback) editorFeedback.textContent = 'Não foi possível salvar a operação.';
+    if (editorFeedback) editorFeedback.textContent = error.message || 'Não foi possível arquivar e salvar a operação.';
   } finally {
     submit.disabled = false;
   }
+};
+
+const migrateOperationImages = async () => {
+  if (!isAdmin()) return;
+  let changed = false;
+  operations = await Promise.all(operations.map(async operation => {
+    if (operation.source !== 'firestore' || !shouldArchiveImage(operation.imageUrl)) return operation;
+    try {
+      const imageUrl = await archiveImage(operation.imageUrl);
+      await setDoc(doc(db, 'operations', operation.id), { imageUrl, updatedAt: serverTimestamp() }, { merge: true });
+      changed = true;
+      return { ...operation, imageUrl };
+    } catch (error) {
+      return operation;
+    }
+  }));
+  if (changed) render();
 };
 
 createButton?.addEventListener('click', () => openEditor());
@@ -372,6 +392,7 @@ onAuthStateChanged(auth, async user => {
     }
   }
   if (user) await loadOperationMedals();
+  if (isAdmin()) await migrateOperationImages();
   if (createButton) createButton.hidden = !isAdmin();
   await loadParticipations();
   render();
