@@ -1,6 +1,7 @@
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
+import { archiveImage } from './cloudinary-images.js?v=20260912-1';
 import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 import { createMediaElement, normalizeExternalUrl } from './community-media.js?v=20260911-1';
 
@@ -246,8 +247,9 @@ galleryForm?.addEventListener('submit', async event => {
     if (galleryFeedback) galleryFeedback.textContent = 'Informe uma URL HTTPS válida.';
     return;
   }
+  const type = galleryForm.elements.type.value === 'video' ? 'video' : 'image';
   const item = {
-    type: galleryForm.elements.type.value === 'video' ? 'video' : 'image',
+    type,
     url,
     title: galleryForm.elements.title.value.trim(),
     description: galleryForm.elements.description.value.trim(),
@@ -257,8 +259,9 @@ galleryForm?.addEventListener('submit', async event => {
     updatedAt: serverTimestamp()
   };
   submit.disabled = true;
-  if (galleryFeedback) galleryFeedback.textContent = 'Transmitindo registro visual…';
+  if (galleryFeedback) galleryFeedback.textContent = type === 'image' ? 'Arquivando imagem permanentemente…' : 'Transmitindo registro visual…';
   try {
+    if (type === 'image') item.url = await archiveImage(url);
     const reference = await addDoc(collection(db, 'communityGallery'), item);
     galleryItems.unshift({ id: reference.id, ...item, createdAt: null, updatedAt: null });
     galleryForm.reset();
@@ -266,7 +269,7 @@ galleryForm?.addEventListener('submit', async event => {
     renderGallery();
     if (galleryFeedback) galleryFeedback.textContent = 'Publicação adicionada à Galeria EXBR.';
   } catch (error) {
-    if (galleryFeedback) galleryFeedback.textContent = 'Não foi possível publicar. Verifique se as novas regras do Firestore estão ativas.';
+    if (galleryFeedback) galleryFeedback.textContent = error.message || 'Não foi possível arquivar e publicar a imagem.';
   } finally {
     submit.disabled = false;
   }
