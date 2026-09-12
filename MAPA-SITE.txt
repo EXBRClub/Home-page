@@ -110,6 +110,8 @@ PAINEL ADMINISTRATIVO
 - Remoção administrativa feita no perfil do membro
 - Catálogo preparado para substituir emojis por iconUrl PNG
 - Botão Editar perfil visível somente ao dono após clicar no avatar
+- Seleção de facção usa imagens oficiais NC, TR, VS e NSO hospedadas no Cloudinary
+- Ícone da facção escolhida aparece no cartão do Perfil e na listagem da Comunidade
 - Controles de edição voltam a ficar ocultos após 30 segundos sem atividade
 - Classe favorita aparece no canto inferior esquerdo do avatar
 - Facção favorita aparece no canto superior direito abaixo do nome
