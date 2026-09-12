@@ -344,6 +344,7 @@
 .member-class-marker[data-active="true"] { border-color: rgba(231, 189, 66, 0.68); color: #ffe16b; background: rgba(41, 33, 11, 0.78); }
 .member-faction-marker span,
 .member-class-marker span { font-size: 1.25rem; line-height: 1; text-shadow: 0 0 0.7rem currentColor; }
+.member-faction-marker span img { width: 2.25rem; height: 2.25rem; display: block; object-fit: contain; }
 .member-faction-marker small,
 .member-class-marker small { color: #8bb0b7; font: 0.48rem/1 Consolas, monospace; letter-spacing: 0.08em; text-transform: uppercase; }
 
@@ -463,6 +464,11 @@
   font-size: 1.2rem;
   cursor: pointer;
 }
+.faction-options button { padding: 0.18rem; }
+.faction-options button img { width: 2.35rem; height: 2.35rem; display: block; margin: auto; object-fit: contain; pointer-events: none; transition: transform 180ms ease, filter 180ms ease; }
+.faction-options button:hover img,
+.faction-options button:focus-visible img,
+.faction-options button[aria-pressed="true"] img { transform: scale(1.08); filter: drop-shadow(0 0 0.45rem rgba(92, 210, 221, 0.48)); }
 .symbol-options button:hover,
 .symbol-options button:focus-visible,
 .symbol-options button[aria-pressed="true"] { border-color: #e7bd42; color: #ffdf63; background: radial-gradient(circle, rgba(226, 176, 44, 0.28), rgba(21, 28, 25, 0.86) 72%); box-shadow: inset 0 0 0.85rem rgba(241, 198, 62, 0.13); }
