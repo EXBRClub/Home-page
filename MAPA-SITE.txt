@@ -101,6 +101,7 @@ PAINEL ADMINISTRATIVO
 - Catálogo persistente: medalCatalog/{medalId}
 - Ícone padrão para medalhas sem PNG válido: assets/icons/dock/recrutamento.png
 - Clique na medalha abre imagem ampliada, nome, descrição, operação e data
+- No computador, a imagem ampliada oferece zoom de inspeção 2,4× acompanhando o cursor
 - Medalhas repetidas permitidas em datas ou operações diferentes
 - Remoção administrativa feita no perfil do membro
 - Catálogo preparado para substituir emojis por iconUrl PNG
