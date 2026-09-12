@@ -5,6 +5,7 @@ import { archiveImage } from './cloudinary-images.js?v=20260912-1';
 import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 import { createMediaElement, normalizeExternalUrl } from './community-media.js?v=20260911-1';
 import { DEFAULT_AVATAR_ID, avatarSource, normalizeAvatarId } from './avatar-catalog.js?v=20260912-1';
+import { DEFAULT_BANNER_ID, normalizeBannerId } from './banner-catalog.js?v=20260912-1';
 
 const list = document.querySelector('[data-community-list]');
 const search = document.querySelector('[data-community-search]');
@@ -85,7 +86,7 @@ const ensureViewerPublicProfile = async user => {
     displayName: profile.displayName || user.displayName || 'Membro EXBR',
     rankId: profile.rankId || 'soldado',
     avatarId: normalizeAvatarId(profile.avatarId || DEFAULT_AVATAR_ID),
-    bannerId: profile.bannerId || 'brasil',
+    bannerId: normalizeBannerId(profile.bannerId || DEFAULT_BANNER_ID),
     bio: profile.bio || '',
     favoriteClass: profile.favoriteClass || '',
     favoriteFaction: profile.favoriteFaction || '',
