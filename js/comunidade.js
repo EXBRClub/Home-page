@@ -29,7 +29,12 @@ let viewerProfile = null;
 const classNames = { infiltrador: 'Infiltrador', 'assalto-leve': 'Assalto leve', medico: 'Médico de combate', engenheiro: 'Engenheiro', 'assalto-pesado': 'Assalto pesado', max: 'MAX' };
 const classSymbols = { infiltrador: '◇', 'assalto-leve': '△', medico: '✚', engenheiro: '⚙', 'assalto-pesado': '⬡', max: '◆' };
 const factionNames = { tr: 'Terran Republic', nc: 'New Conglomerate', vs: 'Vanu Sovereignty', nso: 'Nanite Systems Operatives' };
-const factionSymbols = { tr: '●', nc: '■', vs: '◆', nso: '⬢' };
+const factionIcons = {
+  nc: 'https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_pad,w_256,h_256,b_black/v1789223897/exbr-site/factions/zfgxv0lzxseaksbvp6um.jpg',
+  tr: 'https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_pad,w_256,h_256,b_black/v1789223907/exbr-site/factions/nrjcglhjneak1jsfaw28.jpg',
+  vs: 'https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_pad,w_256,h_256,b_black/v1789223929/exbr-site/factions/qlybaxakjsbuede3k7yk.jpg',
+  nso: 'https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_pad,w_256,h_256,b_black/v1789223939/exbr-site/factions/labmwrezkoulfdxz24um.jpg'
+};
 
 const setFeedback = (message, state = 'info') => {
   if (!feedback) return;
@@ -147,9 +152,23 @@ const render = () => {
     specifications.className = 'community-specifications';
     const className = classNames[member.favoriteClass];
     const factionName = factionNames[member.favoriteFaction];
-    specifications.textContent = className || factionName
-      ? `${classSymbols[member.favoriteClass] || '◇'} ${className || 'Classe não definida'} · ${factionSymbols[member.favoriteFaction] || '◇'} ${factionName || 'Facção não definida'}`
-      : 'Classe e facção ainda não definidas';
+    if (className || factionName) {
+      const classSpecification = document.createElement('span');
+      classSpecification.textContent = (classSymbols[member.favoriteClass] || '◇') + ' ' + (className || 'Classe não definida');
+      const separator = document.createTextNode(' · ');
+      const factionSpecification = document.createElement('span');
+      factionSpecification.className = 'community-faction-specification';
+      if (factionIcons[member.favoriteFaction]) {
+        const factionIcon = document.createElement('img');
+        factionIcon.src = factionIcons[member.favoriteFaction];
+        factionIcon.alt = '';
+        factionSpecification.append(factionIcon);
+      }
+      factionSpecification.append(factionName || 'Facção não definida');
+      specifications.append(classSpecification, separator, factionSpecification);
+    } else {
+      specifications.textContent = 'Classe e facção ainda não definidas';
+    }
     const biography = document.createElement('span');
     biography.className = 'community-biography';
     biography.textContent = member.bio?.trim() || 'Sem transmissão pessoal.';
