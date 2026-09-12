@@ -102,6 +102,10 @@ PAINEL ADMINISTRATIVO
 - Ícone padrão para medalhas sem PNG válido: assets/icons/dock/recrutamento.png
 - Clique na medalha abre imagem ampliada, nome, descrição, operação e data
 - No computador, a imagem ampliada oferece zoom de inspeção 2,4× acompanhando o cursor
+- Medalhas do Perfil organizadas em inventário de três colunas e nove slots iniciais
+- Slots mostram estrela mínima vazia ou preenchida conforme o destaque do membro
+- Janela de detalhes permite favoritar até cinco medalhas no próprio perfil
+- Administrador recebe botão + no cabeçalho e catálogo de concessão em nove colunas
 - Medalhas repetidas permitidas em datas ou operações diferentes
 - Remoção administrativa feita no perfil do membro
 - Catálogo preparado para substituir emojis por iconUrl PNG
@@ -150,6 +154,8 @@ COMUNIDADE
 
 - pages/comunidade.html: área protegida para membros autenticados
 - Abas Membros e Galeria
+- Galeria definida como aba inicial; Membros acessível pela segunda aba
+- Cinco medalhas em destaque cabem sem rolagem horizontal no mobile
 - Pesquisa por nome, patente, classe ou facção
 - Avatar, patente, biografia, preferências, atividade recente e até cinco medalhas escolhidas pelo membro
 - Fotos da Galeria arquivadas no Cloudinary; vídeos diretos, YouTube e Vimeo permanecem externos
