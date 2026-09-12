@@ -68,13 +68,13 @@
 .community-identity { min-width: 0; display: grid; gap: 0.3rem; }
 .community-identity strong { overflow: hidden; color: #58c3cf; font-size: 1.05rem; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
 .community-rank { color: #ff8127; font-size: 0.86rem; font-weight: 850; letter-spacing: 0.05em; text-transform: uppercase; }
-.community-specifications { color: #73cbd4; font: 0.62rem/1.4 Consolas, monospace; }
+.community-specifications { overflow: hidden; color: #73cbd4; font: 0.62rem/1.4 Consolas, monospace; text-overflow: clip; white-space: nowrap; }
 .community-faction-specification,
 .community-class-specification { display: inline-flex; align-items: center; gap: 0.22rem; vertical-align: middle; }
 .community-faction-specification img,
 .community-class-specification img { width: 1.1rem; height: 1.1rem; flex: 0 0 auto; object-fit: contain; }
 .community-class-specification img { filter: drop-shadow(0 0 0.24rem rgba(46, 208, 255, 0.62)); }
-.community-biography { overflow: hidden; color: #9bb1b6; font: 0.72rem/1.45 Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; text-shadow: 0.025rem 0 rgba(77, 224, 233, 0.26), -0.025rem 0 rgba(255, 120, 93, 0.14); animation: community-text-fault 8s steps(1) infinite; }
+.community-biography { display: -webkit-box; overflow: hidden; color: #9bb1b6; font: 0.72rem/1.45 Consolas, monospace; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; text-overflow: ellipsis; white-space: normal; text-shadow: 0.025rem 0 rgba(77, 224, 233, 0.26), -0.025rem 0 rgba(255, 120, 93, 0.14); animation: community-text-fault 8s steps(1) infinite; }
 .community-activity { color: #82a0a7; font: 0.65rem/1.45 Consolas, monospace; }
 .community-activity b { color: #71d0da; font-weight: 700; }
 
@@ -129,6 +129,11 @@
   .community-main { padding-top: calc(var(--header-height) + 1.5rem); }
   .community-member { grid-template-columns: 4rem minmax(0, 1fr); gap: 0.65rem; }
   .community-avatar { width: 3.8rem; height: 4.8rem; }
+  .community-specifications { font-size: 0.5rem; letter-spacing: -0.025em; }
+  .community-faction-specification,
+  .community-class-specification { gap: 0.1rem; }
+  .community-faction-specification img,
+  .community-class-specification img { width: 0.82rem; height: 0.82rem; }
   .community-featured { grid-column: 1 / -1; }
   .community-profile-link { grid-column: 1 / -1; grid-row: auto; justify-self: stretch; }
   .community-medals { width: 100%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.3rem; overflow: visible; padding-bottom: 0; }
