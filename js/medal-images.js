@@ -27,6 +27,16 @@ export const isValidPngUrl = value => {
   }
 };
 
+export const isImportableMedalImage = value => {
+  if (!value?.trim()) return false;
+  if (localAssetPath(value.trim())) return true;
+  try {
+    return new URL(value.trim()).protocol === 'https:';
+  } catch (error) {
+    return false;
+  }
+};
+
 export const normalizeMedalIcon = value => {
   if (!value?.trim()) return defaultMedalIcon;
   const local = localAssetPath(value.trim());
