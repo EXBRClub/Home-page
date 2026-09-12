@@ -126,7 +126,8 @@
   .community-avatar { width: 3.8rem; height: 4.8rem; }
   .community-featured { grid-column: 1 / -1; }
   .community-profile-link { grid-column: 1 / -1; grid-row: auto; justify-self: stretch; }
-  .community-medals { overflow-x: auto; padding-bottom: 0.2rem; }
+  .community-medals { width: 100%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.3rem; overflow: visible; padding-bottom: 0; }
+  .community-medal { width: 100%; height: auto; aspect-ratio: 1; min-width: 0; }
   .gallery-heading { align-items: stretch; flex-direction: column; gap: 0.5rem; }
   .gallery-heading p { text-align: left; }
   .community-gallery { grid-template-columns: 1fr; }
