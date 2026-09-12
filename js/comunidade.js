@@ -29,12 +29,12 @@ let viewerProfile = null;
 const classNames = { infiltrador: 'Infiltrador', 'assalto-leve': 'Assalto leve', medico: 'Médico de combate', engenheiro: 'Engenheiro', 'assalto-pesado': 'Assalto pesado', max: 'MAX' };
 const classSymbols = { infiltrador: '◇', 'assalto-leve': '△', medico: '✚', engenheiro: '⚙', 'assalto-pesado': '⬡', max: '◆' };
 const classIcons = {
-  infiltrador: 'https://res.cloudinary.com/uofznsju/image/upload/v1789226044/exbr-site/classes/n4vssk15kqxqd4c6obgi.png',
-  'assalto-leve': 'https://res.cloudinary.com/uofznsju/image/upload/v1789226054/exbr-site/classes/qkv2u8faf5cywdqa7eot.png',
-  medico: 'https://res.cloudinary.com/uofznsju/image/upload/v1789226064/exbr-site/classes/melgfelpgez4cb1dcbig.png',
-  engenheiro: 'https://res.cloudinary.com/uofznsju/image/upload/v1789226075/exbr-site/classes/tupc2fprhxjq1ykrzouz.png',
-  'assalto-pesado': 'https://res.cloudinary.com/uofznsju/image/upload/v1789226084/exbr-site/classes/oxihdaqkerwop0l10ihy.png',
-  max: 'https://res.cloudinary.com/uofznsju/image/upload/v1789226096/exbr-site/classes/eosv1y4g0vl2m5zsa67w.png'
+  infiltrador: 'https://res.cloudinary.com/uofznsju/image/upload/exbr-site/classes/n4vssk15kqxqd4c6obgi.png?rev=20260912-2',
+  'assalto-leve': 'https://res.cloudinary.com/uofznsju/image/upload/exbr-site/classes/qkv2u8faf5cywdqa7eot.png?rev=20260912-2',
+  medico: 'https://res.cloudinary.com/uofznsju/image/upload/exbr-site/classes/melgfelpgez4cb1dcbig.png?rev=20260912-2',
+  engenheiro: 'https://res.cloudinary.com/uofznsju/image/upload/exbr-site/classes/tupc2fprhxjq1ykrzouz.png?rev=20260912-2',
+  'assalto-pesado': 'https://res.cloudinary.com/uofznsju/image/upload/exbr-site/classes/oxihdaqkerwop0l10ihy.png?rev=20260912-2',
+  max: 'https://res.cloudinary.com/uofznsju/image/upload/exbr-site/classes/eosv1y4g0vl2m5zsa67w.png?rev=20260912-2'
 };
 const factionNames = { tr: 'Terran Republic', nc: 'New Conglomerate', vs: 'Vanu Sovereignty', nso: 'Nanite Systems Operatives' };
 const factionIcons = {
