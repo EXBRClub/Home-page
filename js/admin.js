@@ -388,6 +388,36 @@ const migrateGalleryImages = async items => Promise.all(items.map(async item => 
   }
 }));
 
+const migrateOperationImages = async () => {
+  let snapshot;
+
+  try {
+    snapshot = await getDocs(collection(db, 'operations'));
+  } catch (error) {
+    return 0;
+  }
+
+  let migrated = 0;
+
+  for (const operationDocument of snapshot.docs) {
+    const operation = operationDocument.data();
+    if (!shouldArchiveImage(operation.imageUrl)) continue;
+
+    try {
+      const imageUrl = await archiveImage(operation.imageUrl);
+      await setDoc(operationDocument.ref, {
+        imageUrl,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      migrated += 1;
+    } catch (error) {
+      // Mantém a URL original e tenta novamente no próximo acesso administrativo.
+    }
+  }
+
+  return migrated;
+};
+
 const addMedal = async (medal, button) => {
   if (!selectedUser) return;
   button.disabled = true;
@@ -545,6 +575,7 @@ const loadData = async () => {
     ? gallerySnapshot.docs.map(item => ({ id: item.id, ...item.data() })).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
     : [];
   galleryItems = await migrateGalleryImages(galleryItems);
+  await migrateOperationImages();
   renderMedals();
   renderGalleryAdmin();
   setAdminMedalFeedback(`${medals.length} ${medals.length === 1 ? 'medalha disponível' : 'medalhas disponíveis'} para edição.`, 'success');
