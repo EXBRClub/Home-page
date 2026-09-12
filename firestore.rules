@@ -34,6 +34,17 @@ service cloud.firestore {
       ];
     }
 
+    function validBannerId(bannerId) {
+      return bannerId in [
+        'brasil', 'comando', 'noturna',
+        'Bunner_01', 'Bunner_02', 'Bunner_03', 'Bunner_04', 'Bunner_05',
+        'Bunner_06', 'Bunner_07', 'Bunner_08', 'Bunner_09', 'Bunner_010',
+        'Bunner_011', 'Bunner_012', 'Bunner_013', 'Bunner_014', 'Bunner_015',
+        'Bunner_016', 'Bunner_017', 'Bunner_018', 'Bunner_019', 'Bunner_020',
+        'Bunner_021', 'Bunner_022'
+      ];
+    }
+
     function validNewMember(userId) {
       return owns(userId)
         && request.resource.data.keys().hasOnly([
@@ -46,7 +57,7 @@ service cloud.firestore {
         && request.resource.data.role == 'member'
         && request.resource.data.rankId == 'soldado'
         && validAvatarId(request.resource.data.avatarId)
-        && request.resource.data.bannerId in ['brasil', 'comando', 'noturna']
+        && validBannerId(request.resource.data.bannerId)
         && request.resource.data.bio is string
         && request.resource.data.bio.size() <= 220
         && request.resource.data.favoriteClass in ['', 'infiltrador', 'assalto-leve', 'medico', 'engenheiro', 'assalto-pesado', 'max']
@@ -60,7 +71,7 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['displayName', 'avatarId', 'bannerId', 'bio', 'favoriteClass', 'favoriteFaction', 'featuredMedalIds', 'updatedAt'])
         && validAvatarId(request.resource.data.avatarId)
-        && request.resource.data.bannerId in ['brasil', 'comando', 'noturna']
+        && validBannerId(request.resource.data.bannerId)
         && request.resource.data.bio is string
         && request.resource.data.bio.size() <= 220
         && request.resource.data.favoriteClass in ['', 'infiltrador', 'assalto-leve', 'medico', 'engenheiro', 'assalto-pesado', 'max']
