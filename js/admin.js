@@ -17,6 +17,7 @@ import { auth, db } from './firebase-client.js';
 import { archiveImage, shouldArchiveImage } from './cloudinary-images.js?v=20260912-1';
 import { applyMedalImage, defaultMedalIcon, isImportableMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260912-1';
 import { createMediaElement, normalizeExternalUrl } from './community-media.js?v=20260911-1';
+import { DEFAULT_AVATAR_ID, avatarSource, normalizeAvatarId } from './avatar-catalog.js?v=20260912-1';
 
 const list = document.querySelector('[data-soldier-list]');
 const search = document.querySelector('[data-soldier-search]');
@@ -46,12 +47,6 @@ const adminTitle = document.querySelector('[data-admin-title]');
 const galleryForm = document.querySelector('[data-gallery-form]');
 const galleryAdminList = document.querySelector('[data-gallery-admin-list]');
 const galleryAdminFeedback = document.querySelector('[data-gallery-admin-feedback]');
-
-const avatarSources = {
-  assalto: '../assets/profile/avatars/assalto.webp',
-  pesado: '../assets/profile/avatars/pesado.webp',
-  reconhecimento: '../assets/profile/avatars/reconhecimento.webp'
-};
 
 let users = [];
 let ranks = [];
@@ -91,7 +86,7 @@ const rankName = rankId => ranks.find(rank => rank.id === rankId)?.nome || 'Sold
 const publicProfileData = user => ({
   displayName: user.displayName || user.email?.split('@')[0] || 'Membro EXBR',
   rankId: user.rankId || 'soldado',
-  avatarId: user.avatarId || 'assalto',
+  avatarId: normalizeAvatarId(user.avatarId || DEFAULT_AVATAR_ID),
   bannerId: user.bannerId || 'brasil',
   bio: user.bio || '',
   favoriteClass: user.favoriteClass || '',
@@ -155,7 +150,7 @@ const renderUsers = () => {
     row.setAttribute('aria-label', `${user.displayName || 'Membro EXBR'}, ${rankName(user.rankId)}. Pressione Enter para abrir o perfil.`);
 
     const avatar = document.createElement('img');
-    avatar.src = avatarSources[user.avatarId] || avatarSources.assalto;
+    avatar.src = avatarSource(user.avatarId, 'thumb');
     avatar.alt = '';
 
     const copy = document.createElement('div');

@@ -16,6 +16,24 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    function validAvatarId(avatarId) {
+      return avatarId in [
+        'assalto', 'pesado', 'reconhecimento',
+        'Nc_temperate_forest_light_assault', 'Nc_temperate_forest_heavy_assault',
+        'Nc_temperate_forest_infiltrator', 'Nc_temperate_forest_engineer',
+        'Nc_temperate_forest_combat_medic', 'Nc_temperate_forest_max',
+        'Tr_temperate_forest_light_assault', 'Tr_temperate_forest_heavy_assault',
+        'Tr_temperate_forest_infiltrator', 'Tr_temperate_forest_engineer',
+        'Tr_temperate_forest_combat_medic', 'Tr_temperate_forest_max',
+        'Vs_temperate_forest_light_assault', 'Vs_temperate_forest_heavy_assault',
+        'Vs_temperate_forest_infiltrator', 'Vs_temperate_forest_engineer',
+        'Vs_temperate_forest_combat_medic', 'Vs_temperate_forest_max',
+        'NS_light_assault', 'NS_heavy_assault', 'NS_infiltrator',
+        'NS_engineer', 'NS_combat_medic',
+        'personalizado_assalto', 'personalizado_pesado', 'personalizado_reconhecimento'
+      ];
+    }
+
     function validNewMember(userId) {
       return owns(userId)
         && request.resource.data.keys().hasOnly([
@@ -27,7 +45,7 @@ service cloud.firestore {
         && request.resource.data.email == request.auth.token.email
         && request.resource.data.role == 'member'
         && request.resource.data.rankId == 'soldado'
-        && request.resource.data.avatarId in ['assalto', 'pesado', 'reconhecimento']
+        && validAvatarId(request.resource.data.avatarId)
         && request.resource.data.bannerId in ['brasil', 'comando', 'noturna']
         && request.resource.data.bio is string
         && request.resource.data.bio.size() <= 220
@@ -41,7 +59,7 @@ service cloud.firestore {
       return owns(userId)
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['displayName', 'avatarId', 'bannerId', 'bio', 'favoriteClass', 'favoriteFaction', 'featuredMedalIds', 'updatedAt'])
-        && request.resource.data.avatarId in ['assalto', 'pesado', 'reconhecimento']
+        && validAvatarId(request.resource.data.avatarId)
         && request.resource.data.bannerId in ['brasil', 'comando', 'noturna']
         && request.resource.data.bio is string
         && request.resource.data.bio.size() <= 220

@@ -20,7 +20,7 @@ email       e-mail da conta
 displayName nome exibido no perfil
 role        member | admin
 rankId      identificador presente em data/patentes.json
-avatarId    assalto | pesado | reconhecimento
+avatarId    identificador do catálogo em js/avatar-catalog.js (padrão: NS_light_assault)
 bannerId    brasil | comando | noturna
 bio         apresentação pessoal de até 220 caracteres
 favoriteClass  classe favorita em PlanetSide 2

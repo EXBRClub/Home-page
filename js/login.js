@@ -7,6 +7,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
 import { doc, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
+import { DEFAULT_AVATAR_ID } from './avatar-catalog.js?v=20260912-1';
 
 const TEMP_REGISTRATION_CODE = '070922';
 const form = document.querySelector('[data-login-form]');
@@ -166,7 +167,7 @@ form?.addEventListener('submit', async event => {
         displayName,
         role: 'member',
         rankId: 'soldado',
-        avatarId: 'assalto',
+        avatarId: DEFAULT_AVATAR_ID,
         bannerId: 'brasil',
         bio: '',
         favoriteClass: '',

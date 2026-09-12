@@ -4,6 +4,7 @@ import { auth, db } from './firebase-client.js';
 import { archiveImage } from './cloudinary-images.js?v=20260912-1';
 import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 import { createMediaElement, normalizeExternalUrl } from './community-media.js?v=20260911-1';
+import { DEFAULT_AVATAR_ID, avatarSource, normalizeAvatarId } from './avatar-catalog.js?v=20260912-1';
 
 const list = document.querySelector('[data-community-list]');
 const search = document.querySelector('[data-community-search]');
@@ -13,12 +14,6 @@ const gallery = document.querySelector('[data-community-gallery]');
 const tabs = [...document.querySelectorAll('[data-community-tab]')];
 const panels = [...document.querySelectorAll('[data-community-panel]')];
 const galleryForm = document.querySelector('[data-community-gallery-form]');
-const avatarSources = {
-  assalto: '../assets/profile/avatars/assalto.webp',
-  pesado: '../assets/profile/avatars/pesado.webp',
-  reconhecimento: '../assets/profile/avatars/reconhecimento.webp'
-};
-
 let members = [];
 let ranks = new Map();
 let medalDefinitions = new Map();
@@ -89,7 +84,7 @@ const ensureViewerPublicProfile = async user => {
   await setDoc(doc(db, 'publicProfiles', user.uid), {
     displayName: profile.displayName || user.displayName || 'Membro EXBR',
     rankId: profile.rankId || 'soldado',
-    avatarId: profile.avatarId || 'assalto',
+    avatarId: normalizeAvatarId(profile.avatarId || DEFAULT_AVATAR_ID),
     bannerId: profile.bannerId || 'brasil',
     bio: profile.bio || '',
     favoriteClass: profile.favoriteClass || '',
@@ -135,7 +130,7 @@ const render = () => {
     card.className = 'community-member';
     const avatar = document.createElement('img');
     avatar.className = 'community-avatar';
-    avatar.src = avatarSources[member.avatarId] || avatarSources.assalto;
+    avatar.src = avatarSource(member.avatarId, 'thumb');
     avatar.alt = '';
 
     const identity = document.createElement('div');

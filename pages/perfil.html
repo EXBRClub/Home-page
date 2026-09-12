@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="../css/reset.css?v=20260906-2">
   <link rel="stylesheet" href="../css/base.css?v=20260906-10">
   <link rel="stylesheet" href="../css/components.css?v=20260907-15">
-  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260912-5">
+  <link rel="stylesheet" href="../css/pages/perfil.css?v=20260912-6">
 </head>
 <body class="member-page has-tactical-dock">
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -91,7 +91,7 @@
             </span>
           </div>
 
-          <img class="member-avatar" data-member-avatar src="../assets/profile/avatars/assalto.webp" alt="Avatar selecionado: soldado da classe Assalto" role="button" tabindex="0" aria-label="Mostrar opções de edição do perfil">
+          <img class="member-avatar" data-member-avatar src="https://res.cloudinary.com/uofznsju/image/upload/f_auto,q_auto,c_limit,w_900,h_1100/v1789231970/NS_light_assault" alt="Avatar selecionado: NS Light Assault" role="button" tabindex="0" aria-label="Mostrar opções de edição do perfil">
 
           <div class="member-faction-marker" data-favorite-faction title="Facção favorita não definida">
             <span aria-hidden="true"><img src="../assets/icons/dock/recrutamento.png" alt=""></span><small>Facção</small>
@@ -114,19 +114,10 @@
               <strong>Soldado</strong>
               <span>Selecione um template</span>
             </div>
-            <div class="avatar-options" role="group" aria-label="Templates de soldado">
-              <button type="button" data-avatar-option data-avatar="assalto" data-avatar-name="Assalto" data-avatar-src="../assets/profile/avatars/assalto.webp" aria-pressed="true">
-                <img src="../assets/profile/avatars/assalto.webp" alt="">
-                <span>Assalto</span>
-              </button>
-              <button type="button" data-avatar-option data-avatar="pesado" data-avatar-name="Pesado" data-avatar-src="../assets/profile/avatars/pesado.webp" aria-pressed="false">
-                <img src="../assets/profile/avatars/pesado.webp" alt="">
-                <span>Pesado</span>
-              </button>
-              <button type="button" data-avatar-option data-avatar="reconhecimento" data-avatar-name="Reconhecimento" data-avatar-src="../assets/profile/avatars/reconhecimento.webp" aria-pressed="false">
-                <img src="../assets/profile/avatars/reconhecimento.webp" alt="">
-                <span>Recon</span>
-              </button>
+            <div class="avatar-slider-shell">
+              <button class="avatar-slide-control" type="button" data-avatar-slide="-1" aria-label="Ver avatares anteriores">‹</button>
+              <div class="avatar-options" data-avatar-options role="group" aria-label="Templates de soldado"></div>
+              <button class="avatar-slide-control" type="button" data-avatar-slide="1" aria-label="Ver próximos avatares">›</button>
             </div>
           </div>
 
@@ -271,6 +262,6 @@
   </nav>
 
   <script src="../js/main.js?v=20260907-2" defer></script>
-  <script src="../js/perfil.js?v=20260912-5" type="module"></script>
+  <script src="../js/perfil.js?v=20260912-6" type="module"></script>
 </body>
 </html>

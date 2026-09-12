@@ -447,7 +447,6 @@
   font-size: 0.66rem;
 }
 
-.avatar-options,
 .banner-options,
 .symbol-options {
   display: grid;
@@ -455,7 +454,6 @@
   gap: 0.35rem;
 }
 
-.avatar-options button,
 .banner-options button {
   min-width: 0;
   border: 1px solid rgba(55, 167, 183, 0.24);
@@ -505,23 +503,6 @@
 .biography-editor button { min-height: 2.5rem; border: 1px solid rgba(104, 210, 221, 0.5); color: #dff8fb; background: rgba(5, 37, 44, 0.8); font-size: 0.7rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
 .biography-editor button:hover, .biography-editor button:focus-visible { border-color: #e7bd42; color: #fff2a2; }
 
-.avatar-options button {
-  height: 3.4rem;
-  display: grid;
-  grid-template-columns: 2.4rem minmax(0, 1fr);
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.15rem 0.35rem;
-}
-
-.avatar-options img {
-  width: 2.2rem;
-  height: 3rem;
-  object-fit: contain;
-  object-position: center bottom;
-}
-
-.avatar-options span,
 .banner-options button {
   overflow: hidden;
   font-size: 0.64rem;
@@ -532,11 +513,8 @@
   white-space: nowrap;
 }
 
-.avatar-options button:hover,
-.avatar-options button:focus-visible,
 .banner-options button:hover,
 .banner-options button:focus-visible,
-.avatar-options button[aria-pressed="true"],
 .banner-options button[aria-pressed="true"] {
   border-color: #e7bd42;
   color: #fff5b0;
@@ -544,10 +522,101 @@
   box-shadow: inset 0 0 0.8rem rgba(241, 198, 62, 0.12);
 }
 
-.avatar-options button:hover,
 .banner-options button:hover {
   transform: translateY(-1px);
 }
+
+.avatar-slider-shell {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) 2.2rem;
+  align-items: stretch;
+  gap: 0.4rem;
+}
+
+.avatar-slide-control {
+  border: 1px solid rgba(72, 192, 207, 0.36);
+  color: #74d8e1;
+  background: rgba(3, 24, 31, 0.88);
+  font-size: 1.45rem;
+  cursor: pointer;
+}
+
+.avatar-slide-control:hover,
+.avatar-slide-control:focus-visible {
+  border-color: #e7bd42;
+  color: #ffe06a;
+  background: rgba(53, 43, 13, 0.86);
+}
+
+.avatar-options {
+  display: flex;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 0.1rem 0 0.45rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: #47c6d3 rgba(2, 18, 24, 0.82);
+  scrollbar-width: thin;
+}
+
+.avatar-option-group {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 0.28rem;
+  padding-right: 0.65rem;
+  border-right: 1px solid rgba(65, 178, 192, 0.22);
+  scroll-snap-align: start;
+}
+
+.avatar-option-group:last-child { border-right: 0; }
+
+.avatar-option-group-label {
+  color: #64cbd5;
+  font: 0.56rem/1 Consolas, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.avatar-option-group-items { display: flex; gap: 0.32rem; }
+
+.avatar-options button {
+  width: 4.25rem;
+  height: 5.5rem;
+  flex: 0 0 4.25rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 0.12rem;
+  border: 1px solid rgba(55, 167, 183, 0.24);
+  background: radial-gradient(circle at 50% 42%, rgba(31, 119, 132, 0.2), rgba(4, 25, 31, 0.84) 74%);
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.avatar-options img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+  transition: filter 180ms ease, transform 180ms ease;
+}
+
+.avatar-options button:hover,
+.avatar-options button:focus-visible,
+.avatar-options button[aria-pressed="true"] {
+  border-color: #e7bd42;
+  background: radial-gradient(circle at center, rgba(226, 176, 44, 0.24), rgba(37, 31, 16, 0.86));
+  box-shadow: inset 0 0 0.8rem rgba(241, 198, 62, 0.12);
+}
+
+.avatar-options button:hover { transform: translateY(-1px); }
+.avatar-options button:hover img,
+.avatar-options button:focus-visible img,
+.avatar-options button[aria-pressed="true"] img { filter: drop-shadow(0 0 0.38rem rgba(101, 219, 231, 0.52)); transform: scale(1.04); }
 
 .banner-options button {
   min-height: 2.1rem;
@@ -1149,13 +1218,8 @@
     margin-right: 0.4rem;
   }
 
-  .avatar-options button {
-    height: 3.8rem;
-    grid-template-columns: 1fr;
-    place-items: center;
-  }
-
-  .avatar-options img { display: none; }
+  .avatar-slider-shell { grid-template-columns: 1.85rem minmax(0, 1fr) 1.85rem; }
+  .avatar-options button { width: 3.85rem; height: 5rem; flex-basis: 3.85rem; }
 
   .customizer-heading {
     align-items: flex-start;

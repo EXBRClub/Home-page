@@ -13,13 +13,47 @@ import {
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
 import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
+import { AVATAR_CATALOG, AVATAR_GROUPS, DEFAULT_AVATAR_ID, avatarSource, normalizeAvatarId } from './avatar-catalog.js?v=20260912-1';
 
 document.addEventListener('DOMContentLoaded', () => {
   const card = document.querySelector('[data-profile-card]');
   const identityZone = document.querySelector('.identity-zone');
   const avatarImage = document.querySelector('[data-member-avatar]');
   const avatarClass = document.querySelector('[data-avatar-class]');
+  const avatarOptionsContainer = document.querySelector('[data-avatar-options]');
+  AVATAR_GROUPS.forEach(groupName => {
+    const groupAvatars = AVATAR_CATALOG.filter(avatar => avatar.group === groupName);
+    if (!groupAvatars.length || !avatarOptionsContainer) return;
+    const group = document.createElement('section');
+    group.className = 'avatar-option-group';
+    group.setAttribute('aria-label', groupName);
+    const label = document.createElement('strong');
+    label.className = 'avatar-option-group-label';
+    label.textContent = groupName;
+    const items = document.createElement('div');
+    items.className = 'avatar-option-group-items';
+    groupAvatars.forEach(avatar => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.avatarOption = '';
+      button.dataset.avatar = avatar.id;
+      button.dataset.avatarName = avatar.name;
+      button.dataset.avatarSrc = avatarSource(avatar.id);
+      button.title = avatar.name;
+      button.setAttribute('aria-label', avatar.name);
+      button.setAttribute('aria-pressed', String(avatar.id === DEFAULT_AVATAR_ID));
+      const image = document.createElement('img');
+      image.src = avatarSource(avatar.id, 'thumb');
+      image.alt = '';
+      image.loading = 'lazy';
+      button.append(image);
+      items.append(button);
+    });
+    group.append(label, items);
+    avatarOptionsContainer.append(group);
+  });
   const avatarOptions = [...document.querySelectorAll('[data-avatar-option]')];
+  const avatarSlideButtons = [...document.querySelectorAll('[data-avatar-slide]')];
   const bannerOptions = [...document.querySelectorAll('[data-banner-option]')];
   const classOptions = [...document.querySelectorAll('[data-class-option]')];
   const factionOptions = [...document.querySelectorAll('[data-faction-option]')];
@@ -243,6 +277,15 @@ document.addEventListener('DOMContentLoaded', () => {
       card.classList.remove('is-changing');
     }, animate ? 180 : 0);
   };
+
+  avatarSlideButtons.forEach(button => button.addEventListener('click', () => {
+    if (!avatarOptionsContainer) return;
+    const direction = Number(button.dataset.avatarSlide) || 1;
+    avatarOptionsContainer.scrollBy({
+      left: direction * Math.max(280, avatarOptionsContainer.clientWidth * 0.82),
+      behavior: 'smooth'
+    });
+  }));
 
   const applyBanner = option => {
     if (!option) return;
@@ -643,7 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
     await setDoc(doc(db, 'publicProfiles', currentProfileUid), {
       displayName: currentProfile.displayName || 'Membro EXBR',
       rankId: currentProfile.rankId || 'soldado',
-      avatarId: currentProfile.avatarId || 'assalto',
+      avatarId: normalizeAvatarId(currentProfile.avatarId || DEFAULT_AVATAR_ID),
       bannerId: currentProfile.bannerId || 'brasil',
       bio: currentProfile.bio || '',
       favoriteClass: currentProfile.favoriteClass || '',
@@ -682,7 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
       displayName,
       role: 'member',
       rankId: 'soldado',
-      avatarId: 'assalto',
+      avatarId: DEFAULT_AVATAR_ID,
       bannerId: 'brasil',
       bio: '',
       favoriteClass: '',
@@ -716,7 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (profileMedalAdd) profileMedalAdd.hidden = viewerProfile?.role !== 'admin';
     refreshFeaturedCount();
     document.body.dataset.userRole = viewerProfile?.role === 'admin' ? 'admin' : 'member';
-    applyAvatar(avatars.get(profile.avatarId) || avatarOptions[0], false);
+    applyAvatar(avatars.get(normalizeAvatarId(profile.avatarId)) || avatars.get(DEFAULT_AVATAR_ID) || avatarOptions[0], false);
     applyBanner(banners.get(profile.bannerId) || bannerOptions[0]);
     const selectedClass = classes.get(profile.favoriteClass);
     const selectedFaction = factions.get(profile.favoriteFaction);

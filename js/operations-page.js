@@ -10,6 +10,7 @@ import {
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import { auth, db } from './firebase-client.js';
+import { DEFAULT_AVATAR_ID, normalizeAvatarId } from './avatar-catalog.js?v=20260912-1';
 import { archiveImage, shouldArchiveImage } from './cloudinary-images.js?v=20260912-1';
 import { applyMedalImage, normalizeMedalIcon } from './medal-images.js?v=20260911-1';
 
@@ -274,7 +275,7 @@ const applyToOperation = async (operation, button) => {
       await setDoc(publicReference, {
         displayName: currentProfile?.displayName || currentUser.displayName || 'Membro EXBR',
         rankId: currentProfile?.rankId || 'soldado',
-        avatarId: currentProfile?.avatarId || 'assalto',
+        avatarId: normalizeAvatarId(currentProfile?.avatarId || DEFAULT_AVATAR_ID),
         bannerId: currentProfile?.bannerId || 'brasil',
         featuredMedals: publicSnapshot.data()?.featuredMedals || [],
         recentActivities,
