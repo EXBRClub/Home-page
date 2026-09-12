@@ -21,7 +21,7 @@ displayName nome exibido no perfil
 role        member | admin
 rankId      identificador presente em data/patentes.json
 avatarId    identificador do catálogo em js/avatar-catalog.js (padrão: NS_light_assault)
-bannerId    brasil | comando | noturna
+bannerId    identificador do catálogo em js/banner-catalog.js (padrão: Bunner_022)
 bio         apresentação pessoal de até 220 caracteres
 favoriteClass  classe favorita em PlanetSide 2
 favoriteFaction facção favorita em PlanetSide 2
@@ -42,7 +42,7 @@ Documento: `publicProfiles/{uid}`
 displayName       nome público
 rankId            patente atual
 avatarId          template de soldado
-bannerId          tratamento da bandeira
+bannerId          banner visual selecionado
 bio               apresentação pessoal
 favoriteClass     classe favorita
 favoriteFaction   facção favorita
