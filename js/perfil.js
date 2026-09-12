@@ -1,5 +1,7 @@
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
 import {
+  Timestamp,
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -38,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const adminAccess = document.querySelector('[data-admin-access]');
   const logoutButtons = [...document.querySelectorAll('[data-logout]')];
   const medalsList = document.querySelector('[data-medals-list]');
-  const medalsCount = document.querySelector('[data-medals-count]');
   const medalsLabel = document.querySelector('[data-medals-label]');
   const featuredHint = document.querySelector('[data-featured-hint]');
   const featuredCount = document.querySelector('[data-featured-count]');
@@ -51,6 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const medalDetailDescription = document.querySelector('[data-medal-detail-description]');
   const medalDetailOperation = document.querySelector('[data-medal-detail-operation]');
   const medalDetailDate = document.querySelector('[data-medal-detail-date]');
+  const medalDetailActions = document.querySelector('[data-medal-detail-actions]');
+  const medalDetailFeature = document.querySelector('[data-medal-detail-feature]');
+  const profileMedalAdd = document.querySelector('[data-profile-medal-add]');
+  const profileMedalCatalog = document.querySelector('[data-profile-medal-catalog]');
+  const profileMedalCatalogClose = document.querySelector('[data-profile-medal-catalog-close]');
+  const profileMedalSearch = document.querySelector('[data-profile-medal-search]');
+  const profileMedalCatalogGrid = document.querySelector('[data-profile-medal-catalog-grid]');
+  const profileMedalCatalogFeedback = document.querySelector('[data-profile-medal-catalog-feedback]');
+  const profileMedalOperation = document.querySelector('[data-profile-medal-operation]');
+  const profileMedalDate = document.querySelector('[data-profile-medal-date]');
 
   if (!card || !avatarImage || !avatarClass) return;
 
@@ -70,8 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
   let needsFeaturedMigration = false;
   let feedbackTimer = 0;
   let editVisibilityTimer = 0;
+  let activeDetailMedal = null;
 
   const medalDate = medal => medal.operationDate?.toDate?.().toLocaleDateString('pt-BR') || medal.operationDate || 'Data não informada';
+  const localDateInputValue = (value = new Date()) => {
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    const pad = number => String(number).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  };
   const classNames = {
     infiltrador: 'Infiltrador',
     'assalto-leve': 'Assalto leve',
@@ -141,10 +159,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (medalDetailImage) {
       applyMedalImage(medalDetailImage, definition.iconUrl || medal.iconUrl, `Imagem ampliada da medalha ${name}`);
     }
+    const highlighted = currentProfile?.featuredMedalIds?.includes(medal.id) || false;
+    if (medalDetailActions) medalDetailActions.hidden = !isOwner;
+    if (medalDetailFeature) {
+      medalDetailFeature.textContent = highlighted ? 'Medalha favoritada ★' : 'Favoritar medalha ☆';
+      medalDetailFeature.dataset.selected = String(highlighted);
+      medalDetailFeature.setAttribute('aria-pressed', String(highlighted));
+    }
   };
 
   const openMedalDetail = async medal => {
     if (!medalDetail) return;
+    activeDetailMedal = medal;
     fillMedalDetail(medal);
     medalDetail.showModal();
     if (!medal.catalogId) return;
@@ -349,11 +375,112 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.replace('login.html');
   }));
 
+  const toggleFeaturedMedal = async (medal, control) => {
+    if (!isOwner || !currentProfile || !currentProfileUid) return;
+    const ids = [...(currentProfile.featuredMedalIds || [])];
+    const index = ids.indexOf(medal.id);
+    if (index < 0 && ids.length >= 5) {
+      announce('Você já escolheu cinco medalhas. Remova uma para trocar.', true);
+      return;
+    }
+    if (index >= 0) ids.splice(index, 1);
+    else ids.push(medal.id);
+    if (control) control.disabled = true;
+    try {
+      await updateDoc(doc(db, 'users', currentProfileUid), { featuredMedalIds: ids, updatedAt: serverTimestamp() });
+      currentProfile.featuredMedalIds = ids;
+      await setDoc(doc(db, 'publicProfiles', currentProfileUid), {
+        featuredMedals: featuredMedalsFrom(currentMedals).map(publicMedal),
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      refreshFeaturedCount();
+      renderMedals(currentMedals);
+      if (medalDetail?.open && activeDetailMedal?.id === medal.id) fillMedalDetail(medal);
+      announce(index >= 0 ? 'Medalha removida dos destaques.' : 'Medalha adicionada aos destaques.');
+    } catch (error) {
+      if (control) control.disabled = false;
+      announce('Não foi possível atualizar os destaques.', true);
+    }
+  };
+
+  medalDetailFeature?.addEventListener('click', () => {
+    if (activeDetailMedal) toggleFeaturedMedal(activeDetailMedal, medalDetailFeature);
+  });
+
+  const renderProfileMedalCatalog = () => {
+    if (!profileMedalCatalogGrid) return;
+    const term = profileMedalSearch?.value.trim().toLocaleLowerCase('pt-BR') || '';
+    const definitions = [...medalDefinitions.entries()]
+      .map(([id, definition]) => ({ id, ...definition }))
+      .filter(medal => `${medal.nome || ''} ${medal.description || ''}`.toLocaleLowerCase('pt-BR').includes(term))
+      .sort((first, second) => (first.nome || '').localeCompare(second.nome || '', 'pt-BR'));
+    profileMedalCatalogGrid.replaceChildren();
+
+    definitions.forEach(medal => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'profile-medal-catalog-item';
+      button.title = medal.nome || 'Medalha EXBR';
+      button.setAttribute('aria-label', `Conceder ${medal.nome || 'Medalha EXBR'}`);
+      const image = document.createElement('img');
+      applyMedalImage(image, medal.iconUrl, medal.nome || 'Medalha EXBR');
+      const add = document.createElement('span');
+      add.setAttribute('aria-hidden', 'true');
+      add.textContent = '+';
+      button.append(image, add);
+      button.addEventListener('click', async () => {
+        if (!currentProfileUid || viewerProfile?.role !== 'admin') return;
+        const dateValue = profileMedalDate?.value || localDateInputValue();
+        button.disabled = true;
+        if (profileMedalCatalogFeedback) profileMedalCatalogFeedback.textContent = `Concedendo ${medal.nome || 'medalha'}…`;
+        try {
+          await addDoc(collection(db, 'users', currentProfileUid, 'medals'), {
+            catalogId: medal.id,
+            name: medal.nome || 'Medalha EXBR',
+            description: medal.description || '',
+            operationName: profileMedalOperation?.value.trim() || 'Operação EXBR',
+            operationDate: Timestamp.fromDate(new Date(`${dateValue}T12:00:00`)),
+            iconUrl: normalizeMedalIcon(medal.iconUrl),
+            awardedAt: serverTimestamp()
+          });
+          await loadMedals(currentProfileUid);
+          button.disabled = false;
+          if (profileMedalCatalogFeedback) profileMedalCatalogFeedback.textContent = `${medal.nome || 'Medalha'} adicionada ao perfil.`;
+          announce(`${medal.nome || 'Medalha'} adicionada ao perfil.`);
+        } catch (error) {
+          button.disabled = false;
+          if (profileMedalCatalogFeedback) profileMedalCatalogFeedback.textContent = 'Não foi possível conceder esta medalha.';
+        }
+      });
+      profileMedalCatalogGrid.append(button);
+    });
+
+    const inventorySize = Math.max(18, Math.ceil(definitions.length / 9) * 9);
+    for (let index = definitions.length; index < inventorySize; index += 1) {
+      const empty = document.createElement('span');
+      empty.className = 'profile-medal-catalog-empty';
+      empty.setAttribute('aria-hidden', 'true');
+      profileMedalCatalogGrid.append(empty);
+    }
+  };
+
+  profileMedalSearch?.addEventListener('input', renderProfileMedalCatalog);
+  profileMedalAdd?.addEventListener('click', () => {
+    if (!profileMedalCatalog || viewerProfile?.role !== 'admin') return;
+    if (profileMedalDate) profileMedalDate.value = localDateInputValue();
+    renderProfileMedalCatalog();
+    profileMedalCatalog.showModal();
+    profileMedalSearch?.focus({ preventScroll: true });
+  });
+  profileMedalCatalogClose?.addEventListener('click', () => profileMedalCatalog?.close());
+  profileMedalCatalog?.addEventListener('click', event => {
+    if (event.target === profileMedalCatalog) profileMedalCatalog.close();
+  });
+
   const renderMedals = medals => {
-    if (!medalsList || !medalsCount) return;
+    if (!medalsList) return;
     currentMedals = medals;
     medalsList.replaceChildren();
-    medalsCount.textContent = String(medals.length).padStart(2, '0');
     if (medalsLabel) medalsLabel.textContent = medals.length ? 'Registro oficial' : 'Aguardando condecorações';
     if (!medals.length) {
       const empty = document.createElement('li');
@@ -367,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const medal = effectiveMedal(storedMedal);
       const item = document.createElement('li');
       item.className = 'medal-entry';
-      const date = medalDate(medal);
+      item.dataset.medalName = medal.name || 'Medalha EXBR';
       const icon = document.createElement('span');
       icon.className = 'medal-icon';
       icon.setAttribute('aria-hidden', 'true');
@@ -375,18 +502,13 @@ document.addEventListener('DOMContentLoaded', () => {
       applyMedalImage(image, medal.iconUrl);
       icon.classList.add('has-image');
       icon.append(image);
-      const copy = document.createElement('span');
-      copy.className = 'medal-copy';
-      const name = document.createElement('strong');
-      name.textContent = medal.name || 'Medalha EXBR';
-      const detail = document.createElement('small');
-      detail.textContent = `${medal.operationName || 'Operação'} · ${date}`;
-      copy.append(name, detail);
+      const name = medal.name || 'Medalha EXBR';
       const open = document.createElement('button');
       open.className = 'medal-open';
       open.type = 'button';
-      open.setAttribute('aria-label', `Ver detalhes de ${name.textContent}`);
-      open.append(icon, copy);
+      open.title = name;
+      open.setAttribute('aria-label', `Ver detalhes de ${name}`);
+      open.append(icon);
       open.addEventListener('click', () => openMedalDetail(medal));
       item.append(open);
 
@@ -399,32 +521,8 @@ document.addEventListener('DOMContentLoaded', () => {
         feature.textContent = highlighted ? '★' : '☆';
         feature.dataset.selected = String(highlighted);
         feature.setAttribute('aria-pressed', String(highlighted));
-        feature.setAttribute('aria-label', `${highlighted ? 'Remover' : 'Adicionar'} ${name.textContent} ${highlighted ? 'dos' : 'aos'} destaques`);
-        feature.addEventListener('click', async () => {
-          const ids = [...(currentProfile.featuredMedalIds || [])];
-          const index = ids.indexOf(medal.id);
-          if (index < 0 && ids.length >= 5) {
-            announce('Você já escolheu cinco medalhas. Remova uma para trocar.', true);
-            return;
-          }
-          if (index >= 0) ids.splice(index, 1);
-          else ids.push(medal.id);
-          feature.disabled = true;
-          try {
-            await updateDoc(doc(db, 'users', currentProfileUid), { featuredMedalIds: ids, updatedAt: serverTimestamp() });
-            currentProfile.featuredMedalIds = ids;
-            await setDoc(doc(db, 'publicProfiles', currentProfileUid), {
-              featuredMedals: featuredMedalsFrom(currentMedals).map(publicMedal),
-              updatedAt: serverTimestamp()
-            }, { merge: true });
-            refreshFeaturedCount();
-            renderMedals(currentMedals);
-            announce(index >= 0 ? 'Medalha removida dos destaques.' : 'Medalha adicionada aos destaques.');
-          } catch (error) {
-            feature.disabled = false;
-            announce('Não foi possível atualizar os destaques.', true);
-          }
-        });
+        feature.setAttribute('aria-label', `${highlighted ? 'Remover' : 'Adicionar'} ${name} ${highlighted ? 'dos' : 'aos'} destaques`);
+        feature.addEventListener('click', () => toggleFeaturedMedal(medal, feature));
         item.append(feature);
       }
 
@@ -434,9 +532,9 @@ document.addEventListener('DOMContentLoaded', () => {
         remove.className = 'medal-remove';
         remove.type = 'button';
         remove.textContent = '×';
-        remove.setAttribute('aria-label', `Remover ${name.textContent} de ${memberName?.textContent || 'membro'}`);
+        remove.setAttribute('aria-label', `Remover ${name} de ${memberName?.textContent || 'membro'}`);
         remove.addEventListener('click', async () => {
-          if (!currentProfileUid || !window.confirm(`Remover a medalha ${name.textContent} deste perfil?`)) return;
+          if (!currentProfileUid || !window.confirm(`Remover a medalha ${name} deste perfil?`)) return;
           remove.disabled = true;
           try {
             await deleteDoc(doc(db, 'users', currentProfileUid, 'medals', medal.id));
@@ -451,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
               featuredMedals: featuredMedalsFrom(remainingMedals).map(publicMedal),
               updatedAt: serverTimestamp()
             }, { merge: true });
-            announce(`${name.textContent} removida do perfil.`);
+            announce(`${name} removida do perfil.`);
           } catch (error) {
             remove.disabled = false;
             announce('Não foi possível remover esta medalha.', true);
@@ -461,6 +559,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       medalsList.append(item);
     });
+
+    const inventorySize = Math.max(9, Math.ceil(medals.length / 3) * 3);
+    for (let index = medals.length; index < inventorySize; index += 1) {
+      const empty = document.createElement('li');
+      empty.className = 'medal-slot-empty';
+      empty.setAttribute('aria-hidden', 'true');
+      medalsList.append(empty);
+    }
   };
 
   const loadMedals = async uid => {
@@ -590,6 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (memberStatus) memberStatus.textContent = isOwner ? 'Perfil ativo' : 'Registro consultado';
     if (featuredHint) featuredHint.hidden = !isOwner;
+    if (profileMedalAdd) profileMedalAdd.hidden = viewerProfile?.role !== 'admin';
     refreshFeaturedCount();
     document.body.dataset.userRole = viewerProfile?.role === 'admin' ? 'admin' : 'member';
     applyAvatar(avatars.get(profile.avatarId) || avatarOptions[0], false);
